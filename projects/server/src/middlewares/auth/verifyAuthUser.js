@@ -20,7 +20,7 @@ async function verifyUserRole({
   throw new ResponseError('user unauthorized', 401);
 }
 
-function verifyUserAuth({
+function verifyAuthUser({
   isAdmin = false,
   isWarehouseAdmin = false,
   isCustomer = false,
@@ -37,4 +37,4 @@ function verifyUserAuth({
   };
 }
 
-module.exports = verifyUserAuth;
+module.exports = verifyAuthUser;
