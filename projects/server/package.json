@@ -1,22 +1,42 @@
 {
-  "name": "server",
-  "version": "0.1.0",
+  "name": "gadget-gallery",
+  "version": "0.0.1",
   "main": "src/index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "private": true,
   "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon .",
     "start": "nodemon",
     "serve": "node .",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@joi/date": "^2.1.0",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.0.1",
-    "express": "^4.18.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-bearer-token": "^2.4.0",
+    "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
+    "moment": "^2.29.4",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.6.1",
+    "nodemailer": "^6.9.6",
+    "sequelize": "^6.33.0",
+    "sharp": "^0.32.6"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "cross-env": "^7.0.3",
+    "eslint": "^8.51.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-prettier": "^5.0.0",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.0.3",
+    "sequelize-cli": "^6.6.1"
   }
 }
