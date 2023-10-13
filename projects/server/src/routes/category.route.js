@@ -15,6 +15,24 @@ router.post(
   categoryController.createCategory
 );
 
+// delete category by categoryId
+router.delete(
+  '/:id',
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  categoryValidator.deleteCategoryById,
+  categoryController.deleteCategoryById
+);
+
+// edit category by categoryId
+router.patch(
+  '/:id',
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  multerBlobUploader().single('image'),
+  multerErrorHandler,
+  categoryValidator.editCategoryById,
+  categoryController.editCategoryById
+);
+
 // get categories
 router.get(
   '/',
@@ -27,14 +45,6 @@ router.get(
   '/:id/image',
   categoryValidator.getCategoryImageById,
   categoryController.getCategoryImageById
-);
-
-// delete category by categoryId
-router.delete(
-  '/:id',
-  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
-  categoryValidator.deleteCategoryById,
-  categoryController.deleteCategoryById
 );
 
 module.exports = router;

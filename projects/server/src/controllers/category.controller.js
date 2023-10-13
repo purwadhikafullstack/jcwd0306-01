@@ -31,6 +31,17 @@ const categoryController = {
     }
   },
 
+  editCategoryById: async (req, res) => {
+    try {
+      if (req.file)
+        req.body.image = await sharp(req.file.buffer).png().toBuffer();
+      const category = await categoryService.editCategoryById(req);
+      sendResponse({ res, statusCode: 200, data: category });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   deleteCategoryById: async (req, res) => {
     try {
       await categoryService.deleteCategoryById(req);
