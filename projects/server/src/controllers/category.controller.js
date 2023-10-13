@@ -13,6 +13,26 @@ const categoryController = {
     }
   },
 
+  deleteCategoryById: async (req, res) => {
+    try {
+      await categoryService.deleteCategoryById(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  editCategoryById: async (req, res) => {
+    try {
+      if (req.file)
+        req.body.image = await sharp(req.file.buffer).png().toBuffer();
+      const category = await categoryService.editCategoryById(req);
+      sendResponse({ res, statusCode: 200, data: category });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getCategories: async (req, res) => {
     try {
       const categories = await categoryService.getCategories();
@@ -31,21 +51,10 @@ const categoryController = {
     }
   },
 
-  editCategoryById: async (req, res) => {
+  getCategoryById: async (req, res) => {
     try {
-      if (req.file)
-        req.body.image = await sharp(req.file.buffer).png().toBuffer();
-      const category = await categoryService.editCategoryById(req);
+      const category = await categoryService.getCategoryById(req);
       sendResponse({ res, statusCode: 200, data: category });
-    } catch (error) {
-      sendResponse({ res, error });
-    }
-  },
-
-  deleteCategoryById: async (req, res) => {
-    try {
-      await categoryService.deleteCategoryById(req);
-      res.sendStatus(204);
     } catch (error) {
       sendResponse({ res, error });
     }

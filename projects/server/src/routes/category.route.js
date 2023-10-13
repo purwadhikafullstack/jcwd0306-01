@@ -47,4 +47,12 @@ router.get(
   categoryController.getCategoryImageById
 );
 
+// get category by categoryId
+router.get(
+  '/:id',
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  categoryValidator.getCategoryById,
+  categoryController.getCategoryById
+);
+
 module.exports = router;
