@@ -1,8 +1,8 @@
 const { ResponseError } = require('../../errors');
 const { sequelize, Sequelize, Category } = require('../../models');
 
-const createCategory = async (req) => {
-  const categoryData = await sequelize.transaction(
+async function createCategory(req) {
+  const category = await sequelize.transaction(
     { isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE },
     async (t) => {
       const [data, isCreated] = await Category.findOrCreate({
@@ -16,7 +16,7 @@ const createCategory = async (req) => {
       return { ...data.toJSON(), image: undefined };
     }
   );
-  return categoryData;
-};
+  return category;
+}
 
 module.exports = createCategory;

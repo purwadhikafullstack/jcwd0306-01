@@ -7,11 +7,17 @@ const categoryValidator = require('../middlewares/validators/category.validator'
 
 router.post(
   '/',
-  //   verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   multerBlobUploader().single('image'),
   multerErrorHandler,
   categoryValidator.createCategory,
   categoryController.createCategory
+);
+
+router.get(
+  '/',
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  categoryController.getCategories
 );
 
 module.exports = router;

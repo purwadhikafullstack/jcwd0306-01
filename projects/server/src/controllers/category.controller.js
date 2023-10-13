@@ -6,12 +6,17 @@ const categoryController = {
   createCategory: async (req, res) => {
     try {
       req.body.image = await sharp(req.file.buffer).png().toBuffer();
-      const categoryData = await categoryService.createCategory(req);
-      sendResponse({
-        res,
-        statusCode: 201,
-        data: categoryData,
-      });
+      const category = await categoryService.createCategory(req);
+      sendResponse({ res, statusCode: 201, data: category });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getCategories: async (req, res) => {
+    try {
+      const categories = await categoryService.getCategories();
+      sendResponse({ res, statusCode: 200, data: categories });
     } catch (error) {
       sendResponse({ res, error });
     }
