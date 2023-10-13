@@ -1,3 +1,7 @@
 const sendResponse = require('./sendResponse');
+const validateJoiSchema = require('./validateJoiSchema');
 
-module.exports = { sendResponse };
+module.exports = {
+  sendResponse,
+  validateJoiSchema,
+};

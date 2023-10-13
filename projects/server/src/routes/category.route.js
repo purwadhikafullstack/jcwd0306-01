@@ -1,9 +1,11 @@
 const router = require('express').Router();
 const { categoryController } = require('../controllers');
-// const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
-const multerBlobUploader = require('../middlewares/multers/multerBlobUploader');
-const multerErrorHandler = require('../middlewares/multers/multerErrorHandler');
-const categoryValidator = require('../middlewares/validators/category.validator');
+// const { verifyAuthUser } = require('../middlewares/auth');
+const {
+  multerBlobUploader,
+  multerErrorHandler,
+} = require('../middlewares/multers');
+const { categoryValidator } = require('../middlewares/validators');
 
 // create category
 router.post(

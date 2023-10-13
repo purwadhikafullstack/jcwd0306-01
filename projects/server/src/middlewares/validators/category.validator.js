@@ -1,23 +1,18 @@
 const Joi = require('joi');
-const { sendResponse } = require('../../utils');
+const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 
 const categoryValidator = {
   createCategory: (req, res, next) => {
     try {
-      // validate req.file
-      const schemaFile = Joi.required().label('image');
-      const resultFile = schemaFile.validate(req.file);
-      if (resultFile.error)
-        throw new ResponseError(resultFile.error?.message, 400);
+      validateJoiSchema(req.file, Joi.required().label('image'));
 
-      // validate req.body
-      const schemaBody = Joi.object({
-        name: Joi.string().required(),
-      }).required();
-      const resultBody = schemaBody.validate(req.body);
-      if (resultBody.error)
-        throw new ResponseError(resultBody.error?.message, 400);
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          name: Joi.string().required(),
+        }).required()
+      );
 
       next();
     } catch (error) {
@@ -27,12 +22,12 @@ const categoryValidator = {
 
   deleteCategoryById: (req, res, next) => {
     try {
-      // validate req.params
-      const schema = Joi.object({
-        id: Joi.number().integer().min(1).required(),
-      }).required();
-      const result = schema.validate(req.params);
-      if (result.error) throw new ResponseError(result.error?.message, 400);
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
 
       next();
     } catch (error) {
@@ -42,25 +37,19 @@ const categoryValidator = {
 
   editCategoryById: (req, res, next) => {
     try {
-      // validate req.params
-      const schemaParams = Joi.object({
-        id: Joi.number().integer().min(1).required(),
-      }).required();
-      const resultParams = schemaParams.validate(req.params);
-      if (resultParams.error)
-        throw new ResponseError(resultParams.error?.message, 400);
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
 
-      // validate req.file
-      const schemaFile = Joi.optional().label('image');
-      const resultFile = schemaFile.validate(req.file);
-      if (resultFile.error)
-        throw new ResponseError(resultFile.error?.message, 400);
+      validateJoiSchema(req.file, Joi.optional().label('image'));
 
-      // validate req.body
-      const schemaBody = Joi.object({ name: Joi.string() }).required();
-      const resultBody = schemaBody.validate(req.body);
-      if (resultBody.error)
-        throw new ResponseError(resultBody.error?.message, 400);
+      validateJoiSchema(
+        req.body,
+        Joi.object({ name: Joi.string() }).required()
+      );
 
       // check at least one column of table to be updated
       if (!req.file && Object.keys(req.body).length === 0)
@@ -74,12 +63,12 @@ const categoryValidator = {
 
   getCategoryImageById: (req, res, next) => {
     try {
-      // validate req.params
-      const schema = Joi.object({
-        id: Joi.number().integer().min(1).required(),
-      }).required();
-      const result = schema.validate(req.params);
-      if (result.error) throw new ResponseError(result.error?.message, 400);
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
 
       next();
     } catch (error) {
@@ -89,12 +78,12 @@ const categoryValidator = {
 
   getCategoryById: (req, res, next) => {
     try {
-      // validate req.params
-      const schema = Joi.object({
-        id: Joi.number().integer().min(1).required(),
-      }).required();
-      const result = schema.validate(req.params);
-      if (result.error) throw new ResponseError(result.error?.message, 400);
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
 
       next();
     } catch (error) {
