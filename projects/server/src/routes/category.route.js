@@ -5,6 +5,7 @@ const multerBlobUploader = require('../middlewares/multers/multerBlobUploader');
 const multerErrorHandler = require('../middlewares/multers/multerErrorHandler');
 const categoryValidator = require('../middlewares/validators/category.validator');
 
+// create category
 router.post(
   '/',
   // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
@@ -14,10 +15,18 @@ router.post(
   categoryController.createCategory
 );
 
+// get categories
 router.get(
   '/',
   // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   categoryController.getCategories
+);
+
+// get category image by categoryId
+router.get(
+  '/:id/image',
+  categoryValidator.getCategoryImageById,
+  categoryController.getCategoryImageById
 );
 
 module.exports = router;

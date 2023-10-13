@@ -24,6 +24,21 @@ const categoryValidator = {
       sendResponse({ res, error });
     }
   },
+
+  getCategoryImageById: (req, res, next) => {
+    try {
+      // validate req.params
+      const schema = Joi.object({
+        id: Joi.number().integer().min(1).required(),
+      }).required();
+      const result = schema.validate(req.params);
+      if (result.error) throw new ResponseError(result.error?.message, 400);
+
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = categoryValidator;

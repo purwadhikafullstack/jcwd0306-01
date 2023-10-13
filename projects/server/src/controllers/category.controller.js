@@ -21,6 +21,15 @@ const categoryController = {
       sendResponse({ res, error });
     }
   },
+
+  getCategoryImageById: async (req, res) => {
+    try {
+      const image = await categoryService.getCategoryImageById(req);
+      res.set('Content-type', 'image/png').send(image);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = categoryController;
