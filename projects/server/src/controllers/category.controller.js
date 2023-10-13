@@ -30,6 +30,15 @@ const categoryController = {
       sendResponse({ res, error });
     }
   },
+
+  deleteCategoryById: async (req, res) => {
+    try {
+      await categoryService.deleteCategoryById(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = categoryController;

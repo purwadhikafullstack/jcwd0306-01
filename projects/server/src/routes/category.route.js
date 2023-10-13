@@ -29,4 +29,12 @@ router.get(
   categoryController.getCategoryImageById
 );
 
+// delete category by categoryId
+router.delete(
+  '/:id',
+  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  categoryValidator.deleteCategoryById,
+  categoryController.deleteCategoryById
+);
+
 module.exports = router;
