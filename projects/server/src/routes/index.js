@@ -1,3 +1,4 @@
 const cartRouter = require('./cart.route');
+const categoryRouter = require('./category.route');
 
-module.exports = { cartRouter };
+module.exports = { categoryRouter, cartRouter };
