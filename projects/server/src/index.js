@@ -5,6 +5,7 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
+const { cartRouter } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -24,6 +25,8 @@ app.use(bearerToken());
 
 // ===========================
 // NOTE : Add your routes here
+
+app.use('/cart', cartRouter);
 
 app.get('/api', (req, res) => {
   res.send(`Hello, this is my API`);
