@@ -6,7 +6,7 @@ const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
 
-const { cartRouter, categoryRouter } = require('./routes');
+const { cartRouter, categoryRouter, userRouter } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -29,6 +29,8 @@ app.use(bearerToken());
 app.use('/api/categories', categoryRouter);
 
 app.use('/cart', cartRouter);
+
+app.use('/user', userRouter);
 
 app.get('/api', (req, res) => {
   res.send(`Hello, this is my API`);
@@ -67,6 +69,6 @@ app.listen(PORT, (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
-    console.log(`APP RUNNING at ${PORT} ✅`);
+    console.log(`APP RUNNING at ${PORT} 🚀`);
   }
 });
