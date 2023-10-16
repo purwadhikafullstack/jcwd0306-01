@@ -6,15 +6,17 @@ module.exports = {
     await queryInterface.createTable('Carts', {
       userId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         primaryKey: true,
-        references: { model: 'User', key: 'id' },
+        references: { model: 'Users', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       productId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         primaryKey: true,
-        references: { model: 'Product', key: 'id' },
+        references: { model: 'Products', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       quantity: {
         type: Sequelize.INTEGER,
@@ -26,16 +28,11 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+      updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('Carts');
   },

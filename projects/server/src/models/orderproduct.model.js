@@ -11,18 +11,10 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      OrderProduct.belongsTo(models.Order, { foreignKey: 'orderId' });
-      OrderProduct.belongsTo(models.Product, { foreignKey: 'productId' });
     }
   }
   OrderProduct.init(
     {
-      orderId: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false },
-      productId: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        allowNull: false,
-      },
       quantity: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -40,9 +32,6 @@ module.exports = (sequelize, DataTypes) => {
       paranoid: true,
     }
   );
-  OrderProduct.associate = (models) => {
-    // OrderProduct.belongsTo(models.Order, { foreignKey: 'orderId' });
-    // OrderProduct.belongsTo(models.Product, { foreignKey: 'productId' });
-  };
+  OrderProduct.removeAttribute('id');
   return OrderProduct;
 };

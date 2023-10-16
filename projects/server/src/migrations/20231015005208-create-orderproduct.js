@@ -6,15 +6,17 @@ module.exports = {
     await queryInterface.createTable('OrderProducts', {
       orderId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         primaryKey: true,
-        references: { model: 'Order', key: 'id' },
+        references: { model: 'Orders', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       productId: {
         type: Sequelize.INTEGER,
-        allowNull: false,
         primaryKey: true,
-        references: { model: 'Product', key: 'id' },
+        references: { model: 'Products', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
       },
       quantity: {
         type: Sequelize.INTEGER,
@@ -26,16 +28,11 @@ module.exports = {
         allowNull: false,
         validate: { min: 0 },
       },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE,
-      },
+      createdAt: { type: Sequelize.DATE, allowNull: false },
+      updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('OrderProducts');
   },
