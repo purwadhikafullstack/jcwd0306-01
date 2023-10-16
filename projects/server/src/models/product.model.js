@@ -11,6 +11,13 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      models.Product.belongsToMany(models.User, {
+        through: models.Cart,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+
       models.Product.belongsToMany(models.Category, {
         through: models.ProductCategory,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
@@ -31,12 +38,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      // models.Product.belongsToMany(models.Order, {
-      //   through: models.OrderProduct,
-      //   foreignKey: { name: 'productId', primaryKey: true, unique: false },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.Product.belongsToMany(models.Order, {
+        through: models.OrderProduct,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
       models.Product.hasMany(models.StockMutation, {
         foreignKey: { name: 'productId', allowNull: false },

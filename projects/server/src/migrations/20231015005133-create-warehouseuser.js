@@ -14,7 +14,7 @@ module.exports = {
       warehouseAdminId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        // references: { model: 'Users', key: 'id' },
+        references: { model: 'Users', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },

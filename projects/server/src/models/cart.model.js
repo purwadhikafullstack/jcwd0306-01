@@ -10,19 +10,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Cart.belongsTo(models.User, { foreignKey: 'userId' });
-      // Cart.belongsTo(models.Product, { foreignKey: 'productId' });
+      // define association here
     }
   }
   Cart.init(
     {
-      userId: { type: DataTypes.INTEGER, primaryKey: true, allowNull: false },
-      productId: {
+      quantity: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
         allowNull: false,
+        validate: { min: 1 },
       },
-      quantity: { type: DataTypes.INTEGER, allowNull: false },
       isChecked: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
@@ -34,9 +31,6 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'Cart',
     }
   );
-  // Cart.associate = (models) => {
-  //   Cart.belongsTo(models.User, { foreignKey: 'userId' });
-  //   Cart.belongsTo(models.Product, { foreignKey: 'productId' });
-  // };
+  Cart.removeAttribute('id');
   return Cart;
 };

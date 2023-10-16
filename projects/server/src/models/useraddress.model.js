@@ -11,11 +11,11 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      // models.UserAddress.belongsTo(models.User, {
-      //   foreignKey: { name: 'userId', primaryKey: true, allowNull: false },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.UserAddress.belongsTo(models.User, {
+        foreignKey: { name: 'userId', primaryKey: true, allowNull: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
       models.UserAddress.belongsTo(models.Province, {
         foreignKey: { name: 'provinceId', allowNull: false },
@@ -25,6 +25,12 @@ module.exports = (sequelize, DataTypes) => {
 
       models.UserAddress.belongsTo(models.City, {
         foreignKey: { name: 'provinceId', allowNull: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+
+      models.UserAddress.hasMany(models.Order, {
+        foreignKey: { name: 'userAddressId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
