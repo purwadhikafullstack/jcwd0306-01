@@ -1,25 +1,38 @@
 'use strict';
 
+const { products } = require('../demos');
+
+function getProductCategories() {
+  const productCategories = [];
+  for (const product of products) {
+    for (const categoryId of product.categories) {
+      productCategories.push({
+        productId: product.id,
+        categoryId,
+        createdAt: product.createdAt,
+        updatedAt: product.updatedAt,
+      });
+    }
+  }
+  return productCategories;
+}
+
+function getProductIds() {
+  return products.map(({ id }) => id);
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
+    await queryInterface.bulkInsert(
+      'ProductCategories',
+      getProductCategories()
+    );
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('ProductCategories', {
+      productId: getProductIds(),
+    });
   },
 };

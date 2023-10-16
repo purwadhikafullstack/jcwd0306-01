@@ -1,25 +1,31 @@
 'use strict';
 
+const { products } = require('../demos');
+
+function getProducts() {
+  return products.map((product) => ({
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    weight: product.weight,
+    discount: product.discount,
+    createdAt: product.createdAt,
+    updatedAt: product.updatedAt,
+  }));
+}
+
+function getProductIds() {
+  return products.map(({ id }) => id);
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
+    await queryInterface.bulkInsert('Products', getProducts());
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Products', { id: getProductIds() });
   },
 };

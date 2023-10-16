@@ -1,25 +1,27 @@
 'use strict';
 
+const { warehouses } = require('../demos');
+
+function getWarehouses() {
+  return warehouses.map((warehouse) => ({
+    id: warehouse.id,
+    name: warehouse.name,
+    createdAt: warehouse.createdAt,
+    updatedAt: warehouse.updatedAt,
+  }));
+}
+
+function getWarehouseIds() {
+  return warehouses.map(({ id }) => id);
+}
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
+    await queryInterface.bulkInsert('Warehouses', getWarehouses());
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Warehouses', { id: getWarehouseIds() });
   },
 };

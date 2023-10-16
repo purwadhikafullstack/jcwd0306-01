@@ -3,7 +3,7 @@
 const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class WarehouseAddress extends Model {
+  class UserAddress extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -11,39 +11,39 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      models.WarehouseAddress.belongsTo(models.Warehouse, {
-        foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
+      // models.UserAddress.belongsTo(models.User, {
+      //   foreignKey: { name: 'userId', primaryKey: true, allowNull: false },
+      //   onDelete: 'CASCADE',
+      //   onUpdate: 'CASCADE',
+      // });
 
-      models.WarehouseAddress.belongsTo(models.Province, {
+      models.UserAddress.belongsTo(models.Province, {
         foreignKey: { name: 'provinceId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
-      models.WarehouseAddress.belongsTo(models.City, {
+      models.UserAddress.belongsTo(models.City, {
         foreignKey: { name: 'provinceId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
     }
   }
-  WarehouseAddress.init(
+  UserAddress.init(
     {
       country: { type: DataTypes.STRING, allowNull: false },
       district: { type: DataTypes.STRING, allowNull: false },
       village: { type: DataTypes.STRING, allowNull: false },
-      detail: { type: DataTypes.STRING, allowNull: false },
+      detail: { type: DataTypes.TEXT, allowNull: false },
       longitude: { type: DataTypes.DOUBLE, allowNull: false },
       latitude: { type: DataTypes.DOUBLE, allowNull: false },
+      isDefault: { type: DataTypes.BOOLEAN, allowNull: false },
     },
     {
       sequelize,
-      modelName: 'WarehouseAddress',
+      modelName: 'UserAddress',
     }
   );
-  WarehouseAddress.removeAttribute('id');
-  return WarehouseAddress;
+  return UserAddress;
 };

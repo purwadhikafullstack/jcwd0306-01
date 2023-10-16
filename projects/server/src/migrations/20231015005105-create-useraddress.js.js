@@ -3,11 +3,11 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('WarehouseAddresses', {
-      warehouseId: {
+    await queryInterface.createTable('UserAddresses', {
+      userId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        references: { model: 'Warehouses', key: 'id' },
+        // references: { model: 'Users', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
@@ -28,15 +28,16 @@ module.exports = {
       },
       district: { type: Sequelize.STRING, allowNull: false },
       village: { type: Sequelize.STRING, allowNull: false },
-      detail: { type: Sequelize.STRING, allowNull: false },
+      detail: { type: Sequelize.TEXT, allowNull: false },
       longitude: { type: Sequelize.DOUBLE, allowNull: false },
       latitude: { type: Sequelize.DOUBLE, allowNull: false },
+      isDefault: { type: Sequelize.BOOLEAN, allowNull: false },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('WarehouseAddresses');
+    await queryInterface.dropTable('UserAddresses');
   },
 };
