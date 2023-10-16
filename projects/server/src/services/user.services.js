@@ -4,13 +4,11 @@ const db = require('../models');
 const Service = require('./baseServices');
 
 class User extends Service {
-  getAll = async (req) => {
-    const { id } = req.body;
+  getByID = async (req) => {
+    const { id } = req.params;
     try {
       const users = await this.db.findAll({
-        where: {
-          id,
-        },
+        where: { id },
       });
       return users;
     } catch (error) {

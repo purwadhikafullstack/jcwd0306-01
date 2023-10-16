@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const { userController } = require('../controllers');
 
-router.get('/getAll', userController.test);
+router.get('/:id', userController.getById);
 
 module.exports = router;
