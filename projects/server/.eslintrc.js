@@ -15,6 +15,7 @@ module.exports = {
         'no-unused-vars': 'off',
         'import/no-dynamic-require': 'off',
         'global-require': 'off',
+        'no-restricted-syntax': 'off',
       },
     },
   ],
