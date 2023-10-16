@@ -6,11 +6,12 @@ const Service = require('./baseServices');
 class Cart extends Service {
   getByUserId = async (req) => {
     const { userId } = req.params;
+    const { isChecked } = req.query.selected_items;
     try {
       const result = await this.db.findAll({
-        where: { userId },
+        where: { userId, ...(isChecked && { isChecked: true }) },
         logging: false,
-        // include: [db.Product],
+        include: [db.Product],
       });
       return result;
     } catch (err) {
