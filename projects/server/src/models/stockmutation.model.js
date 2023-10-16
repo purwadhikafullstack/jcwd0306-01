@@ -29,23 +29,23 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      // models.StockMutation.belongsTo(models.User, {
-      //   foreignKey: { name: 'requestAdminId' },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.StockMutation.belongsTo(models.User, {
+        foreignKey: { name: 'requestAdminId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
-      // models.StockMutation.belongsTo(models.User, {
-      //   foreignKey: { name: 'approveAdminId' },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.StockMutation.belongsTo(models.User, {
+        foreignKey: { name: 'approveAdminId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
-      // models.StockMutation.belongsTo(models.Order, {
-      //   foreignKey: { name: 'orderId' },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.StockMutation.belongsTo(models.Order, {
+        foreignKey: { name: 'orderId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
       models.StockMutation.hasMany(models.StockHistory, {
         foreignKey: { name: 'stockMutationId', allowNull: false },

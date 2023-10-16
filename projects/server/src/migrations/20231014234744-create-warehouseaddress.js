@@ -28,7 +28,7 @@ module.exports = {
       },
       district: { type: Sequelize.STRING, allowNull: false },
       village: { type: Sequelize.STRING, allowNull: false },
-      detail: { type: Sequelize.STRING, allowNull: false },
+      detail: { type: Sequelize.TEXT, allowNull: false },
       longitude: { type: Sequelize.DOUBLE, allowNull: false },
       latitude: { type: Sequelize.DOUBLE, allowNull: false },
       createdAt: { type: Sequelize.DATE, allowNull: false },

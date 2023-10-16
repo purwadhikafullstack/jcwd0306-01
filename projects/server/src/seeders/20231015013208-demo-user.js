@@ -1,25 +1,105 @@
 'use strict';
 
+const bcrypt = require('bcrypt');
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    /**
-     * Add seed commands here.
-     *
-     * Example:
-     * await queryInterface.bulkInsert('People', [{
-     *   name: 'John Doe',
-     *   isBetaMember: false
-     * }], {});
-     */
+    await queryInterface.bulkInsert('Users', [
+      {
+        id: 1,
+        firstName: 'admin',
+        lastName: '1',
+        email: 'admin1@gmail.com',
+        password: await bcrypt.hash('admin1', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: false,
+        isAdmin: true,
+        isWarehouseAdmin: false,
+        isVerified: true,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+      {
+        id: 2,
+        firstName: 'admin',
+        lastName: '2',
+        email: 'admin2@gmail.com',
+        password: await bcrypt.hash('admin2', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: false,
+        isAdmin: true,
+        isWarehouseAdmin: false,
+        isVerified: true,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+      {
+        id: 3,
+        firstName: 'warehouseAdmin',
+        lastName: '1',
+        email: 'warehouseAdmin1@gmail.com',
+        password: await bcrypt.hash('warehouseAdmin1', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: false,
+        isAdmin: false,
+        isWarehouseAdmin: true,
+        isVerified: true,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+      {
+        id: 4,
+        firstName: 'warehouseAdmin',
+        lastName: '2',
+        email: 'warehouseAdmin2@gmail.com',
+        password: await bcrypt.hash('warehouseAdmin2', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: false,
+        isAdmin: false,
+        isWarehouseAdmin: true,
+        isVerified: true,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+      {
+        id: 5,
+        firstName: 'user',
+        lastName: '1',
+        email: 'user1@gmail.com',
+        password: await bcrypt.hash('user1', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: true,
+        isAdmin: false,
+        isWarehouseAdmin: false,
+        isVerified: true,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+      {
+        id: 6,
+        firstName: 'user',
+        lastName: '2',
+        email: 'user2@gmail.com',
+        password: await bcrypt.hash('user2', 10),
+        // uuidGoogle: 'google_uuid',
+        image: null,
+        isCustomer: true,
+        isAdmin: false,
+        isWarehouseAdmin: false,
+        isVerified: false,
+        createdAt: Sequelize.fn('now'),
+        updatedAt: Sequelize.fn('now'),
+      },
+    ]);
   },
 
   async down(queryInterface, Sequelize) {
-    /**
-     * Add commands to revert seed here.
-     *
-     * Example:
-     * await queryInterface.bulkDelete('People', null, {});
-     */
+    await queryInterface.bulkDelete('Users', null, { id: [1, 2, 3, 4, 5, 6] });
   },
 };

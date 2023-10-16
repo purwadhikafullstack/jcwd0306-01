@@ -23,14 +23,14 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      // models.StockHistory.belongsTo(models.User, {
-      //   foreignKey: { name: 'adminId', allowNull: false },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.StockHistory.belongsTo(models.User, {
+        foreignKey: { name: 'adminId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
       models.StockHistory.belongsTo(models.StockMutation, {
-        foreignKey: { name: 'stockMutationId', allowNull: false },
+        foreignKey: { name: 'stockMutationId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });

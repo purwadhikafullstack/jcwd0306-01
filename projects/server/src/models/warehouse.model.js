@@ -24,12 +24,12 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      // models.Warehouse.belongsToMany(models.User, {
-      //   through: models.WarehouseUser,
-      //   foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
-      //   onDelete: 'CASCADE',
-      //   onUpdate: 'CASCADE',
-      // });
+      models.Warehouse.belongsToMany(models.User, {
+        through: models.WarehouseUser,
+        foreignKey: { name: 'adminId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
 
       models.Warehouse.hasMany(models.StockMutation, {
         foreignKey: { name: 'fromWarehouseId', allowNull: false },
@@ -44,6 +44,12 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       models.Warehouse.hasMany(models.StockHistory, {
+        foreignKey: { name: 'warehouseId', allowNull: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+
+      models.Warehouse.hasMany(models.Order, {
         foreignKey: { name: 'warehouseId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',

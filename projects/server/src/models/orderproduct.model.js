@@ -15,12 +15,21 @@ module.exports = (sequelize, DataTypes) => {
   }
   OrderProduct.init(
     {
-      quantity: { type: DataTypes.INTEGER, allowNull: false },
-      price: { type: DataTypes.INTEGER, allowNull: false },
+      quantity: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: { min: 1 },
+      },
+      price: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        validate: { min: 0 },
+      },
     },
     {
       sequelize,
       modelName: 'OrderProduct',
+      paranoid: true,
     }
   );
   OrderProduct.removeAttribute('id');

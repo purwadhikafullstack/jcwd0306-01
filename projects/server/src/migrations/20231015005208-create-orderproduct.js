@@ -7,7 +7,7 @@ module.exports = {
       orderId: {
         type: Sequelize.INTEGER,
         primaryKey: true,
-        // references: { model: 'Orders', key: 'id' },
+        references: { model: 'Orders', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
@@ -18,8 +18,16 @@ module.exports = {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
-      quantity: { type: Sequelize.INTEGER, allowNull: false },
-      price: { type: Sequelize.INTEGER, allowNull: false },
+      quantity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate: { min: 1 },
+      },
+      price: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        validate: { min: 0 },
+      },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });

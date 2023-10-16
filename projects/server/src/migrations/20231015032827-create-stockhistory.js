@@ -14,7 +14,7 @@ module.exports = {
       },
       productId: {
         type: Sequelize.INTEGER,
-        allowNull: true,
+        allowNull: false,
         references: { model: 'Products', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -26,12 +26,14 @@ module.exports = {
       },
       adminId: {
         type: Sequelize.INTEGER,
-        // references: { model: 'Users', key: 'id' },
+        allowNull: true,
+        references: { model: 'Users', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       },
       stockMutationId: {
         type: Sequelize.INTEGER,
+        allowNull: true,
         references: { model: 'StockMutations', key: 'id' },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
