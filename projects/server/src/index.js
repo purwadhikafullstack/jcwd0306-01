@@ -6,7 +6,14 @@ const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
 
-const { cartRouter, categoryRouter, userRouter } = require('./routes');
+const {
+  cartRouter,
+  categoryRouter,
+  userRouter,
+  userAddressRouter,
+  provinceRouter,
+  cityRouter,
+} = require('./routes');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -29,8 +36,10 @@ app.use(bearerToken());
 app.use('/api/categories', categoryRouter);
 
 app.use('/cart', cartRouter);
-
+app.use(`/user_address`, userAddressRouter);
 app.use('/user', userRouter);
+app.use(`/province`, provinceRouter);
+app.use(`/city`, cityRouter);
 
 app.get('/api', (req, res) => {
   res.send(`Hello, this is my API`);

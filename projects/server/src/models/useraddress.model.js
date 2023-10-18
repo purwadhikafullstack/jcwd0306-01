@@ -38,7 +38,11 @@ module.exports = (sequelize, DataTypes) => {
   }
   UserAddress.init(
     {
+      receiverName: { type: DataTypes.STRING, allowNull: false },
+      receiverPhone: { type: DataTypes.STRING, allowNull: false },
+      addressName: { type: DataTypes.STRING, allowNull: false },
       country: { type: DataTypes.STRING, allowNull: false },
+      postalCode: { type: DataTypes.INTEGER, allowNull: false },
       district: { type: DataTypes.STRING, allowNull: false },
       village: { type: DataTypes.STRING, allowNull: false },
       detail: { type: DataTypes.TEXT, allowNull: false },

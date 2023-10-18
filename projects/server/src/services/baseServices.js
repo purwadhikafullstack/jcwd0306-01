@@ -5,14 +5,28 @@ class Service {
     this.db = db[modelName];
   }
 
-  async getAll() {
-    await this.db
-      .findAll()
-      .then((result) => result.dataValues)
-      .catch((err) => {
-        throw new Error(err?.message);
-      });
+  async getAll(option = {}) {
+    try {
+      const result = await this.db.findAll({ ...option });
+      return result;
+    } catch (error) {
+      throw new Error(error?.message);
+    }
   }
+
+  getByUserId = async (req, option = {}) => {
+    const { userId } = req.params;
+    try {
+      const result = await this.db.findAll({
+        where: { userId },
+        logging: false,
+        ...option,
+      });
+      return result;
+    } catch (err) {
+      throw new Error(err?.message);
+    }
+  };
 
   async getByID(req) {
     const id = req.params;
