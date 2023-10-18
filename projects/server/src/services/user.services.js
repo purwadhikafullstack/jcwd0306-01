@@ -4,6 +4,7 @@ const fs = require('fs');
 const handlebars = require('handlebars');
 const path = require('path');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const db = require('../models');
 // const { sequelize } = require('../models');
 const Service = require('./baseServices');
@@ -86,6 +87,38 @@ class User extends Service {
       );
     } catch (err) {
       return err;
+    }
+  };
+
+  signIn = async (email, password) => {
+    try {
+      const result = await this.db.findOne({
+        where: {
+          email,
+        },
+      });
+      // console.log('result', result.dataValues.password);
+      if (!result) throw new Error('wrong email/password');
+      const isValid = await bcrypt.compare(
+        password,
+        result.dataValues.password
+      );
+      // console.log('isValid', isValid);
+      if (!isValid) {
+        throw new Error('wrong password');
+      }
+      delete result.dataValues.password;
+
+      const payload = { ...result };
+      // console.log('payload', payload);
+
+      const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+        expiresIn: '15min',
+      });
+
+      return { token, user: result };
+    } catch (err) {
+      return err?.message;
     }
   };
 }

@@ -59,6 +59,16 @@ class UserController {
       return res.status(400).send(err?.message);
     }
   };
+
+  static login = async (req, res) => {
+    const { email, password } = req.body;
+    try {
+      const signInResult = await userServices.signIn(email, password);
+      return res.status(200).send({ signInResult });
+    } catch (err) {
+      return res.status(400).send(err?.message);
+    }
+  };
 }
 
 module.exports = UserController;
