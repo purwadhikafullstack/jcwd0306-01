@@ -6,7 +6,12 @@ const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
 
-const { cartRouter, categoryRouter, userRouter } = require('./routes');
+const {
+  cartRouter,
+  categoryRouter,
+  productRouter,
+  userRouter,
+} = require('./routes');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
@@ -26,7 +31,9 @@ app.use(bearerToken());
 
 // ===========================
 // NOTE : Add your routes here
-app.use('/api/categories', categoryRouter);
+app.use('/categories', categoryRouter);
+
+app.use('/products', productRouter);
 
 app.use('/cart', cartRouter);
 
