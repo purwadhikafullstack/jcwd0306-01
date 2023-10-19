@@ -12,6 +12,15 @@ const carouselController = {
       sendResponse({ res, error });
     }
   },
+
+  getCarouselImageById: async (req, res) => {
+    try {
+      const image = await carouselService.getCarouselImageById(req);
+      res.set('Content-type', 'image/png').send(image);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = carouselController;

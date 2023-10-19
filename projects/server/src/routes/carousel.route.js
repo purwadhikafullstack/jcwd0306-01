@@ -15,4 +15,11 @@ router.post(
   carouselController.createCarousel
 );
 
+// get carousel image by carouselId
+router.get(
+  '/images/:id',
+  carouselValidator.getCarouselImageById,
+  carouselController.getCarouselImageById
+);
+
 module.exports = router;

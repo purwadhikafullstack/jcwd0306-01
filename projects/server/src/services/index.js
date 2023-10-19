@@ -1,4 +1,4 @@
-const carouselService = require('./carouselimage.service');
+const carouselService = require('./carousel.service');
 const categoryService = require('./category.service');
 const productService = require('./product.service');
 const userService = require('./user.services');

@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Carousel.init(
     {
-      image: DataTypes.BLOB('long'),
+      image: { type: DataTypes.BLOB('long'), allowNull: false },
     },
     {
       sequelize,
