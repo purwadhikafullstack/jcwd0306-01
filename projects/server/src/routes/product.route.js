@@ -11,4 +11,11 @@ router.get(
   productController.getProducts
 );
 
+// get product image by productImageId
+router.get(
+  '/images/:imageId',
+  productValidator.getProductImageByImageId,
+  productController.getProductImageByImageId
+);
+
 module.exports = router;
