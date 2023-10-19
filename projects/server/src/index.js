@@ -11,6 +11,7 @@ const {
   categoryRouter,
   productRouter,
   userRouter,
+  carouselRouter,
 } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
@@ -31,6 +32,8 @@ app.use(bearerToken());
 
 // ===========================
 // NOTE : Add your routes here
+app.use('/carousels', carouselRouter);
+
 app.use('/categories', categoryRouter);
 
 app.use('/products', productRouter);
@@ -39,11 +42,11 @@ app.use('/cart', cartRouter);
 
 app.use('/user', userRouter);
 
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
   res.send(`Hello, this is my API`);
 });
 
-app.get('/api/greetings', (req, res) => {
+app.get('/greetings', (req, res) => {
   res.status(200).json({
     message: 'Hello, Student !',
   });
