@@ -13,6 +13,15 @@ const carouselController = {
     }
   },
 
+  getCarousels: async (req, res) => {
+    try {
+      const carousels = await carouselService.getCarousels();
+      sendResponse({ res, statusCode: 200, data: carousels });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getCarouselImageById: async (req, res) => {
     try {
       const image = await carouselService.getCarouselImageById(req);

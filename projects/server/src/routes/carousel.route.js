@@ -15,6 +15,9 @@ router.post(
   carouselController.createCarousel
 );
 
+// get carousels
+router.get('/', carouselController.getCarousels);
+
 // get carousel image by carouselId
 router.get(
   '/images/:id',
