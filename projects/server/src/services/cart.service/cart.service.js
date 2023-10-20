@@ -1,22 +1,25 @@
 const { Op } = require('sequelize');
-const db = require('../models');
-const { sequelize } = require('../models');
-const Service = require('./baseServices');
+const db = require('../../models');
+const { sequelize } = require('../../models');
+const Service = require('../baseServices');
+
+const optionGetCartByUserId = {
+  limit: 20,
+  attributes: {
+    include: [
+      [
+        sequelize.literal(
+          `(SELECT SUM(WarehouseProducts.stock) FROM WarehouseProducts WHERE WarehouseProducts.productId = Cart.productId)`
+        ),
+        'stock',
+      ],
+    ],
+  },
+  include: db.Product,
+};
 
 class Cart extends Service {
-  getByUserId = async (req) => {
-    const { userId } = req.params;
-    try {
-      const result = await this.db.findAll({
-        where: { userId },
-        logging: false,
-        // include: [db.Product],
-      });
-      return result;
-    } catch (err) {
-      throw new Error(err?.message);
-    }
-  };
+  getCartByUserId = (req) => this.getByUserId(req, optionGetCartByUserId);
 
   updateCart = async (req) => {
     const { values } = req.body;

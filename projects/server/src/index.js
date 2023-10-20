@@ -12,6 +12,10 @@ const {
   productRouter,
   userRouter,
   carouselRouter,
+  userRouter,
+  userAddressRouter,
+  provinceRouter,
+  cityRouter,
 } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
@@ -39,8 +43,10 @@ app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
 
 app.use('/cart', cartRouter);
-
+app.use(`/user_address`, userAddressRouter);
 app.use('/user', userRouter);
+app.use(`/province`, provinceRouter);
+app.use(`/city`, cityRouter);
 
 app.get('/', (req, res) => {
   res.send(`Hello, this is my API`);
