@@ -10,14 +10,23 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // ======================================================
+      // Product < OrderProduct > Order
+      // ======================================================
       models.Order.belongsToMany(models.Product, {
         through: models.OrderProduct,
         foreignKey: { name: 'orderId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      models.Order.hasMany(models.OrderProduct, {
+        foreignKey: { name: 'orderId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
 
+      // ======================================================
       models.Order.belongsTo(models.User, {
         foreignKey: { name: 'userId', allowNull: false },
         onDelete: 'CASCADE',
@@ -85,7 +94,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Order',
-      paranoid: true,
+      // paranoid: true,
     }
   );
   return Order;

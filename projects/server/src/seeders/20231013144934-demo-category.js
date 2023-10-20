@@ -1,7 +1,5 @@
 'use strict';
 
-const axios = require('axios');
-const sharp = require('sharp');
 const { categories } = require('../demos');
 
 function getCategories() {
