@@ -10,10 +10,12 @@
     "dev": "cross-env NODE_ENV=development nodemon .",
     "start": "nodemon",
     "serve": "node .",
-    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0"
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "migrate": "cross-env NODE_ENV=development sequelize-cli db:migrate"
   },
   "dependencies": {
     "@joi/date": "^2.1.0",
+    "axios": "^1.5.1",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
