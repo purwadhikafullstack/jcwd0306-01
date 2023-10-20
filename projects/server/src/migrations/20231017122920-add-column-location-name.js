@@ -9,19 +9,19 @@ module.exports = {
      * Example:
      * await queryInterface.createTable('users', { id: Sequelize.INTEGER });
      */
-    await queryInterface.addColumn('UserAddresses', `addressName`, {
+    await queryInterface.addColumn('UserAddresses', 'addressName', {
       type: Sequelize.STRING,
       after: 'userId',
     });
-    await queryInterface.addColumn('UserAddresses', `receiverName`, {
+    await queryInterface.addColumn('UserAddresses', 'receiverName', {
       type: Sequelize.STRING,
       after: 'userId',
     });
-    await queryInterface.addColumn('UserAddresses', `receiverPhone`, {
+    await queryInterface.addColumn('UserAddresses', 'receiverPhone', {
       type: Sequelize.STRING,
       after: 'userId',
     });
-    await queryInterface.addColumn('UserAddresses', `postalCode`, {
+    await queryInterface.addColumn('UserAddresses', 'postalCode', {
       type: Sequelize.INTEGER,
       after: 'cityId',
     });
@@ -34,9 +34,9 @@ module.exports = {
      * Example:
      * await queryInterface.dropTable('users');
      */
-    queryInterface.removeColumn('UserAddresses', `addressName`);
-    queryInterface.removeColumn('UserAddresses', `receiverName`);
-    queryInterface.removeColumn('UserAddresses', `receiverPhone`);
-    queryInterface.removeColumn('UserAddresses', `postalCode`);
+    queryInterface.removeColumn('UserAddresses', 'addressName');
+    queryInterface.removeColumn('UserAddresses', 'receiverName');
+    queryInterface.removeColumn('UserAddresses', 'receiverPhone');
+    queryInterface.removeColumn('UserAddresses', 'postalCode');
   },
 };

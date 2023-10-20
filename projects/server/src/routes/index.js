@@ -5,7 +5,7 @@ const userRouter = require('./user.route');
 const productRouter = require('./product.route');
 const userAddressRouter = require('./userAddress.route');
 const provinceRouter = require('./province.route');
-const cityRouter = require(`./city.route`);
+const cityRouter = require('./city.route');
 
 module.exports = {
   carouselRouter,
