@@ -23,6 +23,15 @@ const productController = {
     }
   },
 
+  getProductById: async (req, res) => {
+    try {
+      const product = await productService.getProductById(req);
+      sendResponse({ res, statusCode: 200, data: product });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getProductImageByImageId: async (req, res) => {
     try {
       const image = await productService.getProductImageByImageId(req);
