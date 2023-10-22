@@ -9,7 +9,12 @@ module.exports = {
   plugins: ['prettier'],
   overrides: [
     {
-      files: ['src/migrations/*', 'src/models/*', 'src/seeders/*'],
+      files: [
+        'src/migrations/**',
+        'src/models/**',
+        'src/seeders/**',
+        'src/demos/**',
+      ],
       rules: {
         strict: 'off',
         'no-unused-vars': 'off',

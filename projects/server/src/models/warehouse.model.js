@@ -11,13 +11,23 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      // ======================================================
+      // Product < WarehouseProduct > Warehouse
+      // ======================================================
       models.Warehouse.belongsToMany(models.Product, {
         through: models.WarehouseProduct,
         foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      models.Warehouse.hasMany(models.WarehouseProduct, {
+        foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
 
+      // ======================================================
       models.Warehouse.hasOne(models.WarehouseAddress, {
         foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
         onDelete: 'CASCADE',

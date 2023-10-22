@@ -9,7 +9,9 @@ const bearerToken = require('express-bearer-token');
 const {
   cartRouter,
   categoryRouter,
+  productRouter,
   userRouter,
+  carouselRouter,
   userAddressRouter,
   provinceRouter,
   cityRouter,
@@ -33,19 +35,23 @@ app.use(bearerToken());
 
 // ===========================
 // NOTE : Add your routes here
-app.use('/api/categories', categoryRouter);
+app.use('/carousels', carouselRouter);
+
+app.use('/categories', categoryRouter);
+
+app.use('/products', productRouter);
 
 app.use('/cart', cartRouter);
-app.use(`/user_address`, userAddressRouter);
+app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
-app.use(`/province`, provinceRouter);
-app.use(`/city`, cityRouter);
+app.use('/province', provinceRouter);
+app.use('/city', cityRouter);
 
-app.get('/api', (req, res) => {
-  res.send(`Hello, this is my API`);
+app.get('/', (req, res) => {
+  res.send('Hello, this is my API');
 });
 
-app.get('/api/greetings', (req, res) => {
+app.get('/greetings', (req, res) => {
   res.status(200).json({
     message: 'Hello, Student !',
   });

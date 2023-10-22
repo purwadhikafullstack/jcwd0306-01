@@ -1,7 +1,5 @@
 'use strict';
 
-const axios = require('axios');
-const sharp = require('sharp');
 const { products } = require('../demos');
 
 function getProductImages() {

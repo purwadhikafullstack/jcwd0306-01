@@ -10,7 +10,39 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // ======================================================
+      // Product < WarehouseProduct > Warehouse
+      // ======================================================
+      models.Product.belongsToMany(models.Warehouse, {
+        through: models.WarehouseProduct,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.Product.hasMany(models.WarehouseProduct, {
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
+
+      // ======================================================
+      // Product < OrderProduct > Order
+      // ======================================================
+      models.Product.belongsToMany(models.Order, {
+        through: models.OrderProduct,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.Product.hasMany(models.OrderProduct, {
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
+
+      // ======================================================
       models.Product.belongsToMany(models.User, {
         through: models.Cart,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
@@ -27,20 +59,6 @@ module.exports = (sequelize, DataTypes) => {
 
       models.Product.hasMany(models.ProductImage, {
         foreignKey: { name: 'productId', allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
-      models.Product.belongsToMany(models.Warehouse, {
-        through: models.WarehouseProduct,
-        foreignKey: { name: 'productId', primaryKey: true, unique: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
-      models.Product.belongsToMany(models.Order, {
-        through: models.OrderProduct,
-        foreignKey: { name: 'productId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
