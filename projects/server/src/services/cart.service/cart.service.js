@@ -2,6 +2,7 @@ const { Op } = require('sequelize');
 const db = require('../../models');
 const { sequelize } = require('../../models');
 const Service = require('../baseServices');
+const { ResponseError } = require('../../errors');
 
 const optionGetCartByUserId = {
   limit: 20,
@@ -33,7 +34,7 @@ class Cart extends Service {
       });
       return 'success';
     } catch (err) {
-      throw new Error(err?.message);
+      throw new ResponseError(err?.message, 400);
     }
   };
 
@@ -56,7 +57,7 @@ class Cart extends Service {
       });
       return 'success';
     } catch (err) {
-      throw new Error(err?.message);
+      throw new ResponseError(err?.message, 400);
     }
   };
 }

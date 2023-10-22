@@ -1,4 +1,5 @@
 const { ProvinceService } = require('../services');
+const { sendResponse } = require('../utils');
 
 class ProvinceController {
   static async getAll(req, res) {
@@ -6,7 +7,7 @@ class ProvinceController {
       const result = await ProvinceService.getProvinces(req);
       return res.send(result);
     } catch (error) {
-      return res.status(500).send(error?.message);
+      return sendResponse({ res, error });
     }
   }
 }

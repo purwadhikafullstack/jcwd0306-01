@@ -1,12 +1,13 @@
 const { CartService } = require('../services');
+const { sendResponse } = require('../utils');
 
 class CartController {
   static getCartByUserId = async (req, res) => {
     try {
       const data = await CartService.getCartByUserId(req);
       return res.send(data);
-    } catch (err) {
-      return res.status(400).send(err?.message);
+    } catch (error) {
+      return sendResponse({ res, error });
     }
   };
 
@@ -14,8 +15,8 @@ class CartController {
     try {
       const result = await CartService.updateCart(req);
       return res.send(result);
-    } catch (err) {
-      return res.status(500).send(err?.message);
+    } catch (error) {
+      return sendResponse({ res, error });
     }
   };
 
@@ -23,8 +24,8 @@ class CartController {
     try {
       const result = await CartService.deleteItemOnCart(req);
       return res.send(result);
-    } catch (err) {
-      return res.status(400).send(err?.message);
+    } catch (error) {
+      return sendResponse({ res, error });
     }
   };
 }
