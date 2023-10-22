@@ -1,22 +1,20 @@
 const { Op } = require('sequelize');
 const Service = require('../baseServices');
 
-const optionGetAll = (name) => ({
-  limit: 7,
-  where: { ...(name && { name: { [Op.like]: `%${name}%` } }) },
-  logging: false,
-});
-
 class City extends Service {
+  static optionGetAll = (name, provinceId) => ({
+    limit: 20,
+    where: {
+      ...(name && { name: { [Op.like]: `%${name}%` } }),
+      ...(provinceId && { provinceId }),
+    },
+    logging: false,
+  });
+
   getCities = async (req) => {
-    const { name } = req.query;
-    const option = optionGetAll(name);
-    try {
-      const result = await this.getAll(option);
-      return result;
-    } catch (error) {
-      throw new Error(error?.message);
-    }
+    const { name, provinceId } = req.query;
+    const result = await this.getAll(City.optionGetAll(name, provinceId));
+    return result;
   };
 }
 

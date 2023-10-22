@@ -1,4 +1,5 @@
 const { UserAddressService } = require('../services');
+const { sendResponse } = require('../utils');
 
 class UserAddressController {
   static getAddressByUserId = async (req, res) => {
@@ -6,7 +7,7 @@ class UserAddressController {
       const result = await UserAddressService.getAddressByUserId(req);
       return res.send(result);
     } catch (error) {
-      return res.status(500).send(error?.message);
+      return sendResponse({ res, error });
     }
   };
 
@@ -15,16 +16,25 @@ class UserAddressController {
       const result = await UserAddressService.create(req);
       return res.send(result);
     } catch (error) {
-      return res.status(500).send(error?.message);
+      return sendResponse({ res, error });
     }
   };
 
   static update = async (req, res) => {
     try {
       await UserAddressService.update(req);
-      return res.send('success');
+      return res.send(req.body);
     } catch (error) {
-      return res.status(500).send(error?.message);
+      return sendResponse({ res, error });
+    }
+  };
+
+  static paymentOptions = async (req, res) => {
+    try {
+      const result = await UserAddressService.paymentOptions(req);
+      return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
     }
   };
 }
