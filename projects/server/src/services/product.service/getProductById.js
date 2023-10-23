@@ -25,7 +25,7 @@ async function getProductById(req) {
           sequelize.literal(
             'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
           ),
-          'currentStock',
+          'stock',
         ],
         [
           sequelize.literal(

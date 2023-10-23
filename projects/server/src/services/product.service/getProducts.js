@@ -18,7 +18,7 @@ async function getProductsForCategory(req) {
           sequelize.literal(
             'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
           ),
-          'currentStock',
+          'stock',
         ],
         [
           sequelize.literal(
@@ -57,7 +57,7 @@ async function getProductsForNoCategory(req) {
           sequelize.literal(
             'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
           ),
-          'currentStock',
+          'stock',
         ],
         [
           sequelize.literal(
