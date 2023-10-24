@@ -2,6 +2,7 @@ const carouselService = require('./carousel.service');
 const categoryService = require('./category.service');
 const productService = require('./product.service');
 const warehouseService = require('./warehouse.service');
+const warehouseUserService = require('./warehouseuser.service');
 const userService = require('./user.services');
 const UserAddressService = require('./userAddress.service/userAddress.service');
 const ProvinceService = require('./province.service/province.service');
@@ -13,6 +14,7 @@ module.exports = {
   categoryService,
   productService,
   warehouseService,
+  warehouseUserService,
   userService,
   UserAddressService,
   ProvinceService,

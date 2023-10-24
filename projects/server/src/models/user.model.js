@@ -10,16 +10,33 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      models.User.hasMany(models.UserAddress, {
-        foreignKey: { name: 'userId', allowNull: false },
+      // ======================================================
+      // User < WarehouseUser > Warehouse
+      // ======================================================
+      models.User.belongsToMany(models.Warehouse, {
+        through: models.WarehouseUser,
+        foreignKey: {
+          name: 'warehouseAdminId',
+          primaryKey: true,
+          unique: false,
+        },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      models.User.hasMany(models.WarehouseUser, {
+        foreignKey: {
+          name: 'warehouseAdminId',
+          primaryKey: true,
+          unique: false,
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
 
-      models.User.belongsToMany(models.Warehouse, {
-        through: models.WarehouseUser,
-        foreignKey: { name: 'adminId', primaryKey: true, unique: false },
+      // ======================================================
+      models.User.hasMany(models.UserAddress, {
+        foreignKey: { name: 'userId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
@@ -76,11 +93,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
       },
       isAdmin: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
-      },
-      isWarehouseAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,

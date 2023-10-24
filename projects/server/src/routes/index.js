@@ -7,6 +7,7 @@ const userAddressRouter = require('./userAddress.route');
 const provinceRouter = require('./province.route');
 const cityRouter = require('./city.route');
 const warehouseRouter = require('./warehouse.route');
+const warehouseUserRouter = require('./warehouseuser.route');
 
 module.exports = {
   carouselRouter,
@@ -18,4 +19,5 @@ module.exports = {
   provinceRouter,
   cityRouter,
   warehouseRouter,
+  warehouseUserRouter,
 };
