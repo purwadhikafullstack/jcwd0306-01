@@ -16,6 +16,7 @@ async function verifyUserRole({
   const userData = await User.findByPk(decoded.id, {
     attributes: ['isAdmin', 'isWarehouseAdmin', 'isCustomer'],
   });
+  req.body.userId = userData?.id;
   if (idParams && userData?.id !== Number(userId))
     throw new ResponseError('invalid credential', 400);
   if (isAdmin && userData?.isAdmin) return;

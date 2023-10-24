@@ -27,9 +27,9 @@ class Cart extends Service {
     try {
       await sequelize.transaction(async (t) => {
         await this.db.bulkCreate(values, {
-          logging: false,
+          // logging: false,
           transaction: t,
-          updateOnDuplicate: ['quantity', 'isChecked'],
+          updateOnDuplicate: ['quantity', 'isChecked', 'note'],
         });
       });
       return 'success';

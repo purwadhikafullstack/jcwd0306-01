@@ -22,7 +22,7 @@ class UserAddress extends Service {
   getAddressByUserId = (req) =>
     this.getByUserId(req, this.optionGetAddressByUserId);
 
-  paymentOptions = async (req) => {
+  getShippingOptions = async (req) => {
     const warehouse = await this.findNearestWareHouse(req);
     const body = {
       origin: warehouse.cityId,
@@ -31,6 +31,15 @@ class UserAddress extends Service {
     };
     const paymentOption = await this.fetchRajaOngkir(body);
     return paymentOption;
+  };
+
+  setNewDefault = async (req) => {
+    console.log(req.params);
+    await this.db.update(
+      { isDefault: false },
+      { where: { userId: req.params.userId, isDefault: true }, logging: false }
+    );
+    await this.update(req);
   };
 
   findNearestWareHouse = async (req) => {

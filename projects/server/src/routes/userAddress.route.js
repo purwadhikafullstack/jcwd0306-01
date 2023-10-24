@@ -14,9 +14,9 @@ route.get(
 );
 
 route.post(
-  '/payment_option',
+  '/shipping_option',
   // verifyAuthUser({ isCustomer: true, idParams: true }),
-  UserAddressController.paymentOptions
+  UserAddressController.getShippingOptions
 );
 route.post(
   `/new/:userId`,
@@ -27,11 +27,24 @@ route.post(
 );
 
 route.patch(
+  `/new_default/:userId/:id`,
+  // verifyAuthUser({ isCustomer: true, idParams: true }),
+  UserAddressController.setNewDefault
+);
+
+route.patch(
   `/:userId/:id`,
   // verifyAuthUser({ isCustomer: true, idParams: true }),
   addressValidator.addAndUpdate,
   longLatGenerator,
   UserAddressController.update
+);
+
+route.delete(
+  `/:id`,
+  // verifyAuthUser({ isCustomer: true }),
+  addressValidator.checkIsDefault,
+  UserAddressController.delete
 );
 
 module.exports = route;
