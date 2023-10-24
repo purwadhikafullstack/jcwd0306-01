@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      models.StockHistory.hasMany(models.User, {
+      models.User.hasMany(models.StockHistory, {
         foreignKey: { name: 'adminId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',

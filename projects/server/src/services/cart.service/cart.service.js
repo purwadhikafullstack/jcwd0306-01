@@ -22,6 +22,30 @@ const optionGetCartByUserId = {
 class Cart extends Service {
   getCartByUserId = (req) => this.getByUserId(req, optionGetCartByUserId);
 
+  createCart = async (req) => {
+    const cart = await sequelize.transaction(async (t) => {
+      const userId = req.user.id;
+      const { productId, quantity, note } = req.body;
+
+      const [data, isCreated] = await this.db.findOrCreate({
+        where: { userId, productId },
+        defaults: { userId, productId, quantity, note },
+        transaction: t,
+      });
+
+      if (!isCreated) {
+        const prevQuantity = data.getDataValue('quantity');
+        await data.update(
+          { quantity: prevQuantity + quantity, note },
+          { transaction: t }
+        );
+      }
+
+      return data.toJSON();
+    });
+    return cart;
+  };
+
   updateCart = async (req) => {
     const { values } = req.body;
     try {

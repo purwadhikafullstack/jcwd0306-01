@@ -1,14 +1,15 @@
 const router = require('express').Router();
 const { productController } = require('../controllers');
-// const { verifyAuthUser } = require('../middlewares/auth');
 const { productValidator } = require('../middlewares/validators');
 
 // get products
+router.get('/', productValidator.getProducts, productController.getProducts);
+
+// get product by productId
 router.get(
-  '/',
-  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
-  productValidator.getProducts,
-  productController.getProducts
+  '/:id',
+  productValidator.getProductById,
+  productController.getProductById
 );
 
 // get product image by productImageId

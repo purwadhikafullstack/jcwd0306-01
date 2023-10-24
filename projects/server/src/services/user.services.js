@@ -9,6 +9,7 @@ const db = require('../models');
 // const { sequelize } = require('../models');
 const Service = require('./baseServices');
 const mailer = require('../lib/nodemailer');
+const { ResponseError } = require('../errors');
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}.local` });
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
@@ -16,14 +17,21 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 class User extends Service {
   getByID = async (req) => {
     const { id } = req.params;
-    try {
-      const users = await this.db.findAll({
-        where: { id },
-      });
-      return users;
-    } catch (error) {
-      throw new Error(error?.message);
-    }
+    const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
+
+    const user = await this.db.findByPk(id, {
+      attributes: { exclude: ['password'] },
+      raw: true,
+    });
+
+    if (decoded.id !== user.id)
+      throw new ResponseError('invalid credential', 400);
+
+    const token = jwt.sign(user, process.env.JWT_SECRET_KEY, {
+      expiresIn: '1h',
+    });
+
+    return { token, user };
   };
 
   findUser = async (email) => {
@@ -91,35 +99,28 @@ class User extends Service {
   };
 
   signIn = async (email, password) => {
-    try {
-      const result = await this.db.findOne({
-        where: {
-          email,
-        },
-      });
-      // console.log('result', result.dataValues.password);
-      if (!result) throw new Error('wrong email/password');
-      const isValid = await bcrypt.compare(
-        password,
-        result.dataValues.password
-      );
-      // console.log('isValid', isValid);
-      if (!isValid) {
-        throw new Error('wrong password');
-      }
-      delete result.dataValues.password;
-
-      const payload = { ...result };
-      // console.log('payload', payload);
-
-      const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-        expiresIn: '15min',
-      });
-
-      return { token, user: result };
-    } catch (err) {
-      return err?.message;
+    const result = await this.db.findOne({
+      where: {
+        email,
+      },
+    });
+    // console.log('result', result.dataValues.password);
+    if (!result) throw new Error('wrong email/password');
+    const isValid = await bcrypt.compare(password, result.dataValues.password);
+    // console.log('isValid', isValid);
+    if (!isValid) {
+      throw new Error('wrong password');
     }
+    result.setDataValue('password', undefined);
+
+    const payload = { ...result.toJSON() };
+    // console.log('payload', payload);
+
+    const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+      expiresIn: '1h',
+    });
+
+    return { token, user: result };
   };
 }
 

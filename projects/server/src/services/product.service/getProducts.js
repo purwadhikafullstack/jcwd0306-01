@@ -13,13 +13,12 @@ async function getProductsForCategory(req) {
   const products = await category.getProducts({
     ...req.locals,
     attributes: {
-      exclude: ['image'],
       include: [
         [
           sequelize.literal(
             'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
           ),
-          'currentStock',
+          'stock',
         ],
         [
           sequelize.literal(
@@ -53,13 +52,12 @@ async function getProductsForNoCategory(req) {
   const products = await Product.findAll({
     ...req.locals,
     attributes: {
-      exclude: ['image'],
       include: [
         [
           sequelize.literal(
             'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
           ),
-          'currentStock',
+          'stock',
         ],
         [
           sequelize.literal(
@@ -88,7 +86,7 @@ async function getProductsForNoCategory(req) {
 }
 
 function convertProductImageIdsToArray(products) {
-  // this function is to convert string to be array of number
+  // this function is used to convert string to be array of number
   // because previously subquery 'GROUP_CONCAT' returned string
   products.forEach((product) => {
     product.setDataValue(
