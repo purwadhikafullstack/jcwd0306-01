@@ -2,11 +2,21 @@ const { warehouseUserService } = require('../services');
 const { sendResponse } = require('../utils');
 
 const warehouseUserController = {
-  createWarehouseUserByWarehouseId: async (req, res) => {
+  createWarehouseUsersByWarehouseId: async (req, res) => {
     try {
-      const warehouseUser =
-        await warehouseUserService.createWarehouseUserByWarehouseId(req);
-      sendResponse({ res, statusCode: 201, data: warehouseUser });
+      const warehouse =
+        await warehouseUserService.createWarehouseUsersByWarehouseId(req);
+      sendResponse({ res, statusCode: 201, data: warehouse });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getWarehouseUsersByWarehouseId: async (req, res) => {
+    try {
+      const warehouse =
+        await warehouseUserService.getWarehouseUsersByWarehouseId(req);
+      sendResponse({ res, statusCode: 200, data: warehouse });
     } catch (error) {
       sendResponse({ res, error });
     }

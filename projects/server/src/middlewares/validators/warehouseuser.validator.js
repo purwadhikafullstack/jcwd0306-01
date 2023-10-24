@@ -2,7 +2,7 @@ const Joi = require('joi');
 const { validateJoiSchema, sendResponse } = require('../../utils');
 
 const warehouseUserValidator = {
-  createWarehouseUserByWarehouseId: (req, res, next) => {
+  createWarehouseUsersByWarehouseId: (req, res, next) => {
     try {
       validateJoiSchema(
         req.params,
@@ -16,6 +16,20 @@ const warehouseUserValidator = {
           userIds: Joi.array()
             .items(Joi.number().integer().min(1).required())
             .required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getWarehouseUsersByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
         }).required()
       );
       next();

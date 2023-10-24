@@ -1,7 +1,9 @@
-const createWarehouseUserByWarehouseId = require('./createWarehouseUserByWarehouseId');
+const createWarehouseUsersByWarehouseId = require('./createWarehouseUsersByWarehouseId');
+const getWarehouseUsersByWarehouseId = require('./getWarehouseUsersByWarehouseId');
 
 const warehouseUserService = {
-  createWarehouseUserByWarehouseId,
+  createWarehouseUsersByWarehouseId,
+  getWarehouseUsersByWarehouseId,
 };
 
 module.exports = warehouseUserService;
