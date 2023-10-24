@@ -9,6 +9,13 @@ router.post(
   warehouseController.createWarehouse
 );
 
+// edit warehouse by warehouseId;
+router.patch(
+  '/:warehouseId',
+  warehouseValidator.editWarehouseByWarehouseId,
+  warehouseController.editWarehouseByWarehouseId
+);
+
 // get warehouses
 router.get('/', warehouseController.getWarehouses);
 

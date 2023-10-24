@@ -11,6 +11,15 @@ const warehouseController = {
     }
   },
 
+  editWarehouseByWarehouseId: async (req, res) => {
+    try {
+      const warehouse = await warehouseService.editWarehouseByWarehouseId(req);
+      sendResponse({ res, statusCode: 200, data: warehouse });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getWarehouses: async (req, res) => {
     try {
       const warehouses = await warehouseService.getWarehouses();
