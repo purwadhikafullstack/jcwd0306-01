@@ -11,6 +11,15 @@ class CartController {
     }
   };
 
+  static createCart = async (req, res) => {
+    try {
+      const cart = await CartService.createCart(req);
+      sendResponse({ res, statusCode: 201, data: cart });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
   static updateCart = async (req, res) => {
     try {
       const result = await CartService.updateCart(req);

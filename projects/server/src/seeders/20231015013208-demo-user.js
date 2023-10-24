@@ -100,6 +100,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Users', null, { id: [1, 2, 3, 4, 5, 6] });
+    await queryInterface.bulkDelete('Users', { id: [1, 2, 3, 4, 5, 6] });
   },
 };

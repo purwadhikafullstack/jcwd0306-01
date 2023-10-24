@@ -107,13 +107,13 @@ class User extends Service {
       if (!isValid) {
         throw new Error('wrong password');
       }
-      delete result.dataValues.password;
+      result.setDataValue('password', undefined);
 
-      const payload = { ...result };
+      const payload = { ...result.toJSON() };
       // console.log('payload', payload);
 
       const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
-        expiresIn: '15min',
+        expiresIn: '24h',
       });
 
       return { token, user: result };

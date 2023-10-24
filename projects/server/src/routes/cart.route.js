@@ -6,18 +6,23 @@ const {
 } = require('../middlewares/validators/cartQuantityValidator');
 
 router.get(
-  `/:userId`,
+  '/:userId',
   // verifyAuthUser({ isCustomer: true, idParams: true }),
   CartController.getCartByUserId
 );
 router.post(
-  `/:userId`,
+  '/',
+  verifyAuthUser({ isAdmin: true }), // isCustomer: true }),
+  CartController.createCart
+);
+router.post(
+  '/:userId',
   // verifyAuthUser({ isCustomer: true, idParams: true }),
   quantityValidator,
   CartController.updateCart
 );
 router.delete(
-  `/:userId`,
+  '/:userId',
   // verifyAuthUser({ isCustomer: true, idParams: true }),
   CartController.deleteItemOnCart
 );
