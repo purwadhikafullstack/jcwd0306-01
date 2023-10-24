@@ -9,4 +9,7 @@ router.post(
   warehouseController.createWarehouse
 );
 
+// get warehouses
+router.get('/', warehouseController.getWarehouses);
+
 module.exports = router;

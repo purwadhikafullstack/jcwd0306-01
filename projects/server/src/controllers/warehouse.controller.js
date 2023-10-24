@@ -10,6 +10,15 @@ const warehouseController = {
       sendResponse({ res, error });
     }
   },
+
+  getWarehouses: async (req, res) => {
+    try {
+      const warehouses = await warehouseService.getWarehouses();
+      sendResponse({ res, statusCode: 200, data: warehouses });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = warehouseController;
