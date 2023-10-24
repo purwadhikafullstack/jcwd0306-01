@@ -28,6 +28,7 @@ module.exports = {
         allowNull: false,
         defaultValue: false,
       },
+      note: { type: Sequelize.STRING, allowNull: true },
       createdAt: { type: Sequelize.DATE, allowNull: false },
       updatedAt: { type: Sequelize.DATE, allowNull: false },
     });

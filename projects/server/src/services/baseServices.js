@@ -32,7 +32,7 @@ class Service {
 
   async getByID(req, option = {}) {
     try {
-      const id = req.params;
+      const { id } = req.params;
       const result = await this.db.findByPk(id, { ...option });
       return result;
     } catch (error) {
@@ -65,8 +65,8 @@ class Service {
 
   async delete(req) {
     try {
-      const id = req.params;
-      const result = await this.db.destroy({ where: id });
+      const { id } = req.params;
+      const result = await this.db.destroy({ where: { id } });
       return result;
     } catch (error) {
       throw new ResponseError(error?.message, 406);
