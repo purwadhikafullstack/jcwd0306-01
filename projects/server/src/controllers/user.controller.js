@@ -1,14 +1,15 @@
 const bcrypt = require('bcrypt');
 const userServices = require('../services/user.services');
 const db = require('../models');
+const sendResponse = require('../utils/sendResponse');
 
 class UserController {
   static getById = async (req, res) => {
     try {
-      const data = await userServices.getByID(req);
-      return res.send(data);
-    } catch (err) {
-      return res.status(400).send(err?.message);
+      const user = await userServices.getByID(req);
+      sendResponse({ res, statusCode: 200, data: user });
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 
@@ -64,9 +65,9 @@ class UserController {
     const { email, password } = req.body;
     try {
       const signInResult = await userServices.signIn(email, password);
-      return res.status(200).send({ signInResult });
-    } catch (err) {
-      return res.status(400).send(err?.message);
+      sendResponse({ res, statusCode: 200, data: signInResult });
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }
