@@ -29,10 +29,28 @@ class UserAddressController {
     }
   };
 
-  static paymentOptions = async (req, res) => {
+  static getShippingOptions = async (req, res) => {
     try {
-      const result = await UserAddressService.paymentOptions(req);
+      const result = await UserAddressService.getShippingOptions(req);
       return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
+  static delete = async (req, res) => {
+    try {
+      await UserAddressService.delete(req);
+      return res.send('success');
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
+  static setNewDefault = async (req, res) => {
+    try {
+      await UserAddressService.setNewDefault(req);
+      return res.send('success');
     } catch (error) {
       return sendResponse({ res, error });
     }

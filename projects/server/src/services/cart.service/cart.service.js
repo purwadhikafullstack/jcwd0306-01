@@ -17,7 +17,10 @@ const optionGetCartByUserId = {
       ],
     ],
   },
-  include: db.Product,
+  include: {
+    model: db.Product,
+    include: { model: db.ProductImage, attributes: ['id'] },
+  },
 };
 
 class Cart extends Service {
@@ -94,7 +97,7 @@ class Cart extends Service {
         await this.db.bulkCreate(values, {
           logging: false,
           transaction: t,
-          updateOnDuplicate: ['quantity', 'isChecked'],
+          updateOnDuplicate: ['quantity', 'isChecked', 'note'],
         });
       });
       return 'success';
@@ -106,7 +109,6 @@ class Cart extends Service {
   deleteItemOnCart = async (req) => {
     const userId = Number(req.params.userId);
     const { productId } = req.query;
-
     try {
       await sequelize.transaction(async (t) => {
         await this.db.destroy({

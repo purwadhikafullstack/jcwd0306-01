@@ -1,6 +1,8 @@
 const Joi = require('joi');
 const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
+const db = require('../../models');
+const { sequelize } = require('../../models');
 
 const addressSchema = Joi.object({
   receiverPhone: Joi.string().required().regex(/^\d+$/),
@@ -37,6 +39,29 @@ const addressValidator = {
       req.body.latitude = result.results[0].geometry.lat;
       req.body.longitude = result.results[0].geometry.lng;
 
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  shippingOptionInputValidator: async (req, res, next) => {
+    try {
+      const { longitude, latitude, cityId, weight } = req.body;
+      if (!(longitude && latitude && cityId && weight))
+        throw new ResponseError('Invalid information', 400);
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  checkIsDefault: async (req, res, next) => {
+    try {
+      const result = await db.UserAddress.findByPk(req.params.id);
+      if (result.dataValues.isDefault) {
+        throw new ResponseError('Default address cannot be removed', 400);
+      }
       next();
     } catch (error) {
       sendResponse({ res, error });

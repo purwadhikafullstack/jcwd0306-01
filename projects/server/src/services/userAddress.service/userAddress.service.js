@@ -22,15 +22,27 @@ class UserAddress extends Service {
   getAddressByUserId = (req) =>
     this.getByUserId(req, this.optionGetAddressByUserId);
 
-  paymentOptions = async (req) => {
-    const warehouse = await this.findNearestWareHouse(req);
-    const body = {
-      origin: warehouse.cityId,
-      destination: req.body.cityId,
-      weight: req.body.weight,
-    };
-    const paymentOption = await this.fetchRajaOngkir(body);
-    return paymentOption;
+  getShippingOptions = async (req) => {
+    try {
+      const warehouse = await this.findNearestWareHouse(req);
+      const body = {
+        origin: warehouse.cityId,
+        destination: req.body.cityId,
+        weight: req.body.weight,
+      };
+      const paymentOption = await this.fetchRajaOngkir(body);
+      return paymentOption;
+    } catch (error) {
+      throw new ResponseError(error?.message, 500);
+    }
+  };
+
+  setNewDefault = async (req) => {
+    await this.db.update(
+      { isDefault: false },
+      { where: { userId: req.params.userId, isDefault: true }, logging: false }
+    );
+    await this.update(req);
   };
 
   findNearestWareHouse = async (req) => {
