@@ -80,7 +80,10 @@ class Cart extends Service {
             ],
           ],
         },
-        include: db.Product,
+        include: {
+          model: db.Product,
+          include: { model: db.ProductImage, attributes: ['id'] },
+        },
         transaction: t,
       });
 
