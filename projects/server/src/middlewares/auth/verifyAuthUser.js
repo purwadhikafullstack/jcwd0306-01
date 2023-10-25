@@ -12,7 +12,7 @@ async function verifyUserRole({
   warehouseId,
 }) {
   const user = await User.findByPk(decoded.id, {
-    attributes: ['isAdmin', 'isWarehouseAdmin', 'isCustomer'],
+    attributes: ['isAdmin', 'isCustomer'],
     raw: true,
   });
   if (userId && user.id !== Number(userId))
