@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       // Product < OrderProduct > Order
       // ======================================================
       models.OrderProduct.belongsTo(models.Product, {
-        through: models.OrderProduct,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',

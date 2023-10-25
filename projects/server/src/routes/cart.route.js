@@ -12,7 +12,7 @@ router.get(
 );
 router.post(
   '/',
-  verifyAuthUser({ isAdmin: true }), // isCustomer: true }),
+  verifyAuthUser({ isCustomer: true }),
   CartController.createCart
 );
 router.post(

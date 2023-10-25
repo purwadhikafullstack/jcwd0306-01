@@ -16,6 +16,8 @@ const {
   provinceRouter,
   cityRouter,
   orderRouter,
+  warehouseRouter,
+  warehouseUserRouter,
 } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
@@ -37,11 +39,11 @@ app.use(bearerToken());
 // ===========================
 // NOTE : Add your routes here
 app.use('/carousels', carouselRouter);
-
 app.use('/categories', categoryRouter);
-
 app.use('/products', productRouter);
 app.use('/order', orderRouter);
+app.use('/warehouses', warehouseRouter);
+app.use('/warehouseusers', warehouseUserRouter);
 app.use('/cart', cartRouter);
 app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
