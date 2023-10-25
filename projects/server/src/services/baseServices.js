@@ -26,6 +26,7 @@ class Service {
       });
       return result;
     } catch (err) {
+      console.log(err);
       throw new ResponseError(err?.message, 400);
     }
   };

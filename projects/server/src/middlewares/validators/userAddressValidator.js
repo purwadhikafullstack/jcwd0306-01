@@ -45,6 +45,17 @@ const addressValidator = {
     }
   },
 
+  shippingOptionInputValidator: async (req, res, next) => {
+    try {
+      const { longitude, latitude, cityId, weight } = req.body;
+      if (!(longitude && latitude && cityId && weight))
+        throw new ResponseError('Invalid information', 400);
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   checkIsDefault: async (req, res, next) => {
     try {
       const result = await db.UserAddress.findByPk(req.params.id);
