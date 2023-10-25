@@ -41,9 +41,12 @@ class Service {
     }
   }
 
-  async create(req) {
+  async create(req, option = {}) {
     try {
-      const result = await this.db.create({ ...req.body });
+      const result = await this.db.create(
+        { ...req.body },
+        { logging: false, ...option }
+      );
       delete result.dataValues?.password;
       return result.dataValues;
     } catch (error) {
@@ -51,12 +54,12 @@ class Service {
     }
   }
 
-  async update(req) {
+  async update(req, option = {}) {
     try {
       const { id } = req.params;
       const result = await this.db.update(
         { ...req.body },
-        { where: { id }, logging: false }
+        { where: { id }, logging: false, ...option }
       );
       return result;
     } catch (error) {

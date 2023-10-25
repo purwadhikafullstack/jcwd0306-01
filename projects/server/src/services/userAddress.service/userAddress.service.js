@@ -27,6 +27,7 @@ class UserAddress extends Service {
       const warehouse = await this.findNearestWareHouse(req);
       const body = {
         origin: warehouse.cityId,
+        warehouseId: warehouse.id,
         destination: req.body.cityId,
         weight: req.body.weight,
       };
@@ -128,6 +129,7 @@ class UserAddress extends Service {
       data.origin_details = result.rajaongkir.origin_details;
       data.destination_details = result.rajaongkir.destination_details;
     }
+    data.origin_details.warehouseId = body.warehouseId;
     data.method = UserAddress.shippingMethodFormatter(temp);
     return data;
   };

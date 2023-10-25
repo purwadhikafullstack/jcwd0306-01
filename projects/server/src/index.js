@@ -15,6 +15,7 @@ const {
   userAddressRouter,
   provinceRouter,
   cityRouter,
+  orderRouter,
 } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
@@ -40,7 +41,7 @@ app.use('/carousels', carouselRouter);
 app.use('/categories', categoryRouter);
 
 app.use('/products', productRouter);
-
+app.use('/order', orderRouter);
 app.use('/cart', cartRouter);
 app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
