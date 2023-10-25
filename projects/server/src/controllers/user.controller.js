@@ -70,6 +70,50 @@ class UserController {
       sendResponse({ res, error });
     }
   };
+
+  static edit = async (req, res) => {
+    const { userId } = req.params;
+    try {
+      const editedResult = await userServices.handleEdit(userId, req);
+      sendResponse({ res, statusCode: 201, data: editedResult });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static editPassword = async (req, res) => {
+    const t = await db.sequelize.transaction();
+    const { email } = req.body;
+    try {
+      const check = await userServices.findUser(email);
+      const match = await bcrypt.compare(
+        req.body.oldPassword,
+        check.dataValues.password
+      );
+      if (!match) {
+        await t.rollback();
+        return sendResponse({
+          res,
+          statusCode: 400,
+          data: 'incorrect old password',
+        });
+      }
+      if (req.body.oldPassword === req.body.newPassword) {
+        await t.rollback();
+        return sendResponse({
+          res,
+          statusCode: 400,
+          data: 'password must be different',
+        });
+      }
+      await userServices.handleEditPassword(req.body, t);
+      await t.commit();
+      return sendResponse({ res, statusCode: 201, data: 'password edited' });
+    } catch (error) {
+      sendResponse({ res, error });
+      // console.log(error);
+    }
+  };
 }
 
 module.exports = UserController;

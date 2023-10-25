@@ -122,6 +122,30 @@ class User extends Service {
 
     return { token, user: result };
   };
+
+  handleEdit = async (userId, req) => {
+    await this.db.update(
+      {
+        ...req.body,
+      },
+      { where: { id: userId } }
+    );
+    const result = await this.getByUserId(req, { where: { id: userId } });
+    return result;
+  };
+
+  handleEditPassword = async (body, t) => {
+    try {
+      const { newPassword, email } = body;
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+      return await this.db.update(
+        { password: hashPassword },
+        { where: { email }, transaction: t }
+      );
+    } catch (err) {
+      return err;
+    }
+  };
 }
 
 module.exports = new User('User');
