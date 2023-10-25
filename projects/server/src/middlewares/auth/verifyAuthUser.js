@@ -12,9 +12,10 @@ async function verifyUserRole({
   warehouseId,
 }) {
   const user = await User.findByPk(decoded.id, {
-    attributes: ['isAdmin', 'isCustomer'],
+    attributes: ['id', 'isAdmin', 'isCustomer'],
     raw: true,
   });
+
   if (userId && user.id !== Number(userId))
     throw new ResponseError('invalid credential', 400);
 
