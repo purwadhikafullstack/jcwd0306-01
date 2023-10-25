@@ -9,6 +9,13 @@ router.post(
   warehouseController.createWarehouse
 );
 
+// delete warehouse by warehouseId
+router.delete(
+  '/:warehouseId',
+  warehouseValidator.deleteWarehouseByWarehouseId,
+  warehouseController.deleteWarehouseByWarehouseId
+);
+
 // edit warehouse by warehouseId;
 router.patch(
   '/:warehouseId',

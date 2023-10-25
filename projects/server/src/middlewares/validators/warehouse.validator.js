@@ -25,6 +25,20 @@ const warehouseValidator = {
     }
   },
 
+  deleteWarehouseByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   editWarehouseByWarehouseId: (req, res, next) => {
     try {
       validateJoiSchema(

@@ -11,6 +11,15 @@ const warehouseController = {
     }
   },
 
+  deleteWarehouseByWarehouseId: async (req, res) => {
+    try {
+      await warehouseService.deleteWarehouseByWarehouseId(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   editWarehouseByWarehouseId: async (req, res) => {
     try {
       const warehouse = await warehouseService.editWarehouseByWarehouseId(req);
