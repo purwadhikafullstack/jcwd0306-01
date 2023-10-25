@@ -12,6 +12,15 @@ const warehouseUserController = {
     }
   },
 
+  deleteWarehouseUsersByWarehouseId: async (req, res) => {
+    try {
+      await warehouseUserService.deleteWarehouseUsersByWarehouseId(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getWarehouseUsersByWarehouseId: async (req, res) => {
     try {
       const warehouse =

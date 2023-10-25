@@ -9,6 +9,13 @@ router.post(
   warehouseUserController.createWarehouseUsersByWarehouseId
 );
 
+// delete warehouse users by warehouseId
+router.delete(
+  '/:warehouseId/users',
+  warehouseUserValidator.deleteWarehouseUsersByWarehouseId,
+  warehouseUserController.deleteWarehouseUsersByWarehouseId
+);
+
 // get warehouse users by warehouseId
 router.get(
   '/:warehouseId/users',
