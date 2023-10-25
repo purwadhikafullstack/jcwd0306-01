@@ -7,7 +7,7 @@ const {
 
 router.get(
   '/:userId',
-  // verifyAuthUser({ isCustomer: true, idParams: true }),
+  verifyAuthUser({ isCustomer: true }),
   CartController.getCartByUserId
 );
 router.post(
@@ -17,13 +17,13 @@ router.post(
 );
 router.post(
   '/:userId',
-  // verifyAuthUser({ isCustomer: true, idParams: true }),
+  verifyAuthUser({ isCustomer: true }),
   quantityValidator,
   CartController.updateCart
 );
 router.delete(
   '/:userId',
-  // verifyAuthUser({ isCustomer: true, idParams: true }),
+  verifyAuthUser({ isCustomer: true }),
   CartController.deleteItemOnCart
 );
 
