@@ -39,7 +39,7 @@ module.exports = (sequelize, DataTypes) => {
         validate: { min: 0 },
       },
       note: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
     },

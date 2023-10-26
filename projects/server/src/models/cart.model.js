@@ -10,8 +10,20 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Cart.belongsTo(models.User, { foreignKey: 'userId' });
-      Cart.belongsTo(models.Product, { foreignKey: 'productId' });
+      // ======================================================
+      // Product < Cart > User
+      // ======================================================
+      models.Cart.belongsTo(models.User, {
+        foreignKey: { name: 'userId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.Cart.belongsTo(models.Product, {
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
     }
   }
   Cart.init(
@@ -22,17 +34,13 @@ module.exports = (sequelize, DataTypes) => {
         validate: { min: 1 },
       },
       note: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT,
         allowNull: true,
       },
       isChecked: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false,
-      },
-      note: {
-        type: DataTypes.TEXT,
-        allowNull: true,
       },
     },
     {

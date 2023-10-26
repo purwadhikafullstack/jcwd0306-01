@@ -77,6 +77,11 @@ module.exports = (sequelize, DataTypes) => {
   Warehouse.init(
     {
       name: { type: DataTypes.STRING, allowNull: true, unique: true },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+      },
     },
     {
       sequelize,

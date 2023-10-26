@@ -9,6 +9,7 @@ const warehouseValidator = {
         req.body,
         Joi.object({
           name: Joi.string().required(),
+          isActive: Joi.boolean(),
           country: Joi.string().required(),
           provinceId: Joi.number().integer().min(1).required(),
           cityId: Joi.number().integer().min(1).required(),
@@ -51,6 +52,7 @@ const warehouseValidator = {
         req.body,
         Joi.object({
           name: Joi.string(),
+          isActive: Joi.boolean(),
           country: Joi.string(),
           provinceId: Joi.number().integer().min(1),
           cityId: Joi.number().integer().min(1),
