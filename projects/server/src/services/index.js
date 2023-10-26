@@ -5,9 +5,11 @@ const warehouseService = require('./warehouse.service');
 const warehouseUserService = require('./warehouseuser.service');
 const userService = require('./user.services');
 const UserAddressService = require('./userAddress.service/userAddress.service');
-const ProvinceService = require('./province.service/province.service');
-const CartService = require('./cart.service/cart.service');
-const CityService = require('./city.service/city.service');
+
+const OrderService = require(`./order.service/order.service`);
+const ProvinceService = require(`./province.service/province.service`);
+const CartService = require(`./cart.service/cart.service`);
+const CityService = require(`./city.service/city.service`);
 
 module.exports = {
   carouselService,
@@ -20,4 +22,5 @@ module.exports = {
   ProvinceService,
   CartService,
   CityService,
+  OrderService,
 };

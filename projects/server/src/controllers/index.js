@@ -6,8 +6,10 @@ const warehouseUserController = require('./warehouseuser.controller');
 const CartController = require('./cart.controller');
 const userController = require('./user.controller');
 const UserAddressController = require('./userAddress.controller');
-const ProvinceController = require('./province.controller');
-const CityController = require('./city.controller');
+
+const ProvinceController = require(`./province.controller`);
+const CityController = require(`./city.controller`);
+const OrderController = require('./order.controller');
 
 module.exports = {
   carouselController,
@@ -20,4 +22,5 @@ module.exports = {
   UserAddressController,
   ProvinceController,
   CityController,
+  OrderController,
 };

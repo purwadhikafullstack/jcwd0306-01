@@ -31,8 +31,7 @@ class UserAddressController {
 
   static getShippingOptions = async (req, res) => {
     try {
-      const result = await UserAddressService.getShippingOptions(req);
-      return res.send(result);
+      await UserAddressService.getShippingOptions(req, res);
     } catch (error) {
       return sendResponse({ res, error });
     }

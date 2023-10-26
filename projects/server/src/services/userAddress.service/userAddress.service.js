@@ -1,6 +1,12 @@
+const { createClient } = require('redis');
 const Service = require('../baseServices');
 const db = require('../../models');
 const { ResponseError } = require('../../errors');
+
+const client = createClient({
+  url: 'redis://localhost:6379',
+  legacyMode: true,
+});
 
 class UserAddress extends Service {
   optionGetAddressByUserId = {
@@ -8,6 +14,7 @@ class UserAddress extends Service {
       { model: db.Province, attributes: ['name'] },
       { model: db.City, attributes: ['name'] },
     ],
+    logging: false,
   };
 
   GOOGLEMAPS_API_KEY = process.env.Googlemaps_api_key;
@@ -22,18 +29,26 @@ class UserAddress extends Service {
   getAddressByUserId = (req) =>
     this.getByUserId(req, this.optionGetAddressByUserId);
 
-  getShippingOptions = async (req) => {
+  getShippingOptions = async (req, res) => {
+    if (!client.isOpen) await client.connect();
+    const key = JSON.stringify(req.body.postalCode);
     try {
-      const warehouse = await this.findNearestWareHouse(req);
-      const body = {
-        origin: warehouse.cityId,
-        destination: req.body.cityId,
-        weight: req.body.weight,
-      };
-      const paymentOption = await this.fetchRajaOngkir(body);
-      return paymentOption;
+      client.get(key, async (err, result) => {
+        if (result) return res.send(JSON.parse(result));
+        console.log(`Fetch from API`);
+        const warehouse = await this.findNearestWareHouse(req);
+        const body = {
+          origin: warehouse.cityId,
+          warehouseId: warehouse.warehouseId,
+          destination: req.body.cityId,
+          weight: req.body.weight,
+        };
+        const paymentOption = await this.fetchRajaOngkir(body);
+        client.setEx(key, 3000, JSON.stringify(paymentOption));
+        return res.send(paymentOption);
+      });
     } catch (error) {
-      throw new ResponseError(error?.message, 500);
+      throw new ResponseError(error?.message, error?.statusCode);
     }
   };
 
@@ -62,7 +77,7 @@ class UserAddress extends Service {
   static findTheSmallestDuration = (result, destination) => {
     const { destinationIndex } = result
       .filter((val) => val.condition === 'ROUTE_EXISTS')
-      .sort((a, b) => parseInt(a.duration) - parseInt(b.duration))[0];
+      .sort((a, b) => parseInt(a.duration, 10) - parseInt(b.duration, 10))[0];
 
     return destination[destinationIndex];
   };
@@ -124,10 +139,16 @@ class UserAddress extends Service {
         body: JSON.stringify(body),
       });
       const result = await response.json();
-      temp.push(result.rajaongkir.results[0]);
+      if (
+        result.rajaongkir.status?.code > 300 ||
+        result.rajaongkir.status?.code < 200
+      )
+        throw new ResponseError(result.rajaongkir.status?.description, 400);
+      temp.push(result.rajaongkir?.results[0]);
       data.origin_details = result.rajaongkir.origin_details;
       data.destination_details = result.rajaongkir.destination_details;
     }
+    data.origin_details.warehouseId = body.warehouseId;
     data.method = UserAddress.shippingMethodFormatter(temp);
     return data;
   };

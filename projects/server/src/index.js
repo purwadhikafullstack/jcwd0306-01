@@ -5,7 +5,8 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
-
+const { Server } = require('socket.io');
+const http = require('http');
 const {
   cartRouter,
   categoryRouter,
@@ -15,12 +16,14 @@ const {
   userAddressRouter,
   provinceRouter,
   cityRouter,
+  orderRouter,
   warehouseRouter,
   warehouseUserRouter,
 } = require('./routes');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+
 app.use(
   cors({
     // origin: [
@@ -40,6 +43,7 @@ app.use(bearerToken());
 app.use('/carousels', carouselRouter);
 app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
+app.use('/order', orderRouter);
 app.use('/warehouses', warehouseRouter);
 app.use('/warehouseusers', warehouseUserRouter);
 app.use('/cart', cartRouter);
@@ -47,6 +51,10 @@ app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
 app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
+
+const server = http.createServer(app);
+const io = new Server(server);
+global.io = io;
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');
@@ -81,7 +89,7 @@ app.use((err, req, res, next) => {
 
 // #endregion
 
-app.listen(PORT, (err) => {
+server.listen(PORT, async (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {
