@@ -2,7 +2,6 @@ module.exports = [
   {
     id: 1,
     name: 'WH-01',
-    isActive: true,
     country: 'Indonesia',
     provinceId: 33,
     cityId: 327,
@@ -17,7 +16,6 @@ module.exports = [
   {
     id: 2,
     name: 'WH-02',
-    isActive: true,
     country: 'Indonesia',
     provinceId: 6,
     cityId: 152,
@@ -32,7 +30,6 @@ module.exports = [
   {
     id: 3,
     name: 'WH-03',
-    isActive: true,
     country: 'Indonesia',
     provinceId: 15,
     cityId: 19,
@@ -47,7 +44,6 @@ module.exports = [
   {
     id: 4,
     name: 'WH-04',
-    isActive: true,
     country: 'Indonesia',
     provinceId: 28,
     cityId: 336,
@@ -62,7 +58,6 @@ module.exports = [
   {
     id: 5,
     name: 'WH-05',
-    isActive: true,
     country: 'Indonesia',
     provinceId: 24,
     cityId: 157,

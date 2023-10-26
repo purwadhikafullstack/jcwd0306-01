@@ -10,7 +10,7 @@ const {
 async function editWarehouse(warehouseId, values, transaction) {
   await Warehouse.update(values, {
     where: { id: warehouseId },
-    fields: ['name', 'isActive'],
+    fields: ['name'],
     transaction,
   });
 }
