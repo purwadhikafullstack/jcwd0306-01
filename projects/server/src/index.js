@@ -5,7 +5,6 @@ require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
-const { createClient } = require('redis');
 const { Server } = require('socket.io');
 const http = require('http');
 const {
@@ -57,10 +56,6 @@ const server = http.createServer(app);
 const io = new Server(server);
 global.io = io;
 
-const client = createClient();
-client.connect();
-global.client = client;
-
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');
 });
@@ -94,14 +89,7 @@ app.use((err, req, res, next) => {
 
 // #endregion
 
-io.on('connection', (socket) => {
-  console.log('a user is connected');
-});
-
-server.listen(PORT, (err) => {
-  client.on('error', () => {
-    console.log(`REDIS client error`);
-  });
+server.listen(PORT, async (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {

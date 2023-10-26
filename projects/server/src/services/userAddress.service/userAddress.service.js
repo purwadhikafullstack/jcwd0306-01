@@ -1,6 +1,12 @@
+const { createClient } = require('redis');
 const Service = require('../baseServices');
 const db = require('../../models');
 const { ResponseError } = require('../../errors');
+
+const client = createClient({
+  url: 'redis://localhost:6379',
+  legacyMode: true,
+});
 
 class UserAddress extends Service {
   optionGetAddressByUserId = {
@@ -8,6 +14,7 @@ class UserAddress extends Service {
       { model: db.Province, attributes: ['name'] },
       { model: db.City, attributes: ['name'] },
     ],
+    logging: false,
   };
 
   GOOGLEMAPS_API_KEY = process.env.Googlemaps_api_key;
@@ -22,17 +29,24 @@ class UserAddress extends Service {
   getAddressByUserId = (req) =>
     this.getByUserId(req, this.optionGetAddressByUserId);
 
-  getShippingOptions = async (req) => {
+  getShippingOptions = async (req, res) => {
+    if (!client.isOpen) await client.connect();
+    const key = JSON.stringify(req.body.postalCode);
     try {
-      const warehouse = await this.findNearestWareHouse(req);
-      const body = {
-        origin: warehouse.cityId,
-        warehouseId: warehouse.warehouseId,
-        destination: req.body.cityId,
-        weight: req.body.weight,
-      };
-      const paymentOption = await this.fetchRajaOngkir(body);
-      return paymentOption;
+      client.get(key, async (err, result) => {
+        if (result) return res.send(JSON.parse(result));
+        console.log(`Fetch from API`);
+        const warehouse = await this.findNearestWareHouse(req);
+        const body = {
+          origin: warehouse.cityId,
+          warehouseId: warehouse.warehouseId,
+          destination: req.body.cityId,
+          weight: req.body.weight,
+        };
+        const paymentOption = await this.fetchRajaOngkir(body);
+        client.setEx(key, 3000, JSON.stringify(paymentOption));
+        return res.send(paymentOption);
+      });
     } catch (error) {
       throw new ResponseError(error?.message, error?.statusCode);
     }

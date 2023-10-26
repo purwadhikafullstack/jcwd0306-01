@@ -1,4 +1,5 @@
 const { Op } = require('sequelize');
+const sharp = require('sharp');
 const db = require('../../models');
 const Service = require('../baseServices');
 const { ResponseError } = require('../../errors');
@@ -70,8 +71,9 @@ class Order extends Service {
 
   createNewTransaction = async (req) => {
     try {
+      let newTransaction = {};
       await db.sequelize.transaction(async (t) => {
-        const newTransaction = await this.db.create(req.body, {
+        newTransaction = await this.db.create(req.body, {
           transaction: t,
         });
         const orderProducts = Order.orderProductFormatter(
@@ -83,13 +85,29 @@ class Order extends Service {
           transaction: t,
         });
       });
-      return req.body;
+      console.log(newTransaction);
+      return newTransaction;
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
   };
 
-  static paymentProof = (req) => req.body;
+  uploadPaymentProof = async (req) => {
+    req.body.paymentProof = await sharp(req.file.buffer)
+      .png()
+      .resize(600, undefined, {
+        withoutEnlargement: true,
+        fastShrinkOnLoad: true,
+      })
+      .toBuffer();
+    await this.update(req);
+    return 'success';
+  };
+
+  renderPaymentProofImg = async (req) => {
+    const result = await this.getByID(req);
+    return result.dataValues;
+  };
 }
 
 module.exports = new Order('Order');
