@@ -1,3 +1,4 @@
+const { ResponseError } = require('../../errors');
 const {
   sequelize,
   Warehouse,
@@ -6,25 +7,37 @@ const {
   City,
 } = require('../../models');
 
+async function addWarehouse(values, transaction) {
+  const [warehouse, isCreated] = await Warehouse.findOrCreate({
+    where: { name: values.name },
+    defaults: values,
+    fields: ['name', 'isActive'],
+    transaction,
+  });
+  if (!isCreated) throw new ResponseError('warehouse name already exist', 400);
+  return warehouse;
+}
+
+async function addWarehouseAddress(warehouse, values, transaction) {
+  await warehouse.createWarehouseAddress(values, {
+    fields: [
+      'country',
+      'provinceId',
+      'cityId',
+      'district',
+      'village',
+      'detail',
+      'longitude',
+      'latitude',
+    ],
+    transaction,
+  });
+}
+
 async function createWarehouse(req) {
   const warehouse = await sequelize.transaction(async (t) => {
-    const data = await Warehouse.create(req.body, {
-      fields: ['name'],
-      transaction: t,
-    });
-    await data.createWarehouseAddress(req.body, {
-      fields: [
-        'country',
-        'provinceId',
-        'cityId',
-        'district',
-        'village',
-        'detail',
-        'longitude',
-        'latitude',
-      ],
-      transaction: t,
-    });
+    const data = await addWarehouse(req.body, t);
+    await addWarehouseAddress(data, req.body, t);
     const result = await Warehouse.findByPk(data.getDataValue('id'), {
       include: [
         {

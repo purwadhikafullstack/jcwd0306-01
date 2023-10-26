@@ -11,6 +11,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // ======================================================
+      // Product < Cart > User
+      // ======================================================
+      models.Product.belongsToMany(models.User, {
+        through: models.Cart,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.Product.hasMany(models.Cart, {
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
+
+      // ======================================================
       // Product < WarehouseProduct > Warehouse
       // ======================================================
       models.Product.belongsToMany(models.Warehouse, {
@@ -43,13 +59,6 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
 
       // ======================================================
-      models.Product.belongsToMany(models.User, {
-        through: models.Cart,
-        foreignKey: { name: 'productId', primaryKey: true, unique: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
       models.Product.belongsToMany(models.Category, {
         through: models.ProductCategory,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
