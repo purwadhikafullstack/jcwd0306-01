@@ -1,4 +1,10 @@
-const { sequelize, Warehouse, WarehouseAddress } = require('../../models');
+const {
+  sequelize,
+  Warehouse,
+  WarehouseAddress,
+  Province,
+  City,
+} = require('../../models');
 
 async function createWarehouse(req) {
   const warehouse = await sequelize.transaction(async (t) => {
@@ -20,7 +26,12 @@ async function createWarehouse(req) {
       transaction: t,
     });
     const result = await Warehouse.findByPk(data.getDataValue('id'), {
-      include: [{ model: WarehouseAddress }],
+      include: [
+        {
+          model: WarehouseAddress,
+          include: [{ model: Province }, { model: City }],
+        },
+      ],
       transaction: t,
     });
     return result.toJSON();

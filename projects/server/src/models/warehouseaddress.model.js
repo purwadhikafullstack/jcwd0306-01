@@ -24,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       models.WarehouseAddress.belongsTo(models.City, {
-        foreignKey: { name: 'provinceId', allowNull: false },
+        foreignKey: { name: 'cityId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
