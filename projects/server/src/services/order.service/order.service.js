@@ -56,16 +56,40 @@ class Order extends Service {
     }
   };
 
+  static orderProductFormatter = (products, orderId) => {
+    const temp = [];
+    products.forEach((product) =>
+      temp.push({
+        ...product,
+        price: product.Product.price,
+        orderId,
+      })
+    );
+    return temp;
+  };
+
   createNewTransaction = async (req) => {
     try {
       await db.sequelize.transaction(async (t) => {
-        const newTransaction = await this.create(req.body, { transaction: t });
+        const newTransaction = await this.db.create(req.body, {
+          transaction: t,
+        });
+        const orderProducts = Order.orderProductFormatter(
+          req.body.products,
+          newTransaction.dataValues.id
+        );
+        await db.OrderProduct.bulkCreate(orderProducts, {
+          logging: false,
+          transaction: t,
+        });
       });
       return req.body;
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
   };
+
+  static paymentProof = (req) => req.body;
 }
 
 module.exports = new Order('Order');
