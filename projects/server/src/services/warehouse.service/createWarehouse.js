@@ -11,7 +11,7 @@ async function addWarehouse(values, transaction) {
   const [warehouse, isCreated] = await Warehouse.findOrCreate({
     where: { name: values.name },
     defaults: values,
-    fields: ['name', 'isActive'],
+    fields: ['name'],
     transaction,
   });
   if (!isCreated) throw new ResponseError('warehouse name already exist', 400);
