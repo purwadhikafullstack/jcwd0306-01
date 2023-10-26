@@ -2,6 +2,15 @@ const { warehouseService } = require('../services');
 const { sendResponse } = require('../utils');
 
 const warehouseController = {
+  activateWarehouseByWarehouseId: async (req, res) => {
+    try {
+      await warehouseService.activateWarehouseByWarehouseId(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   createWarehouse: async (req, res) => {
     try {
       const warehouse = await warehouseService.createWarehouse(req);

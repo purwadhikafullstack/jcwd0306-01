@@ -3,6 +3,20 @@ const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 
 const warehouseValidator = {
+  activateWarehouseByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   createWarehouse: (req, res, next) => {
     try {
       validateJoiSchema(

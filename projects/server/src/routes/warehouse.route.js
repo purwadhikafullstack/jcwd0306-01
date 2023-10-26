@@ -2,6 +2,13 @@ const router = require('express').Router();
 const { warehouseController } = require('../controllers');
 const { warehouseValidator } = require('../middlewares/validators');
 
+// activate warehouse by warehouseId
+router.patch(
+  '/:warehouseId/activate',
+  warehouseValidator.activateWarehouseByWarehouseId,
+  warehouseController.activateWarehouseByWarehouseId
+);
+
 // create warehouse
 router.post(
   '/',
