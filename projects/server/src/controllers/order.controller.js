@@ -11,6 +11,15 @@ class OrderController {
     }
   };
 
+  static getOrderByUserId = async (req, res) => {
+    try {
+      const result = await OrderService.getByUserId(req);
+      return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
   static createNewTransaction = async (req, res) => {
     try {
       const result = await OrderService.createNewTransaction(req);

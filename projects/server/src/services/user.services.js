@@ -146,6 +146,27 @@ class User extends Service {
       return err;
     }
   };
+
+  getDetailsById = async (req) =>
+    this.getOneByID(req, {
+      logging: false,
+      include: [
+        {
+          model: db.Order,
+          as: 'UserOrder',
+          where: { status: 'unpaid' },
+          required: false,
+        },
+        {
+          model: db.Cart,
+          required: false,
+          include: {
+            model: db.Product,
+            include: { model: db.ProductImage, attributes: ['id'] },
+          },
+        },
+      ],
+    });
 }
 
 module.exports = new User('User');

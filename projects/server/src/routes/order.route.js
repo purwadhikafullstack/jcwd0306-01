@@ -9,7 +9,12 @@ route.get(
   OrderController.renderPaymentProof
 );
 route.get(
-  `/:id`,
+  `/user/:userId`,
+  verifyAuthUser({ isCustomer: true }),
+  OrderController.getOrderByUserId
+);
+route.get(
+  `/:userId/:id`,
   verifyAuthUser({ isCustomer: true }),
   OrderController.getByID
 );

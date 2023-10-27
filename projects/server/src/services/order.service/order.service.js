@@ -7,11 +7,12 @@ const { ResponseError } = require('../../errors');
 class Order extends Service {
   limit = 7;
 
-  optionGetOrderByUserId = (page, userId, name) => ({
+  optionGetOrderByUserId = (page, userId, name, status) => ({
     limit: this.limit,
     offset: page ? (Number(page) - 1) * this.limit : 0,
     where: {
       userId,
+      ...(status && { status }),
       ...(name && { '$Product.name$': { [Op.like]: `%${name}%` } }),
     },
     include: [
@@ -30,10 +31,10 @@ class Order extends Service {
   getOrderByUserId = async (req) => {
     try {
       const userId = Number(req.params.userId);
-      const { name, page } = req.query;
+      const { name, page, status } = req.query;
       const result = await this.getByUserId(
         req,
-        this.optionGetOrderByUserId(page, userId, name)
+        this.optionGetOrderByUserId(page, userId, name, status)
       );
       return result;
     } catch (error) {
@@ -85,7 +86,6 @@ class Order extends Service {
           transaction: t,
         });
       });
-      console.log(newTransaction);
       return newTransaction;
     } catch (error) {
       throw new ResponseError(error?.message, 500);

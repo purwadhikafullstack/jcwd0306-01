@@ -114,6 +114,15 @@ class UserController {
       // console.log(error);
     }
   };
+
+  static getDetailsById = async (req, res) => {
+    try {
+      const result = await userServices.getDetailsById(req);
+      return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
 }
 
 module.exports = UserController;
