@@ -41,6 +41,19 @@ class Service {
     }
   }
 
+  async getOneByID(req, option = {}) {
+    try {
+      const { id } = req.params;
+      const result = await this.db.findOne({
+        ...option,
+        where: { ...option.where, id },
+      });
+      return result;
+    } catch (error) {
+      throw new ResponseError(error?.message, 400);
+    }
+  }
+
   async create(req, option = {}) {
     try {
       const result = await this.db.create(

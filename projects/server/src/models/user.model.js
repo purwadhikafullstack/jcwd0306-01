@@ -77,12 +77,14 @@ module.exports = (sequelize, DataTypes) => {
 
       models.User.hasMany(models.Order, {
         foreignKey: { name: 'userId', allowNull: false },
+        as: 'UserOrder',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
       models.User.hasMany(models.Order, {
         foreignKey: { name: 'adminId', allowNull: true },
+        as: 'ApprovedOrder',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
