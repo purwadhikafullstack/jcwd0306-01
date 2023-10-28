@@ -5,6 +5,7 @@ const handlebars = require('handlebars');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const sharp = require('sharp');
 const db = require('../models');
 // const { sequelize } = require('../models');
 const Service = require('./baseServices');
@@ -40,6 +41,8 @@ class User extends Service {
         where: {
           [Op.or]: [{ email }],
         },
+        attributes: { exclude: ['password'] },
+        raw: true,
       });
       return data;
     } catch (err) {
@@ -47,7 +50,7 @@ class User extends Service {
     }
   };
 
-  mailerEmail = async (data, email) => {
+  mailerEmail = async (data, email, token) => {
     try {
       let template;
       let compiledTemplate;
@@ -66,6 +69,17 @@ class User extends Service {
           html = compiledTemplate({
             registrationLink,
             email,
+          });
+          break;
+        case 'forget-password':
+          subject = 'RESET PASSWORD';
+          template = fs.readFileSync(
+            path.join(__dirname, '../template/forgotPassword.html'),
+            'utf-8'
+          );
+          compiledTemplate = handlebars.compile(template);
+          html = compiledTemplate({
+            registrationLink: `${process.env.URL}change-password?token=${token}`,
           });
           break;
       }
@@ -134,6 +148,25 @@ class User extends Service {
     return result;
   };
 
+  handleUploadAvatar = async (req) => {
+    try {
+      const { id } = req.body;
+      req.body.avatar = await sharp(req.file.buffer).png().toBuffer();
+
+      const data = await this.db.update(
+        {
+          image: req.body.avatar,
+        },
+        {
+          where: { id },
+        }
+      );
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   handleEditPassword = async (body, t) => {
     try {
       const { newPassword, email } = body;
@@ -167,6 +200,33 @@ class User extends Service {
         },
       ],
     });
+
+  handleForgetPassword = async (email, hashPassword, t) => {
+    try {
+      const isUserExist = await this.findUser(email);
+      if (!isUserExist) throw new Error('User not Found!');
+
+      const data = await this.db.update(
+        { password: hashPassword, forget_password_token: null },
+        { where: { email }, transaction: t }
+      );
+      return data;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  pushToken = async (email, token) => {
+    try {
+      const result = await this.db.update(
+        { forget_password_token: token },
+        { where: { email } }
+      );
+      return result;
+    } catch (error) {
+      return error;
+    }
+  };
 }
 
 module.exports = new User('User');

@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const sharp = require('sharp');
 const userServices = require('../services/user.services');
 const db = require('../models');
 const sendResponse = require('../utils/sendResponse');
@@ -18,29 +20,20 @@ class UserController {
     try {
       const { email, firstName, lastName, password } = req.body;
       const isUserExist = await userServices.findUser(email);
-      // console.log(isUserExist);
-
       if (isUserExist) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
       }
-
       const hashedPassword = await bcrypt.hash(password, 10);
-
       const newUser = await db.User.create(
         { email, firstName, lastName, password: hashedPassword },
         { transaction: t }
       );
-
       userServices.mailerEmail('register', email);
-
       t.commit();
-      return res.status(201).send({
-        message: 'success register',
-        data: newUser,
-      });
+      sendResponse({ res, statusCode: 200, data: newUser });
     } catch (err) {
-      return res.status(400).send(err?.message);
+      sendResponse({ res, err });
     }
   };
 
@@ -81,6 +74,55 @@ class UserController {
     }
   };
 
+  static uploadAvatar = async (req, res) => {
+    try {
+      const result = await userServices.handleUploadAvatar(req);
+      console.log(result);
+      sendResponse({ res, statusCode: 201, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static renderBlob = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await db.User.findOne({
+        where: {
+          id,
+        },
+      });
+
+      if (!user) {
+        return sendResponse({
+          res,
+          statusCode: 404,
+          message: 'User not found',
+        });
+      }
+
+      const imageData = user.dataValues.image;
+
+      if (!imageData) {
+        return sendResponse({
+          res,
+          statusCode: 404,
+          message: 'Image not found for the user',
+        });
+      }
+
+      // Assuming the image data is stored as a Buffer
+      res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': imageData.length,
+      });
+
+      res.end(imageData);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
   static editPassword = async (req, res) => {
     const t = await db.sequelize.transaction();
     const { email } = req.body;
@@ -111,7 +153,61 @@ class UserController {
       return sendResponse({ res, statusCode: 201, data: 'password edited' });
     } catch (error) {
       sendResponse({ res, error });
-      // console.log(error);
+    }
+  };
+
+  static forgetPassword = async (req, res) => {
+    const t = await db.sequelize.transaction();
+    try {
+      const { email, newPassword } = req.body;
+      if (!email) throw new Error('email not found!');
+      if (!newPassword) throw new Error('newPassword not found!');
+      const hashPassword = await bcrypt.hash(newPassword, 10);
+
+      const response = await userServices.handleForgetPassword(
+        email,
+        hashPassword,
+        t
+      );
+      await t.commit();
+      sendResponse({ res, statusCode: 200, data: response });
+    } catch (error) {
+      await t.rollback();
+      sendResponse({ res, error });
+    }
+  };
+
+  static requestForgetPassword = async (req, res) => {
+    try {
+      const { email } = req.query;
+      const user = await userServices.findUser(email);
+      if (!user) throw new Error('Email Not Found!');
+      if (user.forget_password_token !== null)
+        throw new Error('email has been sent');
+      const payload = { ...user };
+      const generateToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+        expiresIn: '10m',
+      });
+      const result = await userServices.pushToken(email, generateToken);
+      console.log(result);
+      userServices.mailerEmail('forget-password', email, generateToken);
+      sendResponse({ res, statusCode: 200, data: user });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static getResetPasswordToken = async (req, res) => {
+    try {
+      const { email } = req.query;
+      const result = await userServices.findUser(email);
+      sendResponse({
+        res,
+        statusCode: 200,
+        data: result.forget_password_token,
+      });
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 
