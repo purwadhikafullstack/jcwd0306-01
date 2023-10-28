@@ -19,7 +19,7 @@ async function deactivateWarehouse(warehouse, warehouseId, transaction) {
 }
 
 async function updateWarehouseActivationByWarehouseId(req) {
-  await sequelize.transaction(async (t) => {
+  const wh = await sequelize.transaction(async (t) => {
     const { action } = req.query;
     const { warehouseId } = req.params;
     const warehouse = await Warehouse.findByPk(warehouseId, {
@@ -32,7 +32,9 @@ async function updateWarehouseActivationByWarehouseId(req) {
     else if (action === 'deactivate')
       await deactivateWarehouse(warehouse, warehouseId, t);
     else throw new ResponseError('invalid action', 400);
+    return warehouse.toJSON();
   });
+  return wh;
 }
 
 module.exports = updateWarehouseActivationByWarehouseId;

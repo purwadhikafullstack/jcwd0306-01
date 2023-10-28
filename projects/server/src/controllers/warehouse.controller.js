@@ -31,8 +31,9 @@ const warehouseController = {
 
   updateWarehouseActivationByWarehouseId: async (req, res) => {
     try {
-      await warehouseService.updateWarehouseActivationByWarehouseId(req);
-      res.sendStatus(204);
+      const warehouse =
+        await warehouseService.updateWarehouseActivationByWarehouseId(req);
+      sendResponse({ res, statusCode: 200, data: warehouse });
     } catch (error) {
       sendResponse({ res, error });
     }
