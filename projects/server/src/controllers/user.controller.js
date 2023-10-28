@@ -197,7 +197,7 @@ class UserController {
     }
   };
 
-  static getResetPasswordToken = async (req, res) => {
+  static getForgetPasswordToken = async (req, res) => {
     try {
       const { email } = req.query;
       const result = await userServices.findUser(email);
