@@ -17,7 +17,7 @@ route.get(
 route.post(
   '/shipping_option',
   verifyAuthUser({ isCustomer: true }),
-  addressValidator.shippingOptionInputValidator,
+  shippingOptionInputValidator,
   UserAddressController.getShippingOptions
 );
 route.post(

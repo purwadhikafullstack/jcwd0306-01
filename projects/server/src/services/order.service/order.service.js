@@ -28,6 +28,18 @@ class Order extends Service {
     ],
   });
 
+  optionGetByID = {
+    include: {
+      model: db.OrderProduct,
+      include: {
+        model: db.Product,
+        include: { model: db.ProductImage, attribute: ['id'] },
+      },
+    },
+  };
+
+  getByID = async (req) => this.getOneByID(req, this.optionGetByID);
+
   getOrderByUserId = async (req) => {
     try {
       const userId = Number(req.params.userId);

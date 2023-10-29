@@ -35,7 +35,6 @@ class UserAddress extends Service {
     try {
       client.get(key, async (err, result) => {
         if (result) return res.send(JSON.parse(result));
-        console.log(`Fetch from API`);
         const warehouse = await this.findNearestWareHouse(req);
         const body = {
           origin: warehouse.cityId,

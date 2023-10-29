@@ -5,6 +5,8 @@ const warehouseValidator = require('./warehouse.validator');
 const warehouseUserValidator = require('./warehouseuser.validator');
 const addressValidator = require('./userAddressValidator');
 
+const orderValidator = require(`./order.validator`);
+
 module.exports = {
   carouselValidator,
   categoryValidator,
@@ -12,4 +14,5 @@ module.exports = {
   warehouseValidator,
   warehouseUserValidator,
   addressValidator,
+  orderValidator,
 };

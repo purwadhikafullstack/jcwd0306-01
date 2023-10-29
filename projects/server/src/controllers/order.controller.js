@@ -47,6 +47,15 @@ class OrderController {
       return sendResponse({ res, error });
     }
   };
+
+  static userCancelOrder = async (req, res) => {
+    try {
+      await OrderService.update(req);
+      return res.send('success');
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
 }
 
 module.exports = OrderController;
