@@ -7,6 +7,7 @@ const express = require('express');
 const bearerToken = require('express-bearer-token');
 const { Server } = require('socket.io');
 const http = require('http');
+
 const {
   cartRouter,
   categoryRouter,
@@ -20,9 +21,12 @@ const {
   warehouseRouter,
   warehouseUserRouter,
 } = require('./routes');
+const cronDeleteUnpaid = require('./utils/cron');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
+
+cronDeleteUnpaid();
 
 app.use(
   cors({

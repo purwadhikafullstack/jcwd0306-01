@@ -47,6 +47,7 @@ class Service {
       const result = await this.db.findOne({
         ...option,
         where: { ...option.where, id },
+        logging: false,
       });
       return result;
     } catch (error) {

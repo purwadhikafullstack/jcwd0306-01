@@ -8,7 +8,7 @@ router.get(
   verifyAuthUser({ isCustomer: true }),
   userController.getDetailsById
 );
-router.get('/:id', userController.getForgetPasswordToken);
+router.get('/:id', userController.getById);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/request-fp', userController.requestForgetPassword);
