@@ -12,9 +12,9 @@ const mailer = require('../lib/nodemailer');
 const { ResponseError } = require('../errors');
 
 require('dotenv').config({
-  path: path.resolve(__dirname, '..', `.env.${process.env.NODE_ENV}`),
+  path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
 });
-require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '..', '..', '.env') });
 
 class User extends Service {
   getByID = async (req) => {
