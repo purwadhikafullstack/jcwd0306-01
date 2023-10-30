@@ -1,7 +1,10 @@
 /* eslint-disable no-console */
+const path = require('path');
+require('dotenv').config({
+  path: path.resolve(__dirname, '..', `.env.${process.env.NODE_ENV}`),
+});
+require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') });
 
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}.local` });
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
 const cors = require('cors');
 const express = require('express');
 const bearerToken = require('express-bearer-token');
