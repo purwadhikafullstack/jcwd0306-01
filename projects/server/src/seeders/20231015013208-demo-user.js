@@ -16,7 +16,6 @@ module.exports = {
         image: null,
         isCustomer: false,
         isAdmin: true,
-        isWarehouseAdmin: false,
         isVerified: true,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -31,7 +30,6 @@ module.exports = {
         image: null,
         isCustomer: false,
         isAdmin: true,
-        isWarehouseAdmin: false,
         isVerified: true,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -46,7 +44,6 @@ module.exports = {
         image: null,
         isCustomer: false,
         isAdmin: false,
-        isWarehouseAdmin: true,
         isVerified: true,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -61,7 +58,6 @@ module.exports = {
         image: null,
         isCustomer: false,
         isAdmin: false,
-        isWarehouseAdmin: true,
         isVerified: true,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -76,7 +72,6 @@ module.exports = {
         image: null,
         isCustomer: true,
         isAdmin: false,
-        isWarehouseAdmin: false,
         isVerified: true,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -91,7 +86,6 @@ module.exports = {
         image: null,
         isCustomer: true,
         isAdmin: false,
-        isWarehouseAdmin: false,
         isVerified: false,
         createdAt: Sequelize.fn('now'),
         updatedAt: Sequelize.fn('now'),
@@ -100,6 +94,6 @@ module.exports = {
   },
 
   async down(queryInterface, Sequelize) {
-    await queryInterface.bulkDelete('Users', null, { id: [1, 2, 3, 4, 5, 6] });
+    await queryInterface.bulkDelete('Users', { id: [1, 2, 3, 4, 5, 6] });
   },
 };

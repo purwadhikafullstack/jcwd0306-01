@@ -2,7 +2,7 @@ module.exports = [
   {
     id: 1,
     name: 'WH-01',
-    country: 'INDONESIA',
+    country: 'Indonesia',
     provinceId: 33,
     cityId: 327,
     district: 'Seberang Ulu I',
@@ -16,7 +16,7 @@ module.exports = [
   {
     id: 2,
     name: 'WH-02',
-    country: 'INDONESIA',
+    country: 'Indonesia',
     provinceId: 6,
     cityId: 152,
     district: 'Tanah Abang',
@@ -30,7 +30,7 @@ module.exports = [
   {
     id: 3,
     name: 'WH-03',
-    country: 'INDONESIA',
+    country: 'Indonesia',
     provinceId: 15,
     cityId: 19,
     district: 'Balikpapan Timur',
@@ -44,7 +44,7 @@ module.exports = [
   {
     id: 4,
     name: 'WH-04',
-    country: 'INDONESIA',
+    country: 'Indonesia',
     provinceId: 28,
     cityId: 336,
     district: 'Bacukiki',
@@ -58,7 +58,7 @@ module.exports = [
   {
     id: 5,
     name: 'WH-05',
-    country: 'INDONESIA',
+    country: 'Indonesia',
     provinceId: 24,
     cityId: 157,
     district: 'Sentani Timur',

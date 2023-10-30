@@ -1,22 +1,41 @@
 const jwt = require('jsonwebtoken');
 const { ResponseError } = require('../../errors');
-const { User } = require('../../models');
+const { User, WarehouseUser } = require('../../models');
 const { sendResponse } = require('../../utils');
 
 async function verifyUserRole({
-  err,
   decoded,
   isAdmin,
   isWarehouseAdmin,
   isCustomer,
+  isVerified,
+  userId,
+  warehouseId,
 }) {
-  if (err) throw new ResponseError(err, 401);
-  const userData = await User.findByPk(decoded.id, {
-    attributes: ['isAdmin', 'isWarehouseAdmin', 'isCustomer'],
+  const user = await User.findByPk(decoded.id, {
+    attributes: ['id', 'isAdmin', 'isCustomer', 'isVerified'],
+    raw: true,
+    logging: false,
   });
-  if (isAdmin && userData?.isAdmin) return;
-  if (isWarehouseAdmin && userData?.isWarehouseAdmin) return;
-  if (isCustomer && userData?.isCustomer) return;
+
+  if (userId && user.id !== Number(userId))
+    throw new ResponseError('invalid credential', 400);
+
+  if (isVerified && !user.isVerified)
+    throw new ResponseError('user unverified', 400);
+
+  if (isCustomer && user.isCustomer) return;
+
+  if (isAdmin && user.isAdmin) return;
+
+  if (isWarehouseAdmin && warehouseId) {
+    const warehouseUser = WarehouseUser.findOne({
+      where: { warehouseId, warehouseAdminId: user.id },
+      raw: true,
+    });
+    if (warehouseUser) return;
+  }
+
   throw new ResponseError('user unauthorized', 401);
 }
 
@@ -24,15 +43,29 @@ function verifyAuthUser({
   isAdmin = false,
   isWarehouseAdmin = false,
   isCustomer = false,
+  isVerified = false,
 }) {
   return async (req, res, next) => {
     try {
-      await jwt.verify(req.token, process.env.JWT_SECRET_KEY, (err, decoded) =>
-        verifyUserRole({ err, decoded, isAdmin, isWarehouseAdmin, isCustomer })
-      );
+      console.log(req.token);
+      const { userId, warehouseId } = req.params;
+      const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
+      await verifyUserRole({
+        decoded,
+        isAdmin,
+        isWarehouseAdmin,
+        isCustomer,
+        isVerified,
+        userId,
+        warehouseId,
+      });
+      req.user = decoded;
+
       next();
     } catch (error) {
-      sendResponse({ res, error });
+      if (error instanceof jwt.JsonWebTokenError)
+        sendResponse({ res, statusCode: 400, error });
+      else sendResponse({ res, error });
     }
   };
 }

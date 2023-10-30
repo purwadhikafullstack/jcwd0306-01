@@ -10,7 +10,24 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // ======================================================
+      // User < WarehouseUser > Warehouse
+      // ======================================================
+      models.WarehouseUser.belongsTo(models.Warehouse, {
+        foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.WarehouseUser.belongsTo(models.User, {
+        foreignKey: {
+          name: 'warehouseAdminId',
+          primaryKey: true,
+          unique: false,
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
     }
   }
   WarehouseUser.init(
@@ -18,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'WarehouseUser',
+      paranoid: true,
     }
   );
   WarehouseUser.removeAttribute('id');

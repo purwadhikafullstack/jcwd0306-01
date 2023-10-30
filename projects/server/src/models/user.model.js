@@ -10,21 +10,54 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      // ======================================================
+      // Product < Cart > User
+      // ======================================================
+      models.User.belongsToMany(models.Product, {
+        through: models.Cart,
+        foreignKey: { name: 'userId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.User.hasMany(models.Cart, {
+        foreignKey: { name: 'userId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
+
+      // ======================================================
+      // User < WarehouseUser > Warehouse
+      // ======================================================
+      models.User.belongsToMany(models.Warehouse, {
+        through: models.WarehouseUser,
+        foreignKey: {
+          name: 'warehouseAdminId',
+          primaryKey: true,
+          unique: false,
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.User.hasMany(models.WarehouseUser, {
+        foreignKey: {
+          name: 'warehouseAdminId',
+          primaryKey: true,
+          unique: false,
+        },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
+
+      // ======================================================
       models.User.hasMany(models.UserAddress, {
         foreignKey: { name: 'userId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
-      models.User.belongsToMany(models.Warehouse, {
-        through: models.WarehouseUser,
-        foreignKey: { name: 'adminId', primaryKey: true, unique: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
-      models.StockHistory.hasMany(models.User, {
+      models.User.hasMany(models.StockHistory, {
         foreignKey: { name: 'adminId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -42,21 +75,16 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
 
-      models.User.belongsToMany(models.Product, {
-        through: models.Cart,
-        foreignKey: { name: 'userId', primaryKey: true, unique: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
       models.User.hasMany(models.Order, {
         foreignKey: { name: 'userId', allowNull: false },
+        as: 'UserOrder',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
       models.User.hasMany(models.Order, {
         foreignKey: { name: 'adminId', allowNull: true },
+        as: 'ApprovedOrder',
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
@@ -80,15 +108,15 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: false,
         allowNull: false,
       },
-      isWarehouseAdmin: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
-      },
       isVerified: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
+      },
+      forget_password_token: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
       },
     },
     {

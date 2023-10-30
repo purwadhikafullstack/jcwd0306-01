@@ -13,20 +13,20 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       models.UserAddress.belongsTo(models.User, {
         foreignKey: { name: 'userId', primaryKey: true, allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       });
 
       models.UserAddress.belongsTo(models.Province, {
         foreignKey: { name: 'provinceId', allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       });
 
       models.UserAddress.belongsTo(models.City, {
-        foreignKey: { name: 'provinceId', allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
+        foreignKey: { name: 'cityId', allowNull: false },
+        onDelete: 'NO ACTION',
+        onUpdate: 'NO ACTION',
       });
 
       models.UserAddress.hasMany(models.Order, {
@@ -53,6 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'UserAddress',
+      paranoid: true,
     }
   );
   return UserAddress;

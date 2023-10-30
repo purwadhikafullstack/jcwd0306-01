@@ -14,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
       // Product < OrderProduct > Order
       // ======================================================
       models.OrderProduct.belongsTo(models.Product, {
-        through: models.OrderProduct,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -38,6 +37,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: { min: 0 },
+      },
+      note: {
+        type: DataTypes.TEXT,
+        allowNull: true,
       },
     },
     {

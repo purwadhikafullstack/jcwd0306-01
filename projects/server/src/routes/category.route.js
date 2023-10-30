@@ -38,7 +38,7 @@ router.patch(
 // get categories
 router.get(
   '/',
-  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  categoryValidator.getCategories,
   categoryController.getCategories
 );
 
@@ -52,7 +52,6 @@ router.get(
 // get category by categoryId
 router.get(
   '/:id',
-  // verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   categoryValidator.getCategoryById,
   categoryController.getCategoryById
 );

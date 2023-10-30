@@ -33,6 +33,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'WarehouseProduct',
+      paranoid: true,
     }
   );
   WarehouseProduct.removeAttribute('id');

@@ -1,11 +1,30 @@
 const router = require('express').Router();
 const { CartController } = require('../controllers');
+const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
 const {
   quantityValidator,
 } = require('../middlewares/validators/cartQuantityValidator');
 
-router.get(`/:userId`, CartController.getCartByUserId);
-router.post(`/:userId`, quantityValidator, CartController.updateCart);
-router.delete(`/:userId`, CartController.deleteItemOnCart);
+router.get(
+  '/:userId',
+  verifyAuthUser({ isCustomer: true }),
+  CartController.getCartByUserId
+);
+router.post(
+  '/',
+  verifyAuthUser({ isCustomer: true }),
+  CartController.createCart
+);
+router.post(
+  '/:userId',
+  verifyAuthUser({ isCustomer: true }),
+  quantityValidator,
+  CartController.updateCart
+);
+router.delete(
+  '/:userId',
+  verifyAuthUser({ isCustomer: true }),
+  CartController.deleteItemOnCart
+);
 
 module.exports = router;

@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       // ======================================================
       // Product < WarehouseProduct > Warehouse
       // ======================================================
@@ -28,15 +27,24 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
 
       // ======================================================
-      models.Warehouse.hasOne(models.WarehouseAddress, {
-        foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
+      // User < WarehouseUser > Warehouse
+      // ======================================================
+      models.Warehouse.belongsToMany(models.User, {
+        through: models.WarehouseUser,
+        foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      models.Warehouse.hasMany(models.WarehouseUser, {
+        foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      // ======================================================
 
-      models.Warehouse.belongsToMany(models.User, {
-        through: models.WarehouseUser,
-        foreignKey: { name: 'adminId', primaryKey: true, unique: false },
+      // ======================================================
+      models.Warehouse.hasOne(models.WarehouseAddress, {
+        foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
@@ -68,11 +76,12 @@ module.exports = (sequelize, DataTypes) => {
   }
   Warehouse.init(
     {
-      name: { type: DataTypes.STRING, allowNull: true, unique: true },
+      name: { type: DataTypes.STRING, allowNull: false, unique: true },
     },
     {
       sequelize,
       modelName: 'Warehouse',
+      paranoid: true,
     }
   );
   return Warehouse;

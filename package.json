@@ -21,7 +21,6 @@
     "projects/*"
   ],
   "dependencies": {
-    "file-system": "^2.2.2",
-    "handlebars": "^4.7.8"
+    "file-system": "^2.2.2"
   }
 }

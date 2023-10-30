@@ -1,3 +1,5 @@
+const { ResponseError } = require('../errors');
+
 const db = require(`../models`);
 
 class Service {
@@ -10,7 +12,7 @@ class Service {
       const result = await this.db.findAll({ ...option });
       return result;
     } catch (error) {
-      throw new Error(error?.message);
+      throw new ResponseError(error?.message, 400);
     }
   }
 
@@ -24,53 +26,69 @@ class Service {
       });
       return result;
     } catch (err) {
-      throw new Error(err?.message);
+      console.log(err);
+      throw new ResponseError(err?.message, 400);
     }
   };
 
-  async getByID(req) {
-    const id = req.params;
-    await this.db
-      .findByPk(id)
-      .then((result) => result.dataValues)
-      .catch((err) => {
-        throw new Error(err?.message);
-      });
+  async getByID(req, option = {}) {
+    try {
+      const { id } = req.params;
+      const result = await this.db.findByPk(id, { ...option });
+      return result;
+    } catch (error) {
+      throw new ResponseError(error?.message, 400);
+    }
   }
 
-  async create(req) {
-    await this.db
-      .create({
-        ...req.body,
+  async getOneByID(req, option = {}) {
+    try {
+      const { id } = req.params;
+      const result = await this.db.findOne({
+        ...option,
+        where: { ...option.where, id },
         logging: false,
-      })
-      .then((result) => {
-        delete result.dataValues?.password;
-        return result.dataValues;
-      })
-      .catch((err) => {
-        throw new Error(err?.message);
       });
+      return result;
+    } catch (error) {
+      throw new ResponseError(error?.message, 400);
+    }
   }
 
-  async update(req) {
-    const { id } = req.params;
-    await this.db
-      .update({ ...req.body }, { where: { id }, logging: false })
-      .then((result) => result.dataValues)
-      .catch((err) => {
-        throw new Error(err?.message);
-      });
+  async create(req, option = {}) {
+    try {
+      const result = await this.db.create(
+        { ...req.body },
+        { logging: false, ...option }
+      );
+      delete result.dataValues?.password;
+      return result.dataValues;
+    } catch (error) {
+      throw new ResponseError(error?.message, 406);
+    }
+  }
+
+  async update(req, option = {}) {
+    try {
+      const { id } = req.params;
+      const result = await this.db.update(
+        { ...req.body },
+        { where: { id }, logging: false, ...option }
+      );
+      return result;
+    } catch (error) {
+      throw new ResponseError(error?.message, 406);
+    }
   }
 
   async delete(req) {
-    const id = req.params;
-    await this.db
-      .destroy({ where: id })
-      .then((result) => result)
-      .catch((err) => {
-        throw new Error(err?.message);
-      });
+    try {
+      const { id } = req.params;
+      const result = await this.db.destroy({ where: { id } });
+      return result;
+    } catch (error) {
+      throw new ResponseError(error?.message, 406);
+    }
   }
 }
 
