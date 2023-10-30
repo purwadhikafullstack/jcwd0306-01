@@ -21,7 +21,26 @@ async function updateCategory(req, transaction) {
 
 async function getCategory(req, transaction) {
   const category = await Category.findByPk(req.params.id, {
-    attributes: { exclude: ['image'] },
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            `CAST(
+              (
+                SELECT 
+                  COUNT(*) 
+                FROM 
+                  ProductCategories AS pc 
+                WHERE 
+                  pc.categoryId = Category.id 
+              ) AS SIGNED
+            )`
+          ),
+          'totalProducts',
+        ],
+      ],
+      exclude: ['image'],
+    },
     raw: true,
     transaction,
   });

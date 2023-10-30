@@ -25,20 +25,6 @@ const warehouseValidator = {
     }
   },
 
-  deleteWarehouseByWarehouseId: (req, res, next) => {
-    try {
-      validateJoiSchema(
-        req.params,
-        Joi.object({
-          warehouseId: Joi.number().integer().min(1).required(),
-        }).required()
-      );
-      next();
-    } catch (error) {
-      sendResponse({ res, error });
-    }
-  },
-
   editWarehouseByWarehouseId: (req, res, next) => {
     try {
       validateJoiSchema(
@@ -64,6 +50,26 @@ const warehouseValidator = {
       if (Object.keys(req.body).length === 0)
         // check at least one column of table to be updated
         throw new ResponseError('no data provided', 400);
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  updateWarehouseActivationByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.query,
+        Joi.object({
+          action: Joi.string().valid('activate', 'deactivate').required(),
+        }).required()
+      );
       next();
     } catch (error) {
       sendResponse({ res, error });

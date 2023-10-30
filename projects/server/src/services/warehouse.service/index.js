@@ -1,13 +1,13 @@
 const createWarehouse = require('./createWarehouse');
-const deleteWarehouseByWarehouseId = require('./deleteWarehouseByWarehouseId');
 const editWarehouseByWarehouseId = require('./editWarehouseByWarehouseId');
 const getWarehouses = require('./getWarehouses');
+const updateWarehouseActivationByWarehouseId = require('./updateWarehouseActivationByWarehouseId');
 
 const warehouseService = {
   createWarehouse,
-  deleteWarehouseByWarehouseId,
   editWarehouseByWarehouseId,
   getWarehouses,
+  updateWarehouseActivationByWarehouseId,
 };
 
 module.exports = warehouseService;

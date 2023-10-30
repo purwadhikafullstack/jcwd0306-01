@@ -12,8 +12,10 @@ const Service = require('./baseServices');
 const mailer = require('../lib/nodemailer');
 const { ResponseError } = require('../errors');
 
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}.local` });
-require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
+require('dotenv').config({
+  path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
+});
+require('dotenv').config({ path: path.resolve(__dirname, '..', '..', '.env') });
 
 class User extends Service {
   getByID = async (req) => {

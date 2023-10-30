@@ -12,6 +12,7 @@ async function addWarehouse(values, transaction) {
     where: { name: values.name },
     defaults: values,
     fields: ['name'],
+    paranoid: false,
     transaction,
   });
   if (!isCreated) throw new ResponseError('warehouse name already exist', 400);

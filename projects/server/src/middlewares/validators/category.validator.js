@@ -6,14 +6,12 @@ const categoryValidator = {
   createCategory: (req, res, next) => {
     try {
       validateJoiSchema(req.file, Joi.required().label('image'));
-
       validateJoiSchema(
         req.body,
         Joi.object({
           name: Joi.string().required(),
         }).required()
       );
-
       next();
     } catch (error) {
       sendResponse({ res, error });
@@ -28,7 +26,6 @@ const categoryValidator = {
           id: Joi.number().integer().min(1).required(),
         }).required()
       );
-
       next();
     } catch (error) {
       sendResponse({ res, error });
@@ -43,33 +40,32 @@ const categoryValidator = {
           id: Joi.number().integer().min(1).required(),
         }).required()
       );
-
       validateJoiSchema(req.file, Joi.optional().label('image'));
-
       validateJoiSchema(
         req.body,
         Joi.object({ name: Joi.string() }).required()
       );
-
-      // check at least one column of table to be updated
       if (!req.file && Object.keys(req.body).length === 0)
+        // check at least one column of table to be updated
         throw new ResponseError('no data provided', 400);
-
       next();
     } catch (error) {
       sendResponse({ res, error });
     }
   },
 
-  getCategoryImageById: (req, res, next) => {
+  getCategories: (req, res, next) => {
     try {
       validateJoiSchema(
-        req.params,
+        req.query,
         Joi.object({
-          id: Joi.number().integer().min(1).required(),
-        }).required()
+          name: Joi.string().allow(''),
+          sortBy: Joi.string()
+            .valid('id', 'name', 'totalProducts', 'createdAt', 'updatedAt')
+            .allow(''),
+          orderBy: Joi.string().valid('ASC', 'asc', 'DESC', 'desc').allow(''),
+        })
       );
-
       next();
     } catch (error) {
       sendResponse({ res, error });
@@ -84,7 +80,20 @@ const categoryValidator = {
           id: Joi.number().integer().min(1).required(),
         }).required()
       );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 
+  getCategoryImageById: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
       next();
     } catch (error) {
       sendResponse({ res, error });
