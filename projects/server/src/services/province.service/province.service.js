@@ -3,7 +3,6 @@ const Service = require('../baseServices');
 
 class Province extends Service {
   static optionGetAll = (name) => ({
-    limit: 7,
     where: { ...(name && { name: { [Op.like]: `%${name}%` } }) },
     logging: false,
   });
