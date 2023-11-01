@@ -21,7 +21,7 @@ class Service {
     try {
       const result = await this.db.findAndCountAll({
         where: { userId },
-        // logging: false,
+        logging: false,
         distinct: true,
         ...option,
       });
