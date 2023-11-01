@@ -23,7 +23,10 @@ async function updateProduct(req, transaction) {
 
 async function updateProductCategories(req, transaction) {
   const product = await Product.findByPk(req.params.productId, { transaction });
-  await product.setCategories(req.body.categoryIds, { transaction });
+  await product.setCategories(req.body.categoryIds, {
+    force: true,
+    transaction,
+  });
 }
 
 async function editProductByProductId(req) {
@@ -31,8 +34,8 @@ async function editProductByProductId(req) {
     if (req.body.name) await checkProductNameUniqueness(req, t);
     await updateProduct(req, t);
     if (req.body.categoryIds) await updateProductCategories(req, t);
-    const data = await getProductByProductId(req, t);
-    return data;
+    const result = await getProductByProductId(req.params.productId, t);
+    return result;
   });
   return product;
 }

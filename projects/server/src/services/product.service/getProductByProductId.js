@@ -17,8 +17,9 @@ function convertProductImageIdsToArray(product) {
   );
 }
 
-async function getProductByProductId(req, transaction) {
-  const product = await Product.findByPk(req.params.productId, {
+async function getProductByProductId(productId, transaction) {
+  const product = await Product.findByPk(productId, {
+    paranoid: false,
     transaction,
     attributes: {
       include: [

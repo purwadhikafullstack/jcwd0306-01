@@ -33,4 +33,11 @@ router.get(
   productController.getProductImageByImageId
 );
 
+// update product activation by productId
+router.put(
+  '/:productId',
+  productValidator.updateProductActivationByProductId,
+  productController.updateProductActivationByProductId
+);
+
 module.exports = router;

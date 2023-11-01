@@ -1,5 +1,6 @@
 const { ResponseError } = require('../../errors');
 const { sequelize, Product } = require('../../models');
+const getProductByProductId = require('./getProductByProductId');
 
 async function addProduct(values, transaction) {
   const { name, description, price, weight, discount } = values;
@@ -21,7 +22,8 @@ async function createProduct(req) {
   const product = await sequelize.transaction(async (t) => {
     const data = await addProduct(req.body, t);
     if (req.body.categoryIds) await addProductCategories(data, req.body, t);
-    return data;
+    const result = await getProductByProductId(data.getDataValue('id'), t);
+    return result;
   });
   return product;
 }

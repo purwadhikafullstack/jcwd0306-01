@@ -43,7 +43,9 @@ const productController = {
 
   getProductByProductId: async (req, res) => {
     try {
-      const product = await productService.getProductByProductId(req);
+      const product = await productService.getProductByProductId(
+        req.params.productId
+      );
       sendResponse({ res, statusCode: 200, data: product });
     } catch (error) {
       sendResponse({ res, error });
@@ -54,6 +56,16 @@ const productController = {
     try {
       const image = await productService.getProductImageByImageId(req);
       res.set('Content-type', 'image/png').send(image);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  updateProductActivationByProductId: async (req, res) => {
+    try {
+      const product =
+        await productService.updateProductActivationByProductId(req);
+      sendResponse({ res, statusCode: 200, data: product });
     } catch (error) {
       sendResponse({ res, error });
     }

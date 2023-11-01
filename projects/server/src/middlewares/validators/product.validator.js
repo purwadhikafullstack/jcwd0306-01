@@ -108,6 +108,26 @@ const productValidator = {
       sendResponse({ res, error });
     }
   },
+
+  updateProductActivationByProductId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          productId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.query,
+        Joi.object({
+          action: Joi.string().valid('activate', 'deactivate').required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = productValidator;
