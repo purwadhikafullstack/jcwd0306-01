@@ -1,10 +1,14 @@
 const router = require('express').Router();
 const { productController } = require('../controllers');
+const multerBlobUploader = require('../middlewares/multers/multerBlobUploader');
+const multerErrorHandler = require('../middlewares/multers/multerErrorHandler');
 const { productValidator } = require('../middlewares/validators');
 
 // create product
 router.post(
   '/',
+  multerBlobUploader().array('images'),
+  multerErrorHandler,
   productValidator.createProduct,
   productController.createProduct
 );

@@ -18,10 +18,19 @@ async function addProductCategories(product, values, transaction) {
   await product.setCategories(categoryIds, { transaction });
 }
 
+async function addProductImages(product, values, transaction) {
+  await Promise.all(
+    values.images.map((image) =>
+      product.createProductImage({ image }, { transaction })
+    )
+  );
+}
+
 async function createProduct(req) {
   const product = await sequelize.transaction(async (t) => {
     const data = await addProduct(req.body, t);
     if (req.body.categoryIds) await addProductCategories(data, req.body, t);
+    await addProductImages(data, req.body, t);
     const result = await getProductByProductId(data.getDataValue('id'), t);
     return result;
   });

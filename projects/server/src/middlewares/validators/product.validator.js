@@ -1,10 +1,19 @@
 const Joi = require('joi');
+const sharp = require('sharp');
 const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 
 const productValidator = {
-  createProduct: (req, res, next) => {
+  createProduct: async (req, res, next) => {
     try {
+      // convert categoryIds : string -> array
+      req.body.categoryIds = JSON.parse(req.body.categoryIds);
+
+      // assign image files to req.body
+      req.body.images = await Promise.all(
+        req.files.map((file) => sharp(file.buffer).png().toBuffer())
+      );
+
       validateJoiSchema(
         req.body,
         Joi.object({
@@ -14,6 +23,7 @@ const productValidator = {
           weight: Joi.number().min(0).required(),
           discount: Joi.number().min(0).max(1),
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
+          images: Joi.array().items(Joi.binary()).required(),
         }).required()
       );
       next();
