@@ -12,6 +12,15 @@ const productController = {
     }
   },
 
+  editProductByProductId: async (req, res) => {
+    try {
+      const product = await productService.editProductByProductId(req);
+      sendResponse({ res, statusCode: 200, data: product });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getProducts: async (req, res) => {
     try {
       const { name, sortBy, orderBy, isPaginated } = req.query;
@@ -32,9 +41,9 @@ const productController = {
     }
   },
 
-  getProductById: async (req, res) => {
+  getProductByProductId: async (req, res) => {
     try {
-      const product = await productService.getProductById(req);
+      const product = await productService.getProductByProductId(req);
       sendResponse({ res, statusCode: 200, data: product });
     } catch (error) {
       sendResponse({ res, error });

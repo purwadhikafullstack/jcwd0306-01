@@ -9,14 +9,21 @@ router.post(
   productController.createProduct
 );
 
+// edit product by productId
+router.patch(
+  '/:productId',
+  productValidator.editProductByProductId,
+  productController.editProductByProductId
+);
+
 // get products
 router.get('/', productValidator.getProducts, productController.getProducts);
 
 // get product by productId
 router.get(
-  '/:id',
-  productValidator.getProductById,
-  productController.getProductById
+  '/:productId',
+  productValidator.getProductByProductId,
+  productController.getProductByProductId
 );
 
 // get product image by productImageId

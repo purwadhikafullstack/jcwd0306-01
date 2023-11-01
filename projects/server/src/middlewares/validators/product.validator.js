@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { sendResponse, validateJoiSchema } = require('../../utils');
+const { ResponseError } = require('../../errors');
 
 const productValidator = {
   createProduct: (req, res, next) => {
@@ -15,6 +16,34 @@ const productValidator = {
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
         }).required()
       );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  editProductByProductId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          productId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          name: Joi.string(),
+          description: Joi.string(),
+          price: Joi.number().integer().min(0),
+          weight: Joi.number().min(0),
+          discount: Joi.number().min(0).max(1),
+          categoryIds: Joi.array().items(Joi.number().integer().min(1)),
+        }).required()
+      );
+      if (Object.keys(req.body).length === 0)
+        // check at least one column of table to be updated
+        throw new ResponseError('no data provided', 400);
       next();
     } catch (error) {
       sendResponse({ res, error });
@@ -52,11 +81,13 @@ const productValidator = {
     }
   },
 
-  getProductById: (req, res, next) => {
+  getProductByProductId: (req, res, next) => {
     try {
       validateJoiSchema(
         req.params,
-        Joi.object({ id: Joi.number().integer().min(1).required() }).required()
+        Joi.object({
+          productId: Joi.number().integer().min(1).required(),
+        }).required()
       );
       next();
     } catch (error) {

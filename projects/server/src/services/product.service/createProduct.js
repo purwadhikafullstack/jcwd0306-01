@@ -20,9 +20,8 @@ async function addProductCategories(product, values, transaction) {
 async function createProduct(req) {
   const product = await sequelize.transaction(async (t) => {
     const data = await addProduct(req.body, t);
-    if (req.body.categoryIds?.length !== 0)
-      await addProductCategories(data, req.body, t);
-    return data.toJSON();
+    if (req.body.categoryIds) await addProductCategories(data, req.body, t);
+    return data;
   });
   return product;
 }

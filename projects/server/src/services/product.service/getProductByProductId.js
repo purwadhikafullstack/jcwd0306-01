@@ -17,8 +17,9 @@ function convertProductImageIdsToArray(product) {
   );
 }
 
-async function getProductById(req) {
-  const product = await Product.findByPk(req.params.id, {
+async function getProductByProductId(req, transaction) {
+  const product = await Product.findByPk(req.params.productId, {
+    transaction,
     attributes: {
       include: [
         [
@@ -62,7 +63,7 @@ async function getProductById(req) {
   });
   if (!product) throw new ResponseError('product not found', 404);
   convertProductImageIdsToArray(product);
-  return product.toJSON();
+  return product;
 }
 
-module.exports = getProductById;
+module.exports = getProductByProductId;

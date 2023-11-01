@@ -1,12 +1,14 @@
 const createProduct = require('./createProduct');
-const getProductById = require('./getProductById');
+const editProductByProductId = require('./editProductByProductId');
+const getProductByProductId = require('./getProductByProductId');
 const getProductImageByImageId = require('./getProductImageByImageId');
 const getProducts = require('./getProducts');
 
 const productService = {
   createProduct,
+  editProductByProductId,
   getProducts,
-  getProductById,
+  getProductByProductId,
   getProductImageByImageId,
 };
 
