@@ -2,6 +2,13 @@ const router = require('express').Router();
 const { productController } = require('../controllers');
 const { productValidator } = require('../middlewares/validators');
 
+// create product
+router.post(
+  '/',
+  productValidator.createProduct,
+  productController.createProduct
+);
+
 // get products
 router.get('/', productValidator.getProducts, productController.getProducts);
 

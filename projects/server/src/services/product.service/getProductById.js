@@ -26,7 +26,7 @@ async function getProductById(req) {
             `CAST(
               (
                 SELECT 
-                  SUM(wp.stock) 
+                  IFNULL(SUM(wp.stock), 0) 
                 FROM 
                   WarehouseProducts AS wp 
                 WHERE 

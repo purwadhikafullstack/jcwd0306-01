@@ -3,6 +3,15 @@ const { productService } = require('../services');
 const { sendResponse } = require('../utils');
 
 const productController = {
+  createProduct: async (req, res) => {
+    try {
+      const product = await productService.createProduct(req);
+      sendResponse({ res, statusCode: 201, data: product });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getProducts: async (req, res) => {
     try {
       const { name, sortBy, orderBy, isPaginated } = req.query;
