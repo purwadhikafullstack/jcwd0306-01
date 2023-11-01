@@ -7,6 +7,7 @@ const express = require('express');
 const bearerToken = require('express-bearer-token');
 const { Server } = require('socket.io');
 const http = require('http');
+const { createClient } = require('redis');
 
 const {
   cartRouter,
@@ -59,6 +60,10 @@ app.use('/city', cityRouter);
 const server = http.createServer(app);
 const io = new Server(server);
 global.io = io;
+const client = createClient({
+  url: 'redis://localhost:6379',
+  legacyMode: true,
+});
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');
@@ -92,7 +97,7 @@ app.use((err, req, res, next) => {
 });
 
 // #endregion
-
+client.on('error', () => console.log('Redis Client Error'));
 server.listen(PORT, async (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);

@@ -19,14 +19,18 @@ class Service {
   getByUserId = async (req, option = {}) => {
     const { userId } = req.params;
     try {
-      const result = await this.db.findAll({
+      const result = await this.db.findAndCountAll({
         where: { userId },
-        logging: false,
+        // logging: false,
+        distinct: true,
         ...option,
       });
+      if (option?.limit)
+        result.number_of_pages = Math.ceil(
+          result.count / Number(option?.limit)
+        );
       return result;
     } catch (err) {
-      console.log(err);
       throw new ResponseError(err?.message, 400);
     }
   };

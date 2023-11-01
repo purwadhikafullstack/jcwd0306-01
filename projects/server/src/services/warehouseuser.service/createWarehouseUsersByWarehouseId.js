@@ -5,12 +5,14 @@ async function createWarehouseUsersByWarehouseId(req) {
   const warehouse = await sequelize.transaction(async (t) => {
     const data = await Warehouse.findByPk(req.params.warehouseId, {
       transaction: t,
+      logging: false,
     });
     if (!data) throw new ResponseError('warehouse not found', 404);
     await data.addUsers(req.body.userIds, { transaction: t });
     const result = await Warehouse.findByPk(req.params.warehouseId, {
       include: [{ model: WarehouseUser }],
       transaction: t,
+      logging: false,
     });
     return result.toJSON();
   });

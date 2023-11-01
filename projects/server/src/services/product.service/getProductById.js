@@ -41,6 +41,7 @@ async function getProductById(req) {
         ],
       ],
     },
+    logging: false,
     include: [
       { model: WarehouseProduct, attributes: ['warehouseId', 'stock'] },
       {
