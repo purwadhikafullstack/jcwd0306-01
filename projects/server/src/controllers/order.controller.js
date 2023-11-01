@@ -13,7 +13,7 @@ class OrderController {
 
   static getOrderByUserId = async (req, res) => {
     try {
-      const result = await OrderService.getByUserId(req);
+      const result = await OrderService.getOrderByUserId(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });

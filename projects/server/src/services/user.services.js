@@ -25,6 +25,7 @@ class User extends Service {
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password'] },
       raw: true,
+      logging: false,
     });
 
     if (decoded.id !== user.id)
@@ -45,6 +46,7 @@ class User extends Service {
         },
         attributes: { exclude: ['password'] },
         raw: true,
+        logging: false,
       });
       return data;
     } catch (err) {

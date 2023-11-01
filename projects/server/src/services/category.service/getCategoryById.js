@@ -24,6 +24,7 @@ async function getCategoryById(req) {
       exclude: ['image'],
     },
     raw: true,
+    logging: false,
   });
   if (!category) throw new ResponseError('category not found', 404);
   return category;

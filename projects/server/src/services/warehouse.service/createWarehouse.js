@@ -51,6 +51,7 @@ async function addWarehouse(values, transaction) {
   const [warehouse, isCreated] = await Warehouse.findOrCreate({
     where: { name: values.name },
     defaults: values,
+    logging: false,
     fields: ['name'],
     paranoid: false,
     transaction,
@@ -72,6 +73,7 @@ async function addWarehouseAddress(warehouse, values, transaction) {
       'latitude',
     ],
     transaction,
+    logging: false,
   });
 }
 
@@ -88,6 +90,7 @@ async function createWarehouse(req) {
         },
       ],
       transaction: t,
+      logging: false,
     });
     return result.toJSON();
   });

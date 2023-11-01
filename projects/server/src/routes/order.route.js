@@ -17,7 +17,7 @@ route.get(
 );
 
 route.patch(
-  `/cancel/:userId/:id`,
+  `/:userId/:id`,
   verifyAuthUser({ isCustomer: true }),
   orderValidator.checkStatus,
   OrderController.userCancelOrder

@@ -48,7 +48,10 @@ async function getProductsForCategory(req) {
 }
 
 async function getProductsForNoCategory(req) {
-  const totalData = await Product.count({ where: req.locals.where });
+  const totalData = await Product.count({
+    where: req.locals.where,
+    logging: false,
+  });
   const products = await Product.findAll({
     ...req.locals,
     attributes: {
@@ -83,6 +86,7 @@ async function getProductsForNoCategory(req) {
         ],
       ],
     },
+    logging: false,
     include: [
       { model: WarehouseProduct, attributes: ['warehouseId', 'stock'] },
       {
