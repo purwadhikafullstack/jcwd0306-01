@@ -34,9 +34,11 @@ const productValidator = {
 
   editProductByProductId: async (req, res, next) => {
     try {
-      // convert categoryIds : string -> array
+      // convert categoryIds & imageIdsToDelete : string -> array
       if (req.body.categoryIds)
         req.body.categoryIds = JSON.parse(req.body.categoryIds);
+      if (req.body.imageIdsToDelete)
+        req.body.imageIdsToDelete = JSON.parse(req.body.imageIdsToDelete);
 
       // assign image files to req.body
       req.body.images = await Promise.all(
@@ -58,6 +60,7 @@ const productValidator = {
           discount: Joi.number().min(0).max(1),
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
           images: Joi.array().items(Joi.binary()),
+          imageIdsToDelete: Joi.array().items(Joi.number().integer().min(1)),
         }).required()
       );
       if (Object.keys(req.body).length === 0)

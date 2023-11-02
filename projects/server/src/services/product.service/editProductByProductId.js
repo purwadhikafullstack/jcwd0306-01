@@ -1,5 +1,5 @@
 const { ResponseError } = require('../../errors');
-const { sequelize, Product } = require('../../models');
+const { sequelize, Product, ProductImage } = require('../../models');
 const getProductByProductId = require('./getProductByProductId');
 
 async function checkProductNameUniqueness(req, transaction) {
@@ -12,13 +12,11 @@ async function checkProductNameUniqueness(req, transaction) {
 }
 
 async function updateProduct(req, transaction) {
-  const [numUpdatedProduct] = await Product.update(req.body, {
+  await Product.update(req.body, {
     where: { id: req.params.productId },
     fields: ['name', 'description', 'price', 'weight', 'discount'],
     transaction,
   });
-  if (numUpdatedProduct === 0)
-    throw new ResponseError('product not found', 404);
 }
 
 async function updateProductCategories(req, transaction) {
@@ -38,12 +36,29 @@ async function updateProductImages(req, transaction) {
   );
 }
 
+async function deleteProductImages(req, transaction) {
+  await ProductImage.destroy({
+    where: { id: req.body.imageIdsToDelete },
+    transaction,
+  });
+  const productImages = await ProductImage.findAll({
+    attributes: ['id'],
+    where: { productId: req.params.productId },
+    transaction,
+  });
+  if (productImages.length < 1)
+    throw new ResponseError('Product must have at least one image', 400);
+}
+
 async function editProductByProductId(req) {
   const product = await sequelize.transaction(async (t) => {
     if (req.body.name) await checkProductNameUniqueness(req, t);
     await updateProduct(req, t);
     if (req.body.categoryIds) await updateProductCategories(req, t);
-    await updateProductImages(req, t);
+    if (req.body.images && req.body.images.length !== 0)
+      await updateProductImages(req, t);
+    if (req.body.imageIdsToDelete && req.body.imageIdsToDelete.length !== 0)
+      await deleteProductImages(req, t);
     const result = await getProductByProductId(req.params.productId, t);
     return result;
   });
