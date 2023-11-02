@@ -182,8 +182,6 @@ class UserController {
       const { email } = req.query;
       const user = await userServices.findUser(email);
       if (!user) throw new Error('Email Not Found!');
-      if (user.forget_password_token !== null)
-        throw new Error('email has been sent');
       const payload = { ...user };
       const generateToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
         expiresIn: '10m',

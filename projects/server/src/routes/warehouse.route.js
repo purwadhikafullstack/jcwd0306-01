@@ -9,13 +9,6 @@ router.post(
   warehouseController.createWarehouse
 );
 
-// delete warehouse by warehouseId
-router.delete(
-  '/:warehouseId',
-  warehouseValidator.deleteWarehouseByWarehouseId,
-  warehouseController.deleteWarehouseByWarehouseId
-);
-
 // edit warehouse by warehouseId;
 router.patch(
   '/:warehouseId',
@@ -25,5 +18,12 @@ router.patch(
 
 // get warehouses
 router.get('/', warehouseController.getWarehouses);
+
+// update warehouse activation by warehouseId
+router.put(
+  '/:warehouseId',
+  warehouseValidator.updateWarehouseActivationByWarehouseId,
+  warehouseController.updateWarehouseActivationByWarehouseId
+);
 
 module.exports = router;

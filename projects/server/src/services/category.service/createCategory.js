@@ -13,7 +13,9 @@ async function createCategory(req) {
       });
       if (!isCreated)
         throw new ResponseError('category name already exist', 400);
-      return { ...data.toJSON(), image: undefined };
+      data.setDataValue('image', undefined);
+      data.setDataValue('totalProducts', 0);
+      return data.toJSON();
     }
   );
   return category;

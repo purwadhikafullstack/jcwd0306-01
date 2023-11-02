@@ -1,9 +1,28 @@
 const { ResponseError } = require('../../errors');
-const { Category } = require('../../models');
+const { sequelize, Category } = require('../../models');
 
 async function getCategoryById(req) {
   const category = await Category.findByPk(req.params.id, {
-    attributes: { exclude: ['image'] },
+    attributes: {
+      include: [
+        [
+          sequelize.literal(
+            `CAST(
+              (
+                SELECT 
+                  COUNT(*) 
+                FROM 
+                  ProductCategories AS pc 
+                WHERE 
+                  pc.categoryId = Category.id 
+              ) AS SIGNED
+            )`
+          ),
+          'totalProducts',
+        ],
+      ],
+      exclude: ['image'],
+    },
     raw: true,
     logging: false,
   });

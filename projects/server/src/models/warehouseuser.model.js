@@ -35,6 +35,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'WarehouseUser',
+      paranoid: true,
     }
   );
   WarehouseUser.removeAttribute('id');

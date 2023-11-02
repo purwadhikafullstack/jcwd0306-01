@@ -11,15 +11,6 @@ const warehouseController = {
     }
   },
 
-  deleteWarehouseByWarehouseId: async (req, res) => {
-    try {
-      await warehouseService.deleteWarehouseByWarehouseId(req);
-      res.sendStatus(204);
-    } catch (error) {
-      sendResponse({ res, error });
-    }
-  },
-
   editWarehouseByWarehouseId: async (req, res) => {
     try {
       const warehouse = await warehouseService.editWarehouseByWarehouseId(req);
@@ -33,6 +24,16 @@ const warehouseController = {
     try {
       const warehouses = await warehouseService.getWarehouses();
       sendResponse({ res, statusCode: 200, data: warehouses });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  updateWarehouseActivationByWarehouseId: async (req, res) => {
+    try {
+      const warehouse =
+        await warehouseService.updateWarehouseActivationByWarehouseId(req);
+      sendResponse({ res, statusCode: 200, data: warehouse });
     } catch (error) {
       sendResponse({ res, error });
     }

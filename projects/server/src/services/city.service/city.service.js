@@ -3,7 +3,6 @@ const Service = require('../baseServices');
 
 class City extends Service {
   static optionGetAll = (name, provinceId) => ({
-    limit: 20,
     where: {
       ...(name && { name: { [Op.like]: `%${name}%` } }),
       ...(provinceId && { provinceId }),

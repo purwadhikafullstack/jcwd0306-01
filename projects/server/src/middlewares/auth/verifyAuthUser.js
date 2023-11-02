@@ -8,17 +8,21 @@ async function verifyUserRole({
   isAdmin,
   isWarehouseAdmin,
   isCustomer,
+  isVerified,
   userId,
   warehouseId,
 }) {
   const user = await User.findByPk(decoded.id, {
-    attributes: ['id', 'isAdmin', 'isCustomer'],
+    attributes: ['id', 'isAdmin', 'isCustomer', 'isVerified'],
     raw: true,
     logging: false,
   });
 
   if (userId && user.id !== Number(userId))
     throw new ResponseError('invalid credential', 400);
+
+  if (isVerified && !user.isVerified)
+    throw new ResponseError('user unverified', 400);
 
   if (isCustomer && user.isCustomer) return;
 
@@ -39,9 +43,11 @@ function verifyAuthUser({
   isAdmin = false,
   isWarehouseAdmin = false,
   isCustomer = false,
+  isVerified = false,
 }) {
   return async (req, res, next) => {
     try {
+      console.log(req.token);
       const { userId, warehouseId } = req.params;
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
       await verifyUserRole({
@@ -49,6 +55,7 @@ function verifyAuthUser({
         isAdmin,
         isWarehouseAdmin,
         isCustomer,
+        isVerified,
         userId,
         warehouseId,
       });

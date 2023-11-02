@@ -58,7 +58,17 @@ async function getProductsForNoCategory(req) {
       include: [
         [
           sequelize.literal(
-            'CAST((SELECT SUM(wp.stock) FROM WarehouseProducts AS wp WHERE wp.productId = Product.id) AS SIGNED)'
+            `CAST(
+              (
+                SELECT 
+                  SUM(wp.stock) 
+                FROM 
+                  WarehouseProducts AS wp 
+                WHERE 
+                  wp.productId = Product.id 
+                  AND wp.deletedAt IS NULL
+              ) AS SIGNED
+            )`
           ),
           'stock',
         ],
