@@ -7,13 +7,13 @@ const productValidator = {
   createProduct: async (req, res, next) => {
     try {
       // convert categoryIds : string -> array
-      req.body.categoryIds = JSON.parse(req.body.categoryIds);
+      if (req.body.categoryIds)
+        req.body.categoryIds = JSON.parse(req.body.categoryIds);
 
       // assign image files to req.body
       req.body.images = await Promise.all(
         req.files.map((file) => sharp(file.buffer).png().toBuffer())
       );
-
       validateJoiSchema(
         req.body,
         Joi.object({
@@ -32,8 +32,16 @@ const productValidator = {
     }
   },
 
-  editProductByProductId: (req, res, next) => {
+  editProductByProductId: async (req, res, next) => {
     try {
+      // convert categoryIds : string -> array
+      if (req.body.categoryIds)
+        req.body.categoryIds = JSON.parse(req.body.categoryIds);
+
+      // assign image files to req.body
+      req.body.images = await Promise.all(
+        req.files.map((file) => sharp(file.buffer).png().toBuffer())
+      );
       validateJoiSchema(
         req.params,
         Joi.object({
@@ -49,6 +57,7 @@ const productValidator = {
           weight: Joi.number().min(0),
           discount: Joi.number().min(0).max(1),
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
+          images: Joi.array().items(Joi.binary()),
         }).required()
       );
       if (Object.keys(req.body).length === 0)

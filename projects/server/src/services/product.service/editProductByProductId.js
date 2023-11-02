@@ -29,11 +29,21 @@ async function updateProductCategories(req, transaction) {
   });
 }
 
+async function updateProductImages(req, transaction) {
+  const product = await Product.findByPk(req.params.productId, { transaction });
+  await Promise.all(
+    req.body.images.map((image) =>
+      product.createProductImage({ image }, { transaction })
+    )
+  );
+}
+
 async function editProductByProductId(req) {
   const product = await sequelize.transaction(async (t) => {
     if (req.body.name) await checkProductNameUniqueness(req, t);
     await updateProduct(req, t);
     if (req.body.categoryIds) await updateProductCategories(req, t);
+    await updateProductImages(req, t);
     const result = await getProductByProductId(req.params.productId, t);
     return result;
   });

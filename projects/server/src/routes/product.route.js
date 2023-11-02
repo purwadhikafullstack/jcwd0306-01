@@ -16,6 +16,8 @@ router.post(
 // edit product by productId
 router.patch(
   '/:productId',
+  multerBlobUploader().array('images'),
+  multerErrorHandler,
   productValidator.editProductByProductId,
   productController.editProductByProductId
 );
