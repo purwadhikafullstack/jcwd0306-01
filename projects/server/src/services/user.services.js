@@ -11,6 +11,10 @@ const db = require('../models');
 const Service = require('./baseServices');
 const mailer = require('../lib/nodemailer');
 const { ResponseError } = require('../errors');
+const {
+  attributesCountStatus,
+  includeOrderCart,
+} = require('./user.service/optionGetDetailsByID');
 
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}.local` });
 require('dotenv').config({ path: `.env.${process.env.NODE_ENV}` });
@@ -182,26 +186,15 @@ class User extends Service {
     }
   };
 
-  getDetailsById = async (req) =>
-    this.getOneByID(req, {
+  getDetailsById = async (req) => {
+    const result = await this.getOneByID(req, {
       logging: false,
-      include: [
-        {
-          model: db.Order,
-          as: 'UserOrder',
-          where: { status: 'unpaid' },
-          required: false,
-        },
-        {
-          model: db.Cart,
-          required: false,
-          include: {
-            model: db.Product,
-            include: { model: db.ProductImage, attributes: ['id'] },
-          },
-        },
-      ],
+      attributes: attributesCountStatus,
+      include: includeOrderCart,
     });
+    const order = this.encryptMultiResult({ count: 1, rows: result.UserOrder });
+    return { ...result.dataValues, UserOrder: order.rows };
+  };
 
   handleForgetPassword = async (email, hashPassword, t) => {
     try {

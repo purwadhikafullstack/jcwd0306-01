@@ -48,7 +48,10 @@ class Order extends Service {
     },
   };
 
-  getByID = async (req) => this.getOneByID(req, this.optionGetByID);
+  getByID = async (req) => {
+    const { dataValues } = await this.getOneByID(req, this.optionGetByID);
+    return this.encryptID(dataValues);
+  };
 
   getOrderByUserId = async (req) => {
     try {
@@ -58,7 +61,7 @@ class Order extends Service {
         req,
         this.optionGetOrderByUserId(page, userId, name, status)
       );
-      return result;
+      return this.encryptMultiResult(result);
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
@@ -110,7 +113,8 @@ class Order extends Service {
           transaction: t,
         });
       });
-      return newTransaction;
+
+      return this.encryptID(newTransaction.dataValues);
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
@@ -130,7 +134,7 @@ class Order extends Service {
 
   renderPaymentProofImg = async (req) => {
     const result = await this.getByID(req);
-    return result.dataValues;
+    return result;
   };
 }
 

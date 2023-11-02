@@ -7,6 +7,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
+client.on(`error`, () => client.disconnect());
 
 class UserAddress extends Service {
   optionGetAddressByUserId = {
@@ -34,16 +35,19 @@ class UserAddress extends Service {
       if (!client.isOpen) await client.connect();
       const key = JSON.stringify(req.body.postalCode);
       client.get(key, async (err, result) => {
-        console.log(`from redis`);
+        if (err) {
+          const paymentOption = await this.getShippingOptions(req);
+          return res.send(paymentOption);
+        }
         if (result) return res.send(JSON.parse(result));
         const paymentOption = await this.getShippingOptions(req);
         client.setEx(key, 3000, JSON.stringify(paymentOption));
         return res.send(paymentOption);
       });
     } catch (error) {
+      client.disconnect();
       if (error.code === `ECONNREFUSED`) {
         const paymentOption = await this.getShippingOptions(req);
-        console.log(`from API`);
         return res.send(paymentOption);
       }
       throw new ResponseError(error?.message, error?.statusCode);

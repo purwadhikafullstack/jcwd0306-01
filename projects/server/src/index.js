@@ -97,7 +97,7 @@ app.use((err, req, res, next) => {
 });
 
 // #endregion
-client.on('error', () => console.log('Redis Client Error'));
+
 server.listen(PORT, async (err) => {
   if (err) {
     console.log(`ERROR: ${err}`);
