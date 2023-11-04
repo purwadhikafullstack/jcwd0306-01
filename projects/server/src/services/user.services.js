@@ -52,6 +52,20 @@ class User extends Service {
     }
   };
 
+  findUserEditPassword = async (email) => {
+    try {
+      const data = await this.db.findOne({
+        where: {
+          [Op.or]: [{ email }],
+        },
+        raw: true,
+      });
+      return data;
+    } catch (err) {
+      return err;
+    }
+  };
+
   mailerEmail = async (data, email, token) => {
     try {
       let template;
@@ -173,10 +187,12 @@ class User extends Service {
     try {
       const { newPassword, email } = body;
       const hashPassword = await bcrypt.hash(newPassword, 10);
-      return await this.db.update(
+      const data = await this.db.update(
         { password: hashPassword },
         { where: { email }, transaction: t }
       );
+      console.log(data);
+      return data;
     } catch (err) {
       return err;
     }
