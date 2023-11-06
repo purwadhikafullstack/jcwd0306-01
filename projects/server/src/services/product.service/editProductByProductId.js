@@ -5,6 +5,7 @@ const getProductByProductId = require('./getProductByProductId');
 async function checkProductNameUniqueness(req, transaction) {
   const product = await Product.findOne({
     where: { name: req.body.name },
+    paranoid: false,
     transaction,
   });
   if (product && product.getDataValue('id') !== +req.params.productId)
@@ -15,20 +16,28 @@ async function updateProduct(req, transaction) {
   await Product.update(req.body, {
     where: { id: req.params.productId },
     fields: ['name', 'description', 'price', 'weight', 'discount'],
+    paranoid: false,
     transaction,
   });
 }
 
 async function updateProductCategories(req, transaction) {
-  const product = await Product.findByPk(req.params.productId, { transaction });
+  const product = await Product.findByPk(req.params.productId, {
+    paranoid: false,
+    transaction,
+  });
   await product.setCategories(req.body.categoryIds, {
     force: true,
+    paranoid: false,
     transaction,
   });
 }
 
 async function updateProductImages(req, transaction) {
-  const product = await Product.findByPk(req.params.productId, { transaction });
+  const product = await Product.findByPk(req.params.productId, {
+    paranoid: false,
+    transaction,
+  });
   await Promise.all(
     req.body.images.map((image) =>
       product.createProductImage({ image }, { transaction })

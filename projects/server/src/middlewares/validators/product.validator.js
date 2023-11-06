@@ -74,6 +74,16 @@ const productValidator = {
 
   getProducts: (req, res, next) => {
     try {
+      // convert data type
+      if (req.query.paranoid)
+        req.query.paranoid = JSON.parse(req.query.paranoid);
+      if (req.query.isPaginated)
+        req.query.isPaginated = JSON.parse(req.query.isPaginated);
+      if (req.query.categoryId)
+        req.query.categoryId = Number(req.query.categoryId);
+      if (req.query.page) req.query.page = Number(req.query.page);
+      if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
+
       validateJoiSchema(
         req.query,
         Joi.object({
@@ -88,10 +98,14 @@ const productValidator = {
               'weight',
               'discount',
               'createdAt',
-              'updatedAt'
+              'updatedAt',
+              'deletedAt',
+              'stock',
+              'sold'
             )
             .allow(''),
           orderBy: Joi.string().valid('ASC', 'asc', 'DESC', 'desc').allow(''),
+          paranoid: Joi.boolean().allow(''),
           isPaginated: Joi.boolean().allow(''),
           page: Joi.number().integer().min(1).allow(''),
           perPage: Joi.number().integer().min(1).allow(''),
