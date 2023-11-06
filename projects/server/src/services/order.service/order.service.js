@@ -10,10 +10,19 @@ class Order extends Service {
   optionGetOrderByUserId = (page, userId, name, status) => ({
     limit: this.limit,
     offset: page ? (Number(page) - 1) * this.limit : 0,
+    order: [['createdAt', 'DESC']],
+    required: true,
     where: {
       userId,
-      ...(status && { status }),
-      ...(name && { '$Product.name$': { [Op.like]: `%${name}%` } }),
+      ...(typeof status === 'string' && { status }),
+      ...(typeof status === 'object' && { status: { [Op.in]: status } }),
+      ...(name && {
+        id: [
+          db.sequelize.literal(
+            `SELECT O.id from Orders AS O JOIN OrderProducts AS OP on O.id=OP.orderId JOIN Products as P on OP.productId = P.id where P.name like '%${name}%'`
+          ),
+        ],
+      }),
     },
     include: [
       {
@@ -25,6 +34,7 @@ class Order extends Service {
           },
         ],
       },
+      { model: db.UserAddress, include: [db.City, db.Province] },
     ],
   });
 
@@ -38,7 +48,10 @@ class Order extends Service {
     },
   };
 
-  getByID = async (req) => this.getOneByID(req, this.optionGetByID);
+  getByID = async (req) => {
+    const { dataValues } = await this.getOneByID(req, this.optionGetByID);
+    return this.encryptID(dataValues);
+  };
 
   getOrderByUserId = async (req) => {
     try {
@@ -48,12 +61,13 @@ class Order extends Service {
         req,
         this.optionGetOrderByUserId(page, userId, name, status)
       );
-      return result;
+      return this.encryptMultiResult(result);
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
   };
 
+  // untuk admin
   getByQuery = async (req) => {
     const { page, productName } = req.query;
     const limit = 7;
@@ -88,6 +102,7 @@ class Order extends Service {
       await db.sequelize.transaction(async (t) => {
         newTransaction = await this.db.create(req.body, {
           transaction: t,
+          logging: false,
         });
         const orderProducts = Order.orderProductFormatter(
           req.body.products,
@@ -98,7 +113,8 @@ class Order extends Service {
           transaction: t,
         });
       });
-      return newTransaction;
+
+      return this.encryptID(newTransaction.dataValues);
     } catch (error) {
       throw new ResponseError(error?.message, 500);
     }
@@ -112,13 +128,13 @@ class Order extends Service {
         fastShrinkOnLoad: true,
       })
       .toBuffer();
-    await this.update(req);
+    await this.update(req, { logging: false });
     return 'success';
   };
 
   renderPaymentProofImg = async (req) => {
     const result = await this.getByID(req);
-    return result.dataValues;
+    return result;
   };
 }
 

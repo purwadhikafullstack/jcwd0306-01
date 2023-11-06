@@ -127,11 +127,9 @@ class UserController {
     const t = await db.sequelize.transaction();
     const { email } = req.body;
     try {
-      const check = await userServices.findUser(email);
-      const match = await bcrypt.compare(
-        req.body.oldPassword,
-        check.dataValues.password
-      );
+      const check = await userServices.findUserEditPassword(email);
+      console.log(check);
+      const match = await bcrypt.compare(req.body.oldPassword, check.password);
       if (!match) {
         await t.rollback();
         return sendResponse({
@@ -152,6 +150,7 @@ class UserController {
       await t.commit();
       return sendResponse({ res, statusCode: 201, data: 'password edited' });
     } catch (error) {
+      console.log(error);
       sendResponse({ res, error });
     }
   };
@@ -182,14 +181,16 @@ class UserController {
       const { email } = req.query;
       const user = await userServices.findUser(email);
       if (!user) throw new Error('Email Not Found!');
-      const payload = { ...user };
+      const payload = {
+        id: user.id,
+        email: user.email,
+      };
       const generateToken = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
         expiresIn: '10m',
       });
-      const result = await userServices.pushToken(email, generateToken);
-      console.log(result);
+      await userServices.pushToken(email, generateToken);
       userServices.mailerEmail('forget-password', email, generateToken);
-      sendResponse({ res, statusCode: 200, data: user });
+      sendResponse({ res, statusCode: 200, data: generateToken });
     } catch (error) {
       sendResponse({ res, error });
     }

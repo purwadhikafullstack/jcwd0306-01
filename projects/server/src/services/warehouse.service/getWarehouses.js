@@ -9,6 +9,7 @@ async function getWarehouses() {
         include: [{ model: Province }, { model: City }],
       },
     ],
+    logging: false,
   });
   return warehouses;
 }

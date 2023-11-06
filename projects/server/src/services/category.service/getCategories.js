@@ -24,6 +24,7 @@ async function getCategories(req) {
       exclude: ['image'],
     },
     raw: true,
+    logging: false,
   });
   return categories;
 }

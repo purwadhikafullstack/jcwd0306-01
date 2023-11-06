@@ -43,7 +43,7 @@ route.patch(
 );
 
 route.delete(
-  `/:id`,
+  `/:userId/:id`,
   verifyAuthUser({ isCustomer: true }),
   addressValidator.checkIsDefault,
   UserAddressController.delete

@@ -15,8 +15,6 @@ const warehouseValidator = {
           district: Joi.string().required(),
           village: Joi.string().required(),
           detail: Joi.string().required(),
-          longitude: Joi.number().required(),
-          latitude: Joi.number().required(),
         }).required()
       );
       next();
@@ -40,12 +38,18 @@ const warehouseValidator = {
           country: Joi.string(),
           provinceId: Joi.number().integer().min(1),
           cityId: Joi.number().integer().min(1),
-          district: Joi.string(),
-          village: Joi.string(),
-          detail: Joi.string(),
-          longitude: Joi.number(),
-          latitude: Joi.number(),
-        }).required()
+          district: Joi.string()
+            .when('provinceId', { is: Joi.exist(), then: Joi.required() })
+            .when('cityId', { is: Joi.exist(), then: Joi.required() }),
+          village: Joi.string()
+            .when('provinceId', { is: Joi.exist(), then: Joi.required() })
+            .when('cityId', { is: Joi.exist(), then: Joi.required() }),
+          detail: Joi.string()
+            .when('provinceId', { is: Joi.exist(), then: Joi.required() })
+            .when('cityId', { is: Joi.exist(), then: Joi.required() }),
+        })
+          .and('provinceId', 'cityId')
+          .required()
       );
       if (Object.keys(req.body).length === 0)
         // check at least one column of table to be updated

@@ -1,3 +1,4 @@
+const CryptoJS = require('crypto-js');
 const { ResponseError } = require('../errors');
 
 const db = require(`../models`);
@@ -19,14 +20,22 @@ class Service {
   getByUserId = async (req, option = {}) => {
     const { userId } = req.params;
     try {
-      const result = await this.db.findAll({
+      const result = await this.db.findAndCountAll({
         where: { userId },
+        order: [
+          ['isDefault', 'DESC'],
+          ['updatedAt', 'DESC'],
+        ],
         logging: false,
+        distinct: true,
         ...option,
       });
+      if (option?.limit)
+        result.number_of_pages = Math.ceil(
+          result.count / Number(option?.limit)
+        );
       return result;
     } catch (err) {
-      console.log(err);
       throw new ResponseError(err?.message, 400);
     }
   };
@@ -89,6 +98,37 @@ class Service {
     } catch (error) {
       throw new ResponseError(error?.message, 406);
     }
+  }
+
+  encryptMultiResult(objectResult = {}) {
+    const temp = [];
+    objectResult.rows.forEach((val) => {
+      temp.push(this.encryptID(val.dataValues));
+    });
+
+    return { ...objectResult, rows: temp };
+  }
+
+  encryptID(dataValues = {}) {
+    const encrypted = CryptoJS.AES.encrypt(
+      JSON.stringify(dataValues.id),
+      process.env.JWT_SECRET_KEY
+    ).toString();
+    const encoded = CryptoJS.enc.Base64.parse(encrypted).toString(
+      CryptoJS.enc.Hex
+    );
+    return { ...dataValues, id: encoded, plain_id: dataValues.id };
+  }
+
+  static decryptID(encodedID) {
+    const decoded = CryptoJS.enc.Hex.parse(encodedID).toString(
+      CryptoJS.enc.Base64
+    );
+    const decrypted = CryptoJS.AES.decrypt(
+      decoded,
+      process.env.JWT_SECRET_KEY
+    ).toString(CryptoJS.enc.Utf8);
+    return Number(decrypted);
   }
 }
 

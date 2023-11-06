@@ -7,6 +7,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
+client.on(`error`, () => client.disconnect());
 
 class UserAddress extends Service {
   optionGetAddressByUserId = {
@@ -29,23 +30,41 @@ class UserAddress extends Service {
   getAddressByUserId = (req) =>
     this.getByUserId(req, this.optionGetAddressByUserId);
 
-  getShippingOptions = async (req, res) => {
-    if (!client.isOpen) await client.connect();
-    const key = JSON.stringify(req.body.postalCode);
+  getShippingOptionsWithRedis = async (req, res) => {
     try {
+      if (!client.isOpen) await client.connect();
+      const key = JSON.stringify(req.body.postalCode);
       client.get(key, async (err, result) => {
+        if (err) {
+          const paymentOption = await this.getShippingOptions(req);
+          return res.send(paymentOption);
+        }
         if (result) return res.send(JSON.parse(result));
-        const warehouse = await this.findNearestWareHouse(req);
-        const body = {
-          origin: warehouse.cityId,
-          warehouseId: warehouse.warehouseId,
-          destination: req.body.cityId,
-          weight: req.body.weight,
-        };
-        const paymentOption = await this.fetchRajaOngkir(body);
+        const paymentOption = await this.getShippingOptions(req);
         client.setEx(key, 3000, JSON.stringify(paymentOption));
         return res.send(paymentOption);
       });
+    } catch (error) {
+      client.disconnect();
+      if (error.code === `ECONNREFUSED`) {
+        const paymentOption = await this.getShippingOptions(req);
+        return res.send(paymentOption);
+      }
+      throw new ResponseError(error?.message, error?.statusCode);
+    }
+  };
+
+  getShippingOptions = async (req) => {
+    try {
+      const warehouse = await this.findNearestWareHouse(req);
+      const body = {
+        origin: warehouse.cityId,
+        warehouseId: warehouse.warehouseId,
+        destination: req.body.cityId,
+        weight: req.body.weight,
+      };
+      const paymentOption = await this.fetchRajaOngkir(body);
+      return paymentOption;
     } catch (error) {
       throw new ResponseError(error?.message, error?.statusCode);
     }

@@ -67,7 +67,8 @@ module.exports = (sequelize, DataTypes) => {
           'processed',
           'shipped',
           'received',
-          'cancelled'
+          'cancelled',
+          'rejected'
         ),
         allowNull: false,
       },
