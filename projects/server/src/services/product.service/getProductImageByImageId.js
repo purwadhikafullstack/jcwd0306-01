@@ -5,6 +5,7 @@ async function getProductImageByImageId(req) {
   const productImage = await ProductImage.findByPk(req.params.imageId, {
     attributes: ['image'],
     raw: true,
+    logging: false,
   });
   if (!productImage?.image)
     throw new ResponseError('product image not found', 404);

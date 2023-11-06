@@ -11,6 +11,10 @@ const db = require('../models');
 const Service = require('./baseServices');
 const mailer = require('../lib/nodemailer');
 const { ResponseError } = require('../errors');
+const {
+  attributesCountStatus,
+  includeOrderCart,
+} = require('./user.service/optionGetDetailsByID');
 
 require('dotenv').config({
   path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
@@ -25,6 +29,7 @@ class User extends Service {
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password'] },
       raw: true,
+      logging: false,
     });
 
     if (decoded.id !== user.id)
@@ -44,6 +49,21 @@ class User extends Service {
           [Op.or]: [{ email }],
         },
         attributes: { exclude: ['password'] },
+        raw: true,
+        logging: false,
+      });
+      return data;
+    } catch (err) {
+      return err;
+    }
+  };
+
+  findUserEditPassword = async (email) => {
+    try {
+      const data = await this.db.findOne({
+        where: {
+          [Op.or]: [{ email }],
+        },
         raw: true,
       });
       return data;
@@ -173,35 +193,26 @@ class User extends Service {
     try {
       const { newPassword, email } = body;
       const hashPassword = await bcrypt.hash(newPassword, 10);
-      return await this.db.update(
+      const data = await this.db.update(
         { password: hashPassword },
         { where: { email }, transaction: t }
       );
+      console.log(data);
+      return data;
     } catch (err) {
       return err;
     }
   };
 
-  getDetailsById = async (req) =>
-    this.getOneByID(req, {
+  getDetailsById = async (req) => {
+    const result = await this.getOneByID(req, {
       logging: false,
-      include: [
-        {
-          model: db.Order,
-          as: 'UserOrder',
-          where: { status: 'unpaid' },
-          required: false,
-        },
-        {
-          model: db.Cart,
-          required: false,
-          include: {
-            model: db.Product,
-            include: { model: db.ProductImage, attributes: ['id'] },
-          },
-        },
-      ],
+      attributes: attributesCountStatus,
+      include: includeOrderCart,
     });
+    const order = this.encryptMultiResult({ count: 1, rows: result.UserOrder });
+    return { ...result.dataValues, UserOrder: order.rows };
+  };
 
   handleForgetPassword = async (email, hashPassword, t) => {
     try {

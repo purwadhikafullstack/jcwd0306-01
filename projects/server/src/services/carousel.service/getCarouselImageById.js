@@ -4,6 +4,7 @@ const { Carousel } = require('../../models');
 async function getCarouselImageById(req) {
   const carousel = await Carousel.findByPk(req.params.id, {
     attributes: ['image'],
+    logging: false,
   });
   const image = carousel?.getDataValue('image');
   if (!image) throw new ResponseError('carousel image not found', 404);
