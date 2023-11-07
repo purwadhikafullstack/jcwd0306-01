@@ -23,7 +23,7 @@ const productValidator = {
           weight: Joi.number().min(0).required(),
           discount: Joi.number().min(0).max(1),
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
-          images: Joi.array().items(Joi.binary()).required(),
+          images: Joi.array().items(Joi.binary().required()).required(),
         }).required()
       );
       next();

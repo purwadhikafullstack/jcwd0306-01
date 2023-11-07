@@ -29,7 +29,7 @@ async function verifyUserRole({
   if (isAdmin && user.isAdmin) return;
 
   if (isWarehouseAdmin && warehouseId) {
-    const warehouseUser = WarehouseUser.findOne({
+    const warehouseUser = await WarehouseUser.findOne({
       where: { warehouseId, warehouseAdminId: user.id },
       raw: true,
     });
