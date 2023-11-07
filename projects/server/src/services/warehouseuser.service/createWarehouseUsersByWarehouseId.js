@@ -1,5 +1,5 @@
 const { ResponseError } = require('../../errors');
-const { sequelize, Warehouse, WarehouseUser } = require('../../models');
+const { sequelize, Warehouse, WarehouseUser, User } = require('../../models');
 
 async function createWarehouseUsersByWarehouseId(req) {
   const warehouse = await sequelize.transaction(async (t) => {
@@ -10,7 +10,23 @@ async function createWarehouseUsersByWarehouseId(req) {
     if (!data) throw new ResponseError('warehouse not found', 404);
     await data.addUsers(req.body.userIds, { transaction: t });
     const result = await Warehouse.findByPk(req.params.warehouseId, {
-      include: [{ model: WarehouseUser }],
+      include: [
+        {
+          model: WarehouseUser,
+          include: [
+            {
+              model: User,
+              attributes: [
+                'id',
+                'firstName',
+                'lastName',
+                'createdAt',
+                'updatedAt',
+              ],
+            },
+          ],
+        },
+      ],
       transaction: t,
       logging: false,
     });
