@@ -7,29 +7,31 @@ const {
 } = require('../../models');
 
 const IMAGEIDS_QUERY = sequelize.literal(
-  '(SELECT GROUP_CONCAT(pi.id) FROM ProductImages AS pi WHERE pi.productId = Product.id)'
+  '(SELECT JSON_ARRAYAGG(pi.id) FROM ProductImages AS pi WHERE pi.productId = Product.id)'
 );
 const SOLD_QUERY = sequelize.literal(
   'CAST((SELECT IFNULL(SUM(op.quantity), 0) FROM OrderProducts AS op WHERE op.productId = Product.id) AS SIGNED)'
 );
 const STOCK_QUERY = sequelize.literal(
-  `CAST(
-    (
-      SELECT 
-        IFNULL(SUM(wp.stock), 0) 
-      FROM 
-        WarehouseProducts AS wp 
-      WHERE 
-        wp.productId = Product.id 
-        AND wp.deletedAt IS NULL
-    ) AS SIGNED
+  `CAST( 
+    ( 
+      SELECT IFNULL(SUM(wp.stock), 0) 
+      FROM WarehouseProducts AS wp 
+      WHERE wp.productId = Product.id AND wp.deletedAt IS NULL 
+    ) AS SIGNED 
   )`
 );
 const CATEGORIES_QUERY = sequelize.literal(
   `( 
     SELECT Categories 
     FROM ( 
-      SELECT p.id AS productId, GROUP_CONCAT(CONCAT_WS(',', c.id, c.name) SEPARATOR ';') AS Categories 
+      SELECT 
+        p.id AS productId,
+        CASE 
+          WHEN c.id IS NULL 
+          THEN JSON_ARRAY() 
+          ELSE JSON_ARRAYAGG(JSON_OBJECT('id', c.id, 'name', c.name)) 
+        END AS Categories 
       FROM Products p 
       LEFT JOIN ProductCategories pc ON p.id = pc.productId 
       LEFT JOIN Categories c ON pc.categoryId = c.id 
@@ -77,6 +79,12 @@ async function receiveProducts(req, filters) {
           through: { attributes: [], paranoid: filters.paranoid },
           paranoid: filters.paranoid,
         },
+        {
+          model: WarehouseProduct,
+          where: warehouseId ? { warehouseId } : undefined,
+          attributes: [],
+          paranoid: filters.paranoid,
+        },
       ],
     })
   ).length;
@@ -112,49 +120,11 @@ async function receiveProducts(req, filters) {
   return [products, totalData];
 }
 
-function convertImageIdsToArray(products) {
-  // this function is used to convert string to be array of number
-  // because previously subquery 'GROUP_CONCAT' returned string
-  products.forEach((product) => {
-    product.setDataValue(
-      'imageIds',
-      product.getDataValue('imageIds')
-        ? product.getDataValue('imageIds').split(',').map(Number)
-        : []
-    );
-  });
-}
-
-function convertCategoriesToArray(products) {
-  // this function is used to convert:
-  // eg.  from  : "2,Desktop;4,Game Console"
-  //      to    : [{id: 2, name: "Desktop"}, {id: 4, name: "Game Console"}]
-  products.forEach((product) => {
-    product.setDataValue(
-      'Categories',
-      product.getDataValue('Categories')
-        ? product
-            .getDataValue('Categories')
-            .split(';')
-            .map((strCategory) => {
-              const arrCategory = strCategory.split(',');
-              return {
-                id: Number(arrCategory[0]),
-                name: arrCategory[1],
-              };
-            })
-        : []
-    );
-  });
-}
-
 async function getProducts(req) {
   const filters = generateFilters(req);
 
   const { isPaginated, page, perPage } = req.query;
   const [products, totalData] = await receiveProducts(req, filters);
-  convertImageIdsToArray(products);
-  convertCategoriesToArray(products);
 
   const paginationInfo = { totalData };
   if (isPaginated) {
