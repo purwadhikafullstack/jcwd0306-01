@@ -47,7 +47,6 @@ function verifyAuthUser({
 }) {
   return async (req, res, next) => {
     try {
-      console.log(req.token);
       const { userId, warehouseId } = req.params;
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
       await verifyUserRole({

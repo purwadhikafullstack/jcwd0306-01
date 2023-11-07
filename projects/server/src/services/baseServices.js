@@ -22,7 +22,7 @@ class Service {
     try {
       const result = await this.db.findAndCountAll({
         where: { userId },
-        order: ['updatedAt', 'DESC'],
+        order: [['updatedAt', 'DESC']],
         logging: false,
         distinct: true,
         ...option,
@@ -127,6 +127,19 @@ class Service {
     ).toString(CryptoJS.enc.Utf8);
     return Number(decrypted);
   }
+
+  optGetStock = {
+    attributes: {
+      include: [
+        [
+          db.sequelize.literal(
+            'CAST((SELECT SUM(WarehouseProducts.stock) FROM WarehouseProducts WHERE WarehouseProducts.productId = Product.id) AS SIGNED)'
+          ),
+          'stock',
+        ],
+      ],
+    },
+  };
 }
 
 module.exports = Service;

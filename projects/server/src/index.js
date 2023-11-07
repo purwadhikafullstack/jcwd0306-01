@@ -61,12 +61,13 @@ app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
 
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, { cors: { origin: `*` } });
 global.io = io;
 const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
+client.connect();
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');
@@ -102,6 +103,11 @@ app.use((err, req, res, next) => {
 // #endregion
 
 server.listen(PORT, async (err) => {
+  client.on(`error`, (error) =>
+    console.log(
+      error.code === 'ECONNREFUSED' ? 'Nyalain Redis oi' : `Redis${error.code}`
+    )
+  );
   if (err) {
     console.log(`ERROR: ${err}`);
   } else {

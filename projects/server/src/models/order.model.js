@@ -72,6 +72,7 @@ module.exports = (sequelize, DataTypes) => {
         ),
         allowNull: false,
       },
+      invoiceId: { type: DataTypes.STRING, allowNull: false, unique: true },
       total: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -79,6 +80,11 @@ module.exports = (sequelize, DataTypes) => {
       },
       shippingMethod: { type: DataTypes.STRING, allowNull: false },
       shippingPrice: { type: DataTypes.INTEGER, allowNull: false },
+      shippingReceipt: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true,
+      },
       paymentProof: { type: DataTypes.BLOB('long'), allowNull: true },
       promoCode: { type: DataTypes.STRING, allowNull: true },
       isReadByAdmin: {
