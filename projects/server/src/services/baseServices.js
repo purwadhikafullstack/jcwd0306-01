@@ -22,7 +22,10 @@ class Service {
     try {
       const result = await this.db.findAndCountAll({
         where: { userId },
-        order: [['updatedAt', 'DESC']],
+        order: [
+          ['isDefault', 'DESC'],
+          ['updatedAt', 'DESC'],
+        ],
         logging: false,
         distinct: true,
         ...option,

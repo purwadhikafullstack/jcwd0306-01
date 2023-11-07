@@ -1,12 +1,13 @@
 const { ResponseError } = require('../../errors');
-const { sequelize, Sequelize, Category } = require('../../models');
+const { sequelize, Category } = require('../../models');
 
 async function checkCategoryNameUniqueness(req, transaction) {
   const category = await Category.findOne({
     where: { name: req.body.name },
     transaction,
   });
-  if (category) throw new ResponseError('category name already exist', 400);
+  if (category && category.getDataValue('id') !== +req.params.id)
+    throw new ResponseError('category name already exist', 400);
 }
 
 async function updateCategory(req, transaction) {
@@ -48,15 +49,12 @@ async function getCategory(req, transaction) {
 }
 
 async function editCategoryById(req) {
-  const category = await sequelize.transaction(
-    { isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE },
-    async (t) => {
-      if (req.body.name) await checkCategoryNameUniqueness(req, t);
-      await updateCategory(req, t);
-      const data = await getCategory(req, t);
-      return data;
-    }
-  );
+  const category = await sequelize.transaction(async (t) => {
+    if (req.body.name) await checkCategoryNameUniqueness(req, t);
+    await updateCategory(req, t);
+    const data = await getCategory(req, t);
+    return data;
+  });
   return category;
 }
 

@@ -1,6 +1,7 @@
 const { ResponseError } = require('../../errors');
 const {
   sequelize,
+  Sequelize,
   Warehouse,
   WarehouseUser,
   WarehouseProduct,
@@ -9,7 +10,25 @@ const {
 async function activateWarehouse(warehouse, warehouseId, transaction) {
   await warehouse.restore({ transaction });
   await WarehouseUser.restore({ where: { warehouseId }, transaction });
-  await WarehouseProduct.restore({ where: { warehouseId }, transaction });
+
+  // restore active products only
+  const inactiveProducts = await warehouse.getProducts({
+    attributes: ['id'],
+    where: { deletedAt: { [Sequelize.Op.not]: null } },
+    through: { paranoid: false },
+    paranoid: false,
+    transaction,
+  });
+  const inactiveProductIds = inactiveProducts.map((val) =>
+    val.getDataValue('id')
+  );
+  await WarehouseProduct.restore({
+    where: {
+      warehouseId,
+      productId: { [Sequelize.Op.not]: inactiveProductIds },
+    },
+    transaction,
+  });
 }
 
 async function deactivateWarehouse(warehouse, warehouseId, transaction) {

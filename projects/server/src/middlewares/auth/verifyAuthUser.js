@@ -44,10 +44,14 @@ function verifyAuthUser({
   isWarehouseAdmin = false,
   isCustomer = false,
   isVerified = false,
+  isLogin = false,
 }) {
   return async (req, res, next) => {
     try {
       const { userId, warehouseId } = req.params;
+      if (isLogin && !req.token) {
+        throw new ResponseError('token not provided', 401);
+      }
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
       await verifyUserRole({
         decoded,
