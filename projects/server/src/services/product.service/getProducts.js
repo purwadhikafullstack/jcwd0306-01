@@ -1,4 +1,3 @@
-const { ResponseError } = require('../../errors');
 const {
   sequelize,
   Sequelize,
@@ -26,6 +25,19 @@ const STOCK_QUERY = sequelize.literal(
     ) AS SIGNED
   )`
 );
+const CATEGORIES_QUERY = sequelize.literal(
+  `(
+    SELECT Categories
+    FROM (
+      SELECT p.id AS productId, GROUP_CONCAT(CONCAT_WS(',', c.id, c.name) SEPARATOR ';') AS Categories
+      FROM Products p
+      LEFT JOIN ProductCategories pc ON p.id = pc.productId
+      LEFT JOIN Categories c ON pc.categoryId = c.id
+      GROUP BY p.id
+    ) c
+    WHERE c.productId = Product.id
+  )`
+);
 
 function generateFilters(req) {
   // set default values
@@ -49,45 +61,26 @@ function generateFilters(req) {
   };
 }
 
-async function getProductsForCategory(req, filters) {
-  const category = await Category.findByPk(req.query.categoryId);
-  if (!category) throw new ResponseError('invalid categoryId', 400);
-  const totalData = await category.countProducts({
-    where: filters.where,
-    paranoid: filters.paranoid,
-  });
-  const products = await category.getProducts({
-    ...filters,
-    attributes: {
-      include: [
-        [SOLD_QUERY, 'sold'],
-        [STOCK_QUERY, 'stock'],
-        [IMAGEIDS_QUERY, 'imageIds'],
-      ],
-    },
-    include: [
-      {
-        model: Category,
-        attributes: ['id', 'name'],
-        through: { attributes: [], paranoid: filters.paranoid },
-        paranoid: filters.paranoid,
-      },
-      {
-        model: WarehouseProduct,
-        attributes: ['warehouseId', 'stock'],
-        paranoid: filters.paranoid,
-      },
-    ],
-    joinTableAttributes: [],
-  });
-  return [products, totalData];
-}
+async function receiveProducts(req, filters) {
+  const { categoryId } = req.query;
 
-async function getProductsForNoCategory(req, filters) {
-  const totalData = await Product.count({
-    where: filters.where,
-    paranoid: filters.paranoid,
-  });
+  const totalData = (
+    await Product.findAll({
+      where: filters.where,
+      paranoid: filters.paranoid,
+      attributes: [],
+      include: [
+        {
+          model: Category,
+          where: categoryId ? { id: categoryId } : undefined,
+          attributes: [],
+          through: { attributes: [], paranoid: filters.paranoid },
+          paranoid: filters.paranoid,
+        },
+      ],
+    })
+  ).length;
+
   const products = await Product.findAll({
     ...filters,
     attributes: {
@@ -95,6 +88,7 @@ async function getProductsForNoCategory(req, filters) {
         [SOLD_QUERY, 'sold'],
         [STOCK_QUERY, 'stock'],
         [IMAGEIDS_QUERY, 'imageIds'],
+        [CATEGORIES_QUERY, 'Categories'],
       ],
     },
     include: [
@@ -105,16 +99,19 @@ async function getProductsForNoCategory(req, filters) {
       },
       {
         model: Category,
-        attributes: ['id', 'name'],
+        where: categoryId ? { id: categoryId } : undefined,
+        attributes: [],
         through: { attributes: [], paranoid: filters.paranoid },
         paranoid: filters.paranoid,
+        as: 'Categories_getProducts',
       },
     ],
   });
+
   return [products, totalData];
 }
 
-function convertProductImageIdsToArray(products) {
+function convertImageIdsToArray(products) {
   // this function is used to convert string to be array of number
   // because previously subquery 'GROUP_CONCAT' returned string
   products.forEach((product) => {
@@ -127,15 +124,36 @@ function convertProductImageIdsToArray(products) {
   });
 }
 
+function convertCategoriesToArray(products) {
+  // this function is used to convert:
+  // eg.  from  : "2,Desktop;4,Game Console"
+  //      to    : [{id: 2, name: "Desktop"}, {id: 4, name: "Game Console"}]
+  products.forEach((product) => {
+    product.setDataValue(
+      'Categories',
+      product.getDataValue('Categories')
+        ? product
+            .getDataValue('Categories')
+            .split(';')
+            .map((strCategory) => {
+              const arrCategory = strCategory.split(',');
+              return {
+                id: Number(arrCategory[0]),
+                name: arrCategory[1],
+              };
+            })
+        : []
+    );
+  });
+}
+
 async function getProducts(req) {
   const filters = generateFilters(req);
 
-  const { categoryId, isPaginated, page, perPage } = req.query;
-  const [products, totalData] = categoryId
-    ? await getProductsForCategory(req, filters)
-    : await getProductsForNoCategory(req, filters);
-
-  convertProductImageIdsToArray(products);
+  const { isPaginated, page, perPage } = req.query;
+  const [products, totalData] = await receiveProducts(req, filters);
+  convertImageIdsToArray(products);
+  convertCategoriesToArray(products);
 
   const paginationInfo = { totalData };
   if (isPaginated) {
