@@ -5,6 +5,7 @@ const idDecryptor = require('../middlewares/decryptor/idDecryptor');
 const { multerBlobUploader } = require('../middlewares/multers');
 const { orderValidator } = require('../middlewares/validators');
 
+route.get(``, verifyAuthUser({ isAdmin: true }), OrderController.getByQuery);
 route.get(
   `/payment_proof/:id`,
   idDecryptor,
@@ -21,13 +22,21 @@ route.get(
   verifyAuthUser({ isCustomer: true }),
   OrderController.getByID
 );
+route.get(`/:id`, verifyAuthUser({ isAdmin: true }), OrderController.getByID);
 
 route.patch(
   `/:userId/:id`,
   idDecryptor,
   verifyAuthUser({ isCustomer: true }),
   orderValidator.checkStatus,
-  OrderController.userCancelOrder
+  OrderController.userUpdateOrder
+);
+route.patch(
+  `/:id`,
+  idDecryptor,
+  verifyAuthUser({ isAdmin: true }),
+  orderValidator.rejectOrConfirm,
+  OrderController.adminUpdateOrder
 );
 
 route.post(

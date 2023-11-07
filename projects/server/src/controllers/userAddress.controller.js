@@ -1,10 +1,10 @@
-const { UserAddressService } = require('../services');
+const { userAddressService } = require('../services');
 const { sendResponse } = require('../utils');
 
 class UserAddressController {
   static getAddressByUserId = async (req, res) => {
     try {
-      const result = await UserAddressService.getAddressByUserId(req);
+      const result = await userAddressService.getAddressByUserId(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -13,7 +13,7 @@ class UserAddressController {
 
   static addAddress = async (req, res) => {
     try {
-      const result = await UserAddressService.create(req);
+      const result = await userAddressService.create(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -22,7 +22,7 @@ class UserAddressController {
 
   static update = async (req, res) => {
     try {
-      await UserAddressService.update(req);
+      await userAddressService.update(req);
       return res.send(req.body);
     } catch (error) {
       return sendResponse({ res, error });
@@ -31,7 +31,7 @@ class UserAddressController {
 
   static getShippingOptions = async (req, res) => {
     try {
-      return UserAddressService.getShippingOptionsWithRedis(req, res);
+      return userAddressService.getShippingOptionsWithRedis(req, res);
     } catch (error) {
       return sendResponse({ res, error });
     }
@@ -39,7 +39,7 @@ class UserAddressController {
 
   static delete = async (req, res) => {
     try {
-      await UserAddressService.delete(req);
+      await userAddressService.delete(req);
       return res.send('success');
     } catch (error) {
       return sendResponse({ res, error });
@@ -48,7 +48,7 @@ class UserAddressController {
 
   static setNewDefault = async (req, res) => {
     try {
-      await UserAddressService.setNewDefault(req);
+      await userAddressService.setNewDefault(req);
       return res.send('success');
     } catch (error) {
       return sendResponse({ res, error });
