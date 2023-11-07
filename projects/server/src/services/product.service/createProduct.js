@@ -7,9 +7,10 @@ async function addProduct(values, transaction) {
   const [product, isCreated] = await Product.findOrCreate({
     where: { name },
     defaults: { name, description, price, weight, discount },
+    paranoid: false,
     transaction,
   });
-  if (!isCreated) throw new ResponseError('product name already exist', 400);
+  if (!isCreated) throw new ResponseError('Product name already exist', 400);
   return product;
 }
 
