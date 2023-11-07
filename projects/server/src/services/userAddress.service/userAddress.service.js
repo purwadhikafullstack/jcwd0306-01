@@ -29,7 +29,7 @@ class UserAddress extends Service {
 
   getShippingOptionsWithRedis = async (req, res) => {
     try {
-      if (!client.isOpen) await client.connect();
+      if (!client.isOpen) client.connect();
       const key = JSON.stringify(req.body.postalCode);
       client.get(key, async (err, result) => {
         if (err) {
