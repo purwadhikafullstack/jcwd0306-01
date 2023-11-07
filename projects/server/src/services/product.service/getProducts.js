@@ -26,16 +26,16 @@ const STOCK_QUERY = sequelize.literal(
   )`
 );
 const CATEGORIES_QUERY = sequelize.literal(
-  `(
-    SELECT Categories
-    FROM (
-      SELECT p.id AS productId, GROUP_CONCAT(CONCAT_WS(',', c.id, c.name) SEPARATOR ';') AS Categories
-      FROM Products p
-      LEFT JOIN ProductCategories pc ON p.id = pc.productId
-      LEFT JOIN Categories c ON pc.categoryId = c.id
-      GROUP BY p.id
-    ) c
-    WHERE c.productId = Product.id
+  `( 
+    SELECT Categories 
+    FROM ( 
+      SELECT p.id AS productId, GROUP_CONCAT(CONCAT_WS(',', c.id, c.name) SEPARATOR ';') AS Categories 
+      FROM Products p 
+      LEFT JOIN ProductCategories pc ON p.id = pc.productId 
+      LEFT JOIN Categories c ON pc.categoryId = c.id 
+      GROUP BY p.id 
+    ) c 
+    WHERE c.productId = Product.id 
   )`
 );
 
@@ -62,7 +62,7 @@ function generateFilters(req) {
 }
 
 async function receiveProducts(req, filters) {
-  const { categoryId } = req.query;
+  const { categoryId, warehouseId } = req.query;
 
   const totalData = (
     await Product.findAll({
@@ -93,17 +93,18 @@ async function receiveProducts(req, filters) {
     },
     include: [
       {
-        model: WarehouseProduct,
-        attributes: ['warehouseId', 'stock'],
-        paranoid: filters.paranoid,
-      },
-      {
         model: Category,
         where: categoryId ? { id: categoryId } : undefined,
         attributes: [],
         through: { attributes: [], paranoid: filters.paranoid },
         paranoid: filters.paranoid,
         as: 'Categories_getProducts',
+      },
+      {
+        model: WarehouseProduct,
+        where: warehouseId ? { warehouseId } : undefined,
+        attributes: ['warehouseId', 'stock'],
+        paranoid: filters.paranoid,
       },
     ],
   });

@@ -81,6 +81,8 @@ const productValidator = {
         req.query.isPaginated = JSON.parse(req.query.isPaginated);
       if (req.query.categoryId)
         req.query.categoryId = Number(req.query.categoryId);
+      if (req.query.warehouseId)
+        req.query.warehouseId = Number(req.query.warehouseId);
       if (req.query.page) req.query.page = Number(req.query.page);
       if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
 
@@ -89,6 +91,7 @@ const productValidator = {
         Joi.object({
           name: Joi.string().allow(''),
           categoryId: Joi.number().integer().min(1).allow(''),
+          warehouseId: Joi.number().integer().min(1).allow(''),
           sortBy: Joi.string()
             .valid(
               'id',
