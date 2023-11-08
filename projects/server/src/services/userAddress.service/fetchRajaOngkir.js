@@ -1,4 +1,5 @@
 /* eslint-disable no-await-in-loop */
+const { default: fetch } = require('node-fetch');
 const { ResponseError } = require('../../errors');
 
 const shippingMethodFormatter = (arr = []) => {

@@ -1,15 +1,7 @@
 const { Op } = require('sequelize');
 const db = require('../../models');
 
-const optionGetByQuery = (
-  limit,
-  page,
-  name,
-  id,
-  status,
-  warehouseId,
-  invoiceId
-) => ({
+const optionGetByQuery = (limit, page, text, id, status, warehouseId) => ({
   logging: false,
   attributes: {
     exclude: ['paymentProof', `isReadByUser`],
@@ -20,18 +12,26 @@ const optionGetByQuery = (
   order: [['updatedAt', 'ASC']],
   where: {
     status: { [Op.notIn]: ['unpaid', 'cancelled', 'rejected'] },
-    ...(invoiceId && { invoiceId }),
     ...(typeof status === 'string' && { status }),
     ...(typeof status === 'object' && { status: { [Op.in]: status } }),
     ...(typeof warehouseId === 'string' && { warehouseId }),
     ...(typeof warehouseId === 'object' && {
       warehouseId: { [Op.in]: warehouseId },
     }),
-    ...(name && {
-      id: [
-        db.sequelize.literal(
-          `SELECT O.id from Orders AS O JOIN OrderProducts AS OP on O.id=OP.orderId JOIN Products as P on OP.productId = P.id where P.name like '%${name}%'`
-        ),
+    ...(text && {
+      [Op.or]: [
+        {
+          id: [
+            db.sequelize.literal(
+              `SELECT O.id from Orders AS O JOIN OrderProducts AS OP on O.id=OP.orderId JOIN Products as P on OP.productId = P.id where P.name like '%${text}%'`
+            ),
+          ],
+        },
+        // {
+        //   invoiceId: { [Op.like]: `%${text}%` },
+        // },
+        { id: { [Op.like]: `${text}%` } },
+        { shippingReceipt: { [Op.like]: `%${text}%` } },
       ],
     }),
     ...(id && {
