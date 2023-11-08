@@ -10,7 +10,7 @@ const optionCronDeleteUnpaid = {
       db.sequelize.fn(
         'timediff',
         db.sequelize.fn('NOW'),
-        db.sequelize.col('createdAt')
+        db.sequelize.col('updatedAt')
       ),
       'timediff',
     ],
@@ -21,7 +21,7 @@ const optionCronDeleteUnpaid = {
         db.sequelize.fn(
           'timediff',
           db.sequelize.fn('NOW'),
-          db.sequelize.col('createdAt')
+          db.sequelize.col('updatedAt')
         ),
         {
           [Op.gte]: '24:00:00',
