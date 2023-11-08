@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { warehouseController } = require('../controllers');
+const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
 const { warehouseValidator } = require('../middlewares/validators');
 
 // create warehouse
@@ -24,6 +25,19 @@ router.put(
   '/:warehouseId',
   warehouseValidator.updateWarehouseActivationByWarehouseId,
   warehouseController.updateWarehouseActivationByWarehouseId
+);
+
+// update stock products by warehouseId
+router.patch(
+  '/:warehouseId/products',
+  verifyAuthUser({
+    isLogin: true,
+    isAdmin: true,
+    isWarehouseAdmin: true,
+    isVerified: true,
+  }),
+  warehouseValidator.updateStockProductsByWarehouseId,
+  warehouseController.updateStockProductsByWarehouseId
 );
 
 module.exports = router;

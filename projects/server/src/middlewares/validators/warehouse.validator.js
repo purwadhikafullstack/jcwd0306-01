@@ -79,6 +79,31 @@ const warehouseValidator = {
       sendResponse({ res, error });
     }
   },
+
+  updateStockProductsByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          stocks: Joi.array().items(
+            Joi.object({
+              productId: Joi.number().integer().min(1).required(),
+              quantity: Joi.number().integer().required(),
+            }).required()
+          ),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = warehouseValidator;
