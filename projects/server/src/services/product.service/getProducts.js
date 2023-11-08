@@ -54,10 +54,12 @@ async function getProductsForCategory(req, filters) {
   if (!category) throw new ResponseError('invalid categoryId', 400);
   const totalData = await category.countProducts({
     where: filters.where,
+    logging: false,
     paranoid: filters.paranoid,
   });
   const products = await category.getProducts({
     ...filters,
+    logging: false,
     attributes: {
       include: [
         [SOLD_QUERY, 'sold'],
@@ -86,10 +88,12 @@ async function getProductsForCategory(req, filters) {
 async function getProductsForNoCategory(req, filters) {
   const totalData = await Product.count({
     where: filters.where,
+    logging: false,
     paranoid: filters.paranoid,
   });
   const products = await Product.findAll({
     ...filters,
+    logging: false,
     attributes: {
       include: [
         [SOLD_QUERY, 'sold'],

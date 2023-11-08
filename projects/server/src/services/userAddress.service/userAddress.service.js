@@ -1,4 +1,5 @@
 const { createClient } = require('redis');
+const { default: fetch } = require('node-fetch');
 const Service = require('../baseServices');
 const db = require('../../models');
 const { ResponseError } = require('../../errors');
@@ -29,6 +30,7 @@ class UserAddress extends Service {
 
   getShippingOptionsWithRedis = async (req, res) => {
     try {
+      console.log(fetch);
       if (!client.isOpen) client.connect();
       const key = JSON.stringify(req.body.postalCode);
       client.get(key, async (err, result) => {

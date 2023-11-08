@@ -47,11 +47,15 @@ class Order extends Service {
 
   // untuk admin
   getByQuery = async (req) => {
-    const { page, name, id, status, limit, warehouseId, invoiceId } = req.query;
+    const { page, text, id, status, warehouseId } = req.query;
+    const limit = Number(req.query.limit);
     try {
       const result = await this.db.findAndCountAll(
-        optionGetByQuery(limit, page, name, id, status, warehouseId, invoiceId)
+        optionGetByQuery(limit, page, text, id, status, warehouseId)
       );
+      result.number_of_pages = limit
+        ? Math.ceil(result.count / Number(limit))
+        : 1;
       return result;
     } catch (error) {
       throw new ResponseError(error?.message, 500);
