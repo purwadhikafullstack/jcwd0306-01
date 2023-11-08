@@ -67,6 +67,9 @@ class UserController {
   static edit = async (req, res) => {
     const { userId } = req.params;
     try {
+      if (req.file)
+        req.body.image = await sharp(req.file.buffer).png().toBuffer();
+
       const editedResult = await userServices.handleEdit(userId, req);
       sendResponse({ res, statusCode: 201, data: editedResult });
     } catch (error) {
@@ -86,10 +89,10 @@ class UserController {
 
   static renderBlob = async (req, res) => {
     try {
-      const { id } = req.params;
+      const { userId } = req.params;
       const user = await db.User.findOne({
         where: {
-          id,
+          id: userId,
         },
       });
 
@@ -216,6 +219,15 @@ class UserController {
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
+    }
+  };
+
+  static getUserImageById = async (req, res) => {
+    try {
+      const image = await userServices.getUserImagebyId(req);
+      res.set('Content-type', 'image/png').send(image);
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }

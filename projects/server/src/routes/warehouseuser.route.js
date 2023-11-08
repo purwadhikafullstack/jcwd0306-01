@@ -5,10 +5,10 @@ const { warehouseUserValidator } = require('../middlewares/validators');
 // get all warehouse admin
 router.get('/', warehouseUserController.getAllWarehouseAdmin);
 
-// create warehouse users by warehouseId
+// create warehouse users by user email
 router.post(
   '/:warehouseId/users',
-  warehouseUserValidator.createWarehouseUsersByWarehouseId,
+  // warehouseUserValidator.createWarehouseUsersByWarehouseId,
   warehouseUserController.createWarehouseUsersByWarehouseId
 );
 

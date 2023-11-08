@@ -1,6 +1,10 @@
 const router = require('express').Router();
 const { userController } = require('../controllers');
 const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
+const {
+  multerBlobUploader,
+  multerErrorHandler,
+} = require('../middlewares/multers');
 
 router.get(
   '/forgetPasswordToken',
@@ -12,6 +16,11 @@ router.get(
   verifyAuthUser({ isCustomer: true }),
   userController.getDetailsById
 );
+
+// // render blob by userId
+// router.get('/render/:userId', userController.renderBlob);
+// get category image by categoryId
+router.get('/:id/image', userController.getUserImageById);
 router.get('/:id', userController.getById);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
@@ -27,6 +36,11 @@ router.patch(
   verifyAuthUser({ isCustomer: true }),
   userController.forgetPassword
 );
-router.patch('/edit/:userId', userController.edit);
+router.patch(
+  '/edit/:userId',
+  multerBlobUploader().single(),
+  multerErrorHandler,
+  userController.edit
+);
 
 module.exports = router;

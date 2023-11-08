@@ -1,16 +1,34 @@
 const { ResponseError } = require('../../errors');
-const { WarehouseUser, User, Warehouse } = require('../../models');
+const {
+  WarehouseUser,
+  User,
+  Warehouse,
+  WarehouseAddress,
+  Province,
+} = require('../../models');
 
 async function getAllWarehouseAdmin() {
   const result = await WarehouseUser.findAll({
     include: [
       {
         model: User,
-        attributes: ['firstName'],
+        attributes: ['firstName', 'email'],
       },
       {
         model: Warehouse,
         attributes: ['name'],
+        include: [
+          {
+            model: WarehouseAddress,
+            attributes: ['provinceId'],
+            include: [
+              {
+                model: Province,
+                attributes: ['name'],
+              },
+            ],
+          },
+        ],
       },
     ],
   });

@@ -160,13 +160,15 @@ class User extends Service {
   };
 
   handleEdit = async (userId, req) => {
-    await this.db.update(
-      {
-        ...req.body,
-      },
-      { where: { id: userId } }
-    );
-    const result = await this.getByUserId(req, { where: { id: userId } });
+    const { isdefault, ...updatedData } = req.body;
+
+    await this.db.update(updatedData, {
+      where: { id: userId },
+    });
+
+    const result = await this.db.findByPk(userId, {
+      attributes: { exclude: ['image'] },
+    });
     return result;
   };
 
@@ -239,6 +241,16 @@ class User extends Service {
     } catch (error) {
       return error;
     }
+  };
+
+  getUserImagebyId = async (req) => {
+    const user = await this.db.findByPk(req.params.id, {
+      attributes: ['image'],
+      raw: true,
+      logging: false,
+    });
+    if (!user?.image) throw new ResponseError('user image not found', 404);
+    return user.image;
   };
 }
 

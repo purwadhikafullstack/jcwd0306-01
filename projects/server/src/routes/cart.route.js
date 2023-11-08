@@ -7,23 +7,28 @@ const {
 
 router.get(
   '/:userId',
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   CartController.getCartByUserId
 );
 router.post(
   '/',
-  verifyAuthUser({ isCustomer: true, isVerified: true, isLogin: true }),
+  verifyAuthUser({
+    isCustomer: true,
+    isVerified: true,
+    isLogin: true,
+    isAdmin: true,
+  }),
   CartController.createCart
 );
 router.post(
   '/:userId',
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   quantityValidator,
   CartController.updateCart
 );
 router.delete(
   '/:userId',
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   CartController.deleteItemOnCart
 );
 
