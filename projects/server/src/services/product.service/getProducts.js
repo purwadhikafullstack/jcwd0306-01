@@ -21,6 +21,15 @@ const STOCK_QUERY = sequelize.literal(
     ) AS SIGNED 
   )`
 );
+const INACTIVE_STOCK_QUERY = sequelize.literal(
+  `CAST( 
+    ( 
+      SELECT IFNULL(SUM(wp.stock), 0) 
+      FROM WarehouseProducts AS wp 
+      WHERE wp.productId = Product.id AND wp.deletedAt IS NOT NULL 
+    ) AS SIGNED 
+  )`
+);
 const CATEGORIES_QUERY = sequelize.literal(
   `( 
     SELECT Categories 
@@ -95,6 +104,7 @@ async function receiveProducts(req, filters) {
       include: [
         [SOLD_QUERY, 'sold'],
         [STOCK_QUERY, 'stock'],
+        [INACTIVE_STOCK_QUERY, 'inactiveStock'],
         [IMAGEIDS_QUERY, 'imageIds'],
         [CATEGORIES_QUERY, 'Categories'],
       ],
