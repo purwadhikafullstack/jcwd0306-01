@@ -27,7 +27,7 @@ class User extends Service {
     const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
 
     const user = await this.db.findByPk(id, {
-      attributes: { exclude: ['password'] },
+      attributes: { exclude: ['password', 'image'] },
       raw: true,
       logging: false,
     });
@@ -139,8 +139,10 @@ class User extends Service {
       where: {
         email,
       },
+      attributes: { exclude: ['image'] },
     });
-    // console.log('result', result.dataValues.password);
+
+    console.log('result', result);
     if (!result) throw new Error('wrong email/password');
     const isValid = await bcrypt.compare(password, result.dataValues.password);
     // console.log('isValid', isValid);

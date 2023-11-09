@@ -29,6 +29,17 @@ const warehouseController = {
     }
   },
 
+  getWarehouseByName: async (req, res) => {
+    try {
+      const { warehouseName } = req.query;
+      const warehouse =
+        await warehouseService.getWarehouseByName(warehouseName);
+      sendResponse({ res, statusCode: 200, data: warehouse });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   updateWarehouseActivationByWarehouseId: async (req, res) => {
     try {
       const warehouse =

@@ -12,7 +12,7 @@ async function getAllWarehouseAdmin() {
     include: [
       {
         model: User,
-        attributes: ['firstName', 'email'],
+        attributes: ['firstName', 'email', 'id'],
       },
       {
         model: Warehouse,

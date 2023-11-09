@@ -26,6 +26,7 @@ const warehouseUserValidator = {
 
   deleteWarehouseUsersByWarehouseId: (req, res, next) => {
     try {
+      console.log(req.body);
       validateJoiSchema(
         req.params,
         Joi.object({
