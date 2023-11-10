@@ -17,6 +17,13 @@ router.patch(
   warehouseController.editWarehouseByWarehouseId
 );
 
+// get warehouse by warehouseId
+router.get(
+  '/:warehouseId',
+  warehouseValidator.getWarehouseByWarehouseId,
+  warehouseController.getWarehouseByWarehouseId
+);
+
 // get warehouses
 router.get('/', warehouseController.getWarehouses);
 
