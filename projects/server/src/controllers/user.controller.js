@@ -230,6 +230,24 @@ class UserController {
       sendResponse({ res, error });
     }
   };
+
+  static getAllUsers = async (req, res) => {
+    try {
+      const result = await db.User.findAll({
+        attributes: { exclude: ['image'] }, // Exclude the 'image' column
+        // include: [
+        //   {
+        //     model: db.WarehouseUser,
+        //     attributes: ['warehouseAdminId'],
+        //     required: true, // INNER JOIN
+        //   },
+        // ],
+      });
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
 }
 
 module.exports = UserController;

@@ -168,9 +168,7 @@ class User extends Service {
       where: { id: userId },
     });
 
-    const result = await this.db.findByPk(userId, {
-      attributes: { exclude: ['image'] },
-    });
+    const result = await this.db.findByPk(userId);
     return result;
   };
 

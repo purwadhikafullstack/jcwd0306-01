@@ -7,13 +7,17 @@ const {
 } = require('../middlewares/multers');
 
 router.get(
+  '/getAll',
+  /* verifyAuthUser({ isAdmin: true }), */ userController.getAllUsers
+);
+router.get(
   '/forgetPasswordToken',
   verifyAuthUser({ isCustomer: true }),
   userController.getForgetPasswordToken
 );
 router.get(
   `/details/:id`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   userController.getDetailsById
 );
 
@@ -38,7 +42,7 @@ router.patch(
 );
 router.patch(
   '/edit/:userId',
-  multerBlobUploader().single(),
+  multerBlobUploader().single('file'),
   multerErrorHandler,
   userController.edit
 );
