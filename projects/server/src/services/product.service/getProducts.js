@@ -58,14 +58,19 @@ function generateFilters(req) {
   req.query.perPage = req.query.perPage || 10;
 
   // query for sort by stock and sold
-  if (req.query.sortBy === 'stock') req.query.sortBy = STOCK_QUERY;
+  if (req.query.sortBy === 'stock' && !req.query.warehouseId)
+    req.query.sortBy = STOCK_QUERY;
   else if (req.query.sortBy === 'sold') req.query.sortBy = SOLD_QUERY;
 
   const { name, sortBy, orderBy, paranoid, isPaginated, page, perPage } =
     req.query;
   return {
     where: name ? { name: { [Sequelize.Op.like]: `%${name}%` } } : undefined,
-    order: [[sortBy || 'updatedAt', orderBy || 'DESC']],
+    order:
+      req.query.warehouseId &&
+      ['stock', 'createdAt', 'updatedAt', undefined].includes(sortBy)
+        ? [[WarehouseProduct, sortBy || 'updatedAt', orderBy || 'DESC']]
+        : [[sortBy || 'updatedAt', orderBy || 'DESC']],
     limit: isPaginated ? perPage : undefined,
     offset: isPaginated ? (page - 1) * perPage : undefined,
     paranoid,
@@ -121,7 +126,6 @@ async function receiveProducts(req, filters) {
       {
         model: WarehouseProduct,
         where: warehouseId ? { warehouseId } : undefined,
-        attributes: ['warehouseId', 'stock'],
         paranoid: filters.paranoid,
       },
     ],
