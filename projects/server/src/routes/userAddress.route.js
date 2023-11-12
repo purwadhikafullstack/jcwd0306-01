@@ -10,7 +10,7 @@ const route = require(`express`).Router();
 
 route.get(
   `/:userId`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   UserAddressController.getAddressByUserId
 );
 
@@ -22,7 +22,7 @@ route.post(
 );
 route.post(
   `/new/:userId`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   addressValidator.addAndUpdate,
   longLatGenerator,
   UserAddressController.addAddress
@@ -30,13 +30,13 @@ route.post(
 
 route.patch(
   `/new_default/:userId/:id`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   UserAddressController.setNewDefault
 );
 
 route.patch(
   `/:userId/:id`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   addressValidator.addAndUpdate,
   longLatGenerator,
   UserAddressController.update
@@ -44,7 +44,7 @@ route.patch(
 
 route.delete(
   `/:userId/:id`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   addressValidator.checkIsDefault,
   UserAddressController.delete
 );

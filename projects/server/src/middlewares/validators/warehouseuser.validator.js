@@ -13,9 +13,7 @@ const warehouseUserValidator = {
       validateJoiSchema(
         req.body,
         Joi.object({
-          userIds: Joi.array()
-            .items(Joi.number().integer().min(1).required())
-            .required(),
+          email: Joi.string().required(),
         }).required()
       );
       next();
