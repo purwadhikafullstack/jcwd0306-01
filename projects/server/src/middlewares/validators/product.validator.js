@@ -167,6 +167,27 @@ const productValidator = {
       sendResponse({ res, error });
     }
   },
+
+  updateWarehouseProductStock: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          productId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+          quantity: Joi.number().integer().required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = productValidator;

@@ -49,16 +49,6 @@ const warehouseController = {
       sendResponse({ res, error });
     }
   },
-
-  updateStockProductsByWarehouseId: async (req, res) => {
-    try {
-      const products =
-        await warehouseService.updateStockProductsByWarehouseId(req);
-      sendResponse({ res, statusCode: 200, data: products });
-    } catch (error) {
-      sendResponse({ res, error });
-    }
-  },
 };
 
 module.exports = warehouseController;
