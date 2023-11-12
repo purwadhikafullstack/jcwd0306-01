@@ -4,10 +4,42 @@ const { findUser } = require('../user.services');
 
 async function createWarehouseUsersByWarehouseId(req) {
   const { email } = req.body;
-
   if (!email) {
     throw new ResponseError('Email is required!', 400);
   }
+  if (!req.params.warehouseId)
+    throw new ResponseError('warehouse Id not included!', 400);
+
+  const user = await findUser(email, ['image']);
+
+  if (!user) {
+    throw new ResponseError('User not found', 404);
+  }
+
+  // 1 user tidak bisa menjadi admin lebih dari 1 warehouse
+  // kalau sudah ada id nya di table WarehouseUsers throw new Error
+
+  // bawah: 1 user tidak bisa di post di warehouse yg sama
+  const existingWarehouseUser = await WarehouseUser.findOne({
+    where: {
+      warehouseId: req.params.warehouseId,
+      warehouseAdminId: user.id,
+    },
+    raw: true,
+    logging: false,
+  });
+  if (existingWarehouseUser) {
+    throw new ResponseError('User already exists for this warehouse', 400);
+  }
+
+  const existingAdmin = await WarehouseUser.findOne({
+    where: {
+      warehouseAdminId: user.id,
+    },
+    logging: false,
+  });
+  if (existingAdmin)
+    throw new ResponseError('User Already a Warehouse Admin', 400);
 
   const data = await sequelize.transaction(async (t) => {
     const warehouse = await Warehouse.findByPk(req.params.warehouseId, {
@@ -17,12 +49,6 @@ async function createWarehouseUsersByWarehouseId(req) {
 
     if (!warehouse) {
       throw new ResponseError('Warehouse not found', 404);
-    }
-
-    const user = await findUser(email, { transaction: t });
-
-    if (!user) {
-      throw new ResponseError('User not found', 404);
     }
 
     await WarehouseUser.create(

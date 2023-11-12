@@ -26,4 +26,7 @@ router.get(
   warehouseUserController.getWarehouseUsersByWarehouseId
 );
 
+// edit warehouse user by warehouse Id
+router.patch('/:whId', warehouseUserController.editWarehouseAdmin);
+
 module.exports = router;

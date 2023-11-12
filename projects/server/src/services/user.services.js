@@ -42,13 +42,13 @@ class User extends Service {
     return { token, user };
   };
 
-  findUser = async (email) => {
+  findUser = async (email, config = []) => {
     try {
       const data = await this.db.findOne({
         where: {
           [Op.or]: [{ email }],
         },
-        attributes: { exclude: ['password'] },
+        attributes: { exclude: ['password', ...config] },
         raw: true,
         logging: false,
       });
@@ -142,7 +142,7 @@ class User extends Service {
       attributes: { exclude: ['image'] },
     });
 
-    console.log('result', result);
+    // console.log('result', result);
     if (!result) throw new Error('wrong email/password');
     const isValid = await bcrypt.compare(password, result.dataValues.password);
     // console.log('isValid', isValid);
@@ -218,7 +218,7 @@ class User extends Service {
 
   handleForgetPassword = async (email, hashPassword, t) => {
     try {
-      const isUserExist = await this.findUser(email);
+      const isUserExist = await this.findUser(email, ['image']);
       if (!isUserExist) throw new Error('User not Found!');
 
       const data = await this.db.update(

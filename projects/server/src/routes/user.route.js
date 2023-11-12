@@ -32,7 +32,7 @@ router.post('/request-fp', userController.requestForgetPassword);
 router.patch('/verify', userController.verify);
 router.patch(
   '/edit-password',
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
   userController.editPassword
 );
 router.patch(

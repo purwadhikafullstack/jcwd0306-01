@@ -33,7 +33,6 @@ async function getAllWarehouseAdmin() {
     ],
   });
   if (!result) throw new ResponseError('warehouse admin not found', 404);
-  console.log(result);
   return result;
 }
 

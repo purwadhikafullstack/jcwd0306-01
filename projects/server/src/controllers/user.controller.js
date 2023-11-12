@@ -19,7 +19,7 @@ class UserController {
     const t = await db.sequelize.transaction();
     try {
       const { email, firstName, lastName, password } = req.body;
-      const isUserExist = await userServices.findUser(email);
+      const isUserExist = await userServices.findUser(email, ['image']);
       if (isUserExist) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
@@ -182,7 +182,7 @@ class UserController {
   static requestForgetPassword = async (req, res) => {
     try {
       const { email } = req.query;
-      const user = await userServices.findUser(email);
+      const user = await userServices.findUser(email, ['image']);
       if (!user) throw new Error('Email Not Found!');
       const payload = {
         id: user.id,
@@ -202,7 +202,7 @@ class UserController {
   static getForgetPasswordToken = async (req, res) => {
     try {
       const { email } = req.query;
-      const result = await userServices.findUser(email);
+      const result = await userServices.findUser(email, ['image']);
       sendResponse({
         res,
         statusCode: 200,
