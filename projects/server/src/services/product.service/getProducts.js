@@ -60,6 +60,8 @@ function generateFilters(req) {
   // query for sort by stock and sold
   if (req.query.sortBy === 'stock' && !req.query.warehouseId)
     req.query.sortBy = STOCK_QUERY;
+  else if (req.query.sortBy === 'inactive-stock')
+    req.query.sortBy = INACTIVE_STOCK_QUERY;
   else if (req.query.sortBy === 'sold') req.query.sortBy = SOLD_QUERY;
 
   const { name, sortBy, orderBy, paranoid, isPaginated, page, perPage } =

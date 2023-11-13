@@ -104,6 +104,7 @@ const productValidator = {
               'updatedAt',
               'deletedAt',
               'stock',
+              'inactive-stock',
               'sold'
             )
             .allow(''),
