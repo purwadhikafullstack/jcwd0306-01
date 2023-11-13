@@ -1,5 +1,5 @@
 /* eslint-disable default-case */
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 const fs = require('fs');
 const handlebars = require('handlebars');
 const path = require('path');
@@ -25,17 +25,16 @@ class User extends Service {
   getByID = async (req) => {
     const { id } = req.params;
     const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
+    if (decoded.id !== Number(id))
+      throw new ResponseError('Invalid credential', 401);
 
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password'] },
-      raw: true,
+      include: [{ model: db.WarehouseUser, paranoid: false }],
       logging: false,
     });
 
-    if (decoded.id !== user.id)
-      throw new ResponseError('invalid credential', 400);
-
-    const token = jwt.sign(user, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
 
@@ -139,19 +138,21 @@ class User extends Service {
       where: {
         email,
       },
+      include: [{ model: db.WarehouseUser, paranoid: false }],
     });
-    // console.log('result', result.dataValues.password);
+
     if (!result) throw new Error('wrong email/password');
-    const isValid = await bcrypt.compare(password, result.dataValues.password);
-    // console.log('isValid', isValid);
+    const isValid = await bcrypt.compare(
+      password,
+      result.getDataValue('password')
+    );
+
     if (!isValid) {
       throw new Error('wrong password');
     }
     result.setDataValue('password', undefined);
 
-    const payload = { ...result.toJSON() };
-    // console.log('payload', payload);
-
+    const payload = result.toJSON();
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });

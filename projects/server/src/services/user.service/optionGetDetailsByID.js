@@ -30,6 +30,7 @@ const attributesCountStatus = {
 };
 
 const includeOrderCart = [
+  { model: db.WarehouseUser, paranoid: false },
   {
     model: db.Order,
     as: 'UserOrder',
