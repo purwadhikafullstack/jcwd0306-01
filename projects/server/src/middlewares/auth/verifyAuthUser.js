@@ -19,24 +19,31 @@ async function verifyUserRole({
   });
 
   if (userId && user.id !== Number(userId))
-    throw new ResponseError('invalid credential', 400);
+    throw new ResponseError('Invalid credential', 401);
 
-  if (isVerified && !user.isVerified)
-    throw new ResponseError('user unverified', 400);
+  if (isCustomer && user.isCustomer) {
+    if (isVerified && !user.isVerified)
+      throw new ResponseError('User unverified', 401);
+    return;
+  }
 
-  if (isCustomer && user.isCustomer) return;
-
-  if (isAdmin && user.isAdmin) return;
+  if (isAdmin && user.isAdmin) {
+    if (isVerified && !user.isVerified)
+      throw new ResponseError('User unverified', 401);
+    return;
+  }
 
   if (isWarehouseAdmin && warehouseId) {
-    const warehouseUser = WarehouseUser.findOne({
+    if (isVerified && !user.isVerified)
+      throw new ResponseError('User unverified', 401);
+
+    const warehouseUser = await WarehouseUser.findOne({
       where: { warehouseId, warehouseAdminId: user.id },
-      raw: true,
     });
     if (warehouseUser) return;
   }
 
-  throw new ResponseError('user unauthorized', 401);
+  throw new ResponseError('User unauthorized', 401);
 }
 
 function verifyAuthUser({
@@ -50,7 +57,7 @@ function verifyAuthUser({
     try {
       const { userId, warehouseId } = req.params;
       if (isLogin && !req.token) {
-        throw new ResponseError('token not provided', 401);
+        throw new ResponseError('Token not provided', 401);
       }
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
       await verifyUserRole({

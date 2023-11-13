@@ -19,7 +19,7 @@ class UserController {
     const t = await db.sequelize.transaction();
     try {
       const { email, firstName, lastName, password } = req.body;
-      const isUserExist = await userServices.findUser(email);
+      const isUserExist = await userServices.findUser(email, ['image']);
       if (isUserExist) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
@@ -67,6 +67,9 @@ class UserController {
   static edit = async (req, res) => {
     const { userId } = req.params;
     try {
+      if (req.file)
+        req.body.image = await sharp(req.file.buffer).png().toBuffer();
+
       const editedResult = await userServices.handleEdit(userId, req);
       sendResponse({ res, statusCode: 201, data: editedResult });
     } catch (error) {
@@ -86,10 +89,10 @@ class UserController {
 
   static renderBlob = async (req, res) => {
     try {
-      const { id } = req.params;
+      const { userId } = req.params;
       const user = await db.User.findOne({
         where: {
-          id,
+          id: userId,
         },
       });
 
@@ -179,7 +182,7 @@ class UserController {
   static requestForgetPassword = async (req, res) => {
     try {
       const { email } = req.query;
-      const user = await userServices.findUser(email);
+      const user = await userServices.findUser(email, ['image']);
       if (!user) throw new Error('Email Not Found!');
       const payload = {
         id: user.id,
@@ -199,7 +202,7 @@ class UserController {
   static getForgetPasswordToken = async (req, res) => {
     try {
       const { email } = req.query;
-      const result = await userServices.findUser(email);
+      const result = await userServices.findUser(email, ['image']);
       sendResponse({
         res,
         statusCode: 200,
@@ -216,6 +219,33 @@ class UserController {
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
+    }
+  };
+
+  static getUserImageById = async (req, res) => {
+    try {
+      const image = await userServices.getUserImagebyId(req);
+      res.set('Content-type', 'image/png').send(image);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static getAllUsers = async (req, res) => {
+    try {
+      const result = await db.User.findAll({
+        attributes: { exclude: ['image'] }, // Exclude the 'image' column
+        // include: [
+        //   {
+        //     model: db.WarehouseUser,
+        //     attributes: ['warehouseAdminId'],
+        //     required: true, // INNER JOIN
+        //   },
+        // ],
+      });
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }

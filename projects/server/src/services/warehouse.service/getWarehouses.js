@@ -1,7 +1,7 @@
 const { Warehouse, WarehouseAddress, Province, City } = require('../../models');
 
 async function getWarehouses() {
-  const warehouses = Warehouse.findAll({
+  const warehouses = await Warehouse.findAll({
     paranoid: false,
     include: [
       {
@@ -9,7 +9,7 @@ async function getWarehouses() {
         include: [{ model: Province }, { model: City }],
       },
     ],
-    logging: false,
+    order: [['updatedAt', 'DESC']],
   });
   return warehouses;
 }

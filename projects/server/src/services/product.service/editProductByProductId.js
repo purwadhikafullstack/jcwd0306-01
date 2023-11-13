@@ -50,6 +50,9 @@ async function deleteProductImages(req, transaction) {
     where: { id: req.body.imageIdsToDelete },
     transaction,
   });
+}
+
+async function checkProductImages(req, transaction) {
   const productImages = await ProductImage.findAll({
     attributes: ['id'],
     where: { productId: req.params.productId },
@@ -68,6 +71,7 @@ async function editProductByProductId(req) {
       await updateProductImages(req, t);
     if (req.body.imageIdsToDelete && req.body.imageIdsToDelete.length !== 0)
       await deleteProductImages(req, t);
+    await checkProductImages(req, t);
     const result = await getProductByProductId(req.params.productId, t);
     return result;
   });

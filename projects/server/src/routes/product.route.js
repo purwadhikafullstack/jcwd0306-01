@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { productController } = require('../controllers');
+const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
 const multerBlobUploader = require('../middlewares/multers/multerBlobUploader');
 const multerErrorHandler = require('../middlewares/multers/multerErrorHandler');
 const { productValidator } = require('../middlewares/validators');
@@ -44,6 +45,19 @@ router.put(
   '/:productId',
   productValidator.updateProductActivationByProductId,
   productController.updateProductActivationByProductId
+);
+
+// update warehouse product stock
+router.patch(
+  '/:productId/warehouseproducts',
+  verifyAuthUser({
+    isLogin: true,
+    isAdmin: true,
+    isWarehouseAdmin: true,
+    isVerified: true,
+  }),
+  productValidator.updateWarehouseProductStock,
+  productController.updateWarehouseProductStock
 );
 
 module.exports = router;

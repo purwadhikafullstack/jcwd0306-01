@@ -2,6 +2,7 @@ const axios = require('axios');
 const { ResponseError } = require('../../errors');
 const {
   sequelize,
+  Product,
   Warehouse,
   WarehouseAddress,
   Province,
@@ -77,11 +78,23 @@ async function addWarehouseAddress(warehouse, values, transaction) {
   });
 }
 
+async function addWarehouseProducts(warehouse, transaction) {
+  const products = await Product.findAll({ paranoid: false, transaction });
+  if (products.length !== 0) {
+    await warehouse.setProducts(products, {
+      through: { stock: 0 },
+      paranoid: false,
+      transaction,
+    });
+  }
+}
+
 async function createWarehouse(req) {
   const warehouse = await sequelize.transaction(async (t) => {
     await getLocation(req, t);
     const data = await addWarehouse(req.body, t);
     await addWarehouseAddress(data, req.body, t);
+    await addWarehouseProducts(data, t);
     const result = await Warehouse.findByPk(data.getDataValue('id'), {
       include: [
         {

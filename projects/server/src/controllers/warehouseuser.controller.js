@@ -30,6 +30,25 @@ const warehouseUserController = {
       sendResponse({ res, error });
     }
   },
+
+  getAllWarehouseAdmin: async (req, res) => {
+    try {
+      const warehouseAdmin = await warehouseUserService.getAllWarehouseAdmin();
+      sendResponse({ res, statusCode: 200, data: warehouseAdmin });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  editWarehouseAdmin: async (req, res) => {
+    try {
+      const edited = await warehouseUserService.editWarehouseAdmin(req);
+      sendResponse({ res, statusCode: 200, data: edited });
+    } catch (error) {
+      console.error(error);
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = warehouseUserController;
