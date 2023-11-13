@@ -59,13 +59,29 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
 
       // ======================================================
+      // Product < ProductCategory > Category
+      // ======================================================
       models.Product.belongsToMany(models.Category, {
         through: models.ProductCategory,
         foreignKey: { name: 'productId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+      models.Product.hasMany(models.ProductCategory, {
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+      models.Product.belongsToMany(models.Category, {
+        through: models.ProductCategory,
+        foreignKey: { name: 'productId', primaryKey: true, unique: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: 'Categories_getProducts', // used on getProducts service
+      });
+      // ======================================================
 
+      // ======================================================
       models.Product.hasMany(models.ProductImage, {
         foreignKey: { name: 'productId', allowNull: false },
         onDelete: 'CASCADE',

@@ -16,7 +16,7 @@ router.get(
   userController.getForgetPasswordToken
 );
 router.get(
-  `/details/:id`,
+  '/details/:id',
   verifyAuthUser({ isCustomer: true, isAdmin: true }),
   userController.getDetailsById
 );

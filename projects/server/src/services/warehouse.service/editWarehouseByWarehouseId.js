@@ -12,17 +12,15 @@ async function getProvinceName(provinceId, transaction) {
   const province = await Province.findByPk(provinceId, {
     attributes: ['name'],
     transaction,
-    raw: true,
   });
   if (!province) throw new ResponseError('province not found', 404);
-  return province.name;
+  return province.getDataValue('name');
 }
 
 async function getCityName(provinceId, cityId, transaction) {
   const city = await City.findByPk(cityId, {
     attributes: ['name', 'provinceId'],
     transaction,
-    raw: true,
   });
   if (!city) throw new ResponseError('city not found', 404);
   if (city.provinceId !== provinceId)
@@ -30,7 +28,7 @@ async function getCityName(provinceId, cityId, transaction) {
       `city(${cityId}) is not in province(${provinceId})`,
       400
     );
-  return city.name;
+  return city.getDataValue('name');
 }
 
 async function getLocation(req, transaction) {
@@ -49,6 +47,7 @@ async function getLocation(req, transaction) {
 
 async function editWarehouse(warehouseId, values, transaction) {
   await Warehouse.update(values, {
+    paranoid: false,
     where: { id: warehouseId },
     fields: ['name'],
     transaction,
@@ -79,6 +78,7 @@ async function editWarehouseByWarehouseId(req) {
     await editWarehouse(warehouseId, req.body, t);
     await editWarehouseAddress(warehouseId, req.body, t);
     const result = await Warehouse.findByPk(warehouseId, {
+      paranoid: false,
       include: [
         {
           model: WarehouseAddress,
@@ -87,8 +87,8 @@ async function editWarehouseByWarehouseId(req) {
       ],
       transaction: t,
     });
-    if (!result) throw new ResponseError('warehouse not found', 404);
-    return result.toJSON();
+    if (!result) throw new ResponseError('Warehouse not found', 404);
+    return result;
   });
   return warehouse;
 }

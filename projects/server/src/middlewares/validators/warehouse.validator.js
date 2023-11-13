@@ -60,6 +60,20 @@ const warehouseValidator = {
     }
   },
 
+  getWarehouseByWarehouseId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   updateWarehouseActivationByWarehouseId: (req, res, next) => {
     try {
       validateJoiSchema(

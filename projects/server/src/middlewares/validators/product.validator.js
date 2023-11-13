@@ -23,7 +23,7 @@ const productValidator = {
           weight: Joi.number().min(0).required(),
           discount: Joi.number().min(0).max(1),
           categoryIds: Joi.array().items(Joi.number().integer().min(1)),
-          images: Joi.array().items(Joi.binary()).required(),
+          images: Joi.array().items(Joi.binary().required()).required(),
         }).required()
       );
       next();
@@ -81,6 +81,8 @@ const productValidator = {
         req.query.isPaginated = JSON.parse(req.query.isPaginated);
       if (req.query.categoryId)
         req.query.categoryId = Number(req.query.categoryId);
+      if (req.query.warehouseId)
+        req.query.warehouseId = Number(req.query.warehouseId);
       if (req.query.page) req.query.page = Number(req.query.page);
       if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
 
@@ -89,6 +91,7 @@ const productValidator = {
         Joi.object({
           name: Joi.string().allow(''),
           categoryId: Joi.number().integer().min(1).allow(''),
+          warehouseId: Joi.number().integer().min(1).allow(''),
           sortBy: Joi.string()
             .valid(
               'id',
@@ -157,6 +160,27 @@ const productValidator = {
         req.query,
         Joi.object({
           action: Joi.string().valid('activate', 'deactivate').required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  updateWarehouseProductStock: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          productId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          warehouseId: Joi.number().integer().min(1).required(),
+          quantity: Joi.number().integer().required(),
         }).required()
       );
       next();
