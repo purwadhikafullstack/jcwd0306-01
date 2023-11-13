@@ -67,6 +67,7 @@ const WAREHOUSEPRODUCTS_QUERY = sequelize.literal(
 async function getProductByProductId(productId, transaction) {
   const product = await Product.findByPk(productId, {
     paranoid: false,
+    logging: false,
     transaction,
     attributes: {
       include: [

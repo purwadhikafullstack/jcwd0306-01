@@ -26,6 +26,9 @@ router.get(
 // get warehouses
 router.get('/', warehouseController.getWarehouses);
 
+// get Warehouse By Name
+router.get('/search', warehouseController.getWarehouseByName);
+
 // update warehouse activation by warehouseId
 router.put(
   '/:warehouseId',

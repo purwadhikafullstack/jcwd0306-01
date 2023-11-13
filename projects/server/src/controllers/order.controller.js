@@ -1,10 +1,10 @@
-const { OrderService } = require('../services');
+const { orderService } = require('../services');
 const { sendResponse } = require('../utils');
 
 class OrderController {
   static getByID = async (req, res) => {
     try {
-      const result = await OrderService.getByID(req);
+      const result = await orderService.getByID(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -13,7 +13,16 @@ class OrderController {
 
   static getOrderByUserId = async (req, res) => {
     try {
-      const result = await OrderService.getOrderByUserId(req);
+      const result = await orderService.getOrderByUserId(req);
+      return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
+  static getByQuery = async (req, res) => {
+    try {
+      const result = await orderService.getByQuery(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -22,7 +31,7 @@ class OrderController {
 
   static createNewTransaction = async (req, res) => {
     try {
-      const result = await OrderService.createNewTransaction(req);
+      const result = await orderService.createNewTransaction(req);
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -31,7 +40,10 @@ class OrderController {
 
   static uploadPaymentProof = async (req, res) => {
     try {
-      const result = await OrderService.uploadPaymentProof(req);
+      const result = await orderService.uploadPaymentProof(req);
+      global?.io.emit(`warehouse-${req.body.warehouseId}`, {
+        message: `New transaction payment to be verified`,
+      });
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -40,7 +52,7 @@ class OrderController {
 
   static renderPaymentProof = async (req, res) => {
     try {
-      const result = await OrderService.renderPaymentProofImg(req);
+      const result = await orderService.renderPaymentProofImg(req);
       res.set('Content-type', 'image/png');
       return res.send(result?.paymentProof);
     } catch (error) {
@@ -48,10 +60,28 @@ class OrderController {
     }
   };
 
-  static userCancelOrder = async (req, res) => {
+  static userUpdateOrder = async (req, res) => {
     try {
-      await OrderService.update(req);
+      await orderService.update(req);
       return res.send('success');
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
+  static adminUpdateOrder = async (req, res) => {
+    try {
+      const { status } = req.body;
+      await orderService.adminUpdateOrder(req);
+      if (status === 'unpaid')
+        global?.io.emit(`unpaid-${req.baseData.userId}`, {
+          message: 'You need to review one of transaction',
+          data: req.baseData,
+        });
+      else
+        global?.io.emit(`notification-${req.baseData.userId}`, { [status]: 1 });
+
+      return res.send(`success`);
     } catch (error) {
       return sendResponse({ res, error });
     }

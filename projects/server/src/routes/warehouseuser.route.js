@@ -2,10 +2,13 @@ const router = require('express').Router();
 const { warehouseUserController } = require('../controllers');
 const { warehouseUserValidator } = require('../middlewares/validators');
 
-// create warehouse users by warehouseId
+// get all warehouse admin
+router.get('/', warehouseUserController.getAllWarehouseAdmin);
+
+// create warehouse users by user email
 router.post(
   '/:warehouseId/users',
-  warehouseUserValidator.createWarehouseUsersByWarehouseId,
+  // warehouseUserValidator.createWarehouseUsersByWarehouseId,
   warehouseUserController.createWarehouseUsersByWarehouseId
 );
 
@@ -22,5 +25,8 @@ router.get(
   warehouseUserValidator.getWarehouseUsersByWarehouseId,
   warehouseUserController.getWarehouseUsersByWarehouseId
 );
+
+// edit warehouse user by warehouse Id
+router.patch('/:whId', warehouseUserController.editWarehouseAdmin);
 
 module.exports = router;

@@ -105,6 +105,7 @@ async function receiveProducts(req, filters) {
 
   const products = await Product.findAll({
     ...filters,
+    logging: false,
     attributes: {
       include: [
         [SOLD_QUERY, 'sold'],

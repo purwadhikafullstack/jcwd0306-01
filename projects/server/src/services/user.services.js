@@ -29,7 +29,7 @@ class User extends Service {
       throw new ResponseError('Invalid credential', 401);
 
     const user = await this.db.findByPk(id, {
-      attributes: { exclude: ['password'] },
+      attributes: { exclude: ['password', 'image'] },
       include: [{ model: db.WarehouseUser, paranoid: false }],
       logging: false,
     });
@@ -41,13 +41,13 @@ class User extends Service {
     return { token, user };
   };
 
-  findUser = async (email) => {
+  findUser = async (email, config = []) => {
     try {
       const data = await this.db.findOne({
         where: {
           [Op.or]: [{ email }],
         },
-        attributes: { exclude: ['password'] },
+        attributes: { exclude: ['password', ...config] },
         raw: true,
         logging: false,
       });
@@ -139,8 +139,8 @@ class User extends Service {
         email,
       },
       include: [{ model: db.WarehouseUser, paranoid: false }],
+      attributes: { exclude: ['image'] },
     });
-
     if (!result) throw new Error('wrong email/password');
     const isValid = await bcrypt.compare(
       password,
@@ -161,13 +161,13 @@ class User extends Service {
   };
 
   handleEdit = async (userId, req) => {
-    await this.db.update(
-      {
-        ...req.body,
-      },
-      { where: { id: userId } }
-    );
-    const result = await this.getByUserId(req, { where: { id: userId } });
+    const { isdefault, ...updatedData } = req.body;
+
+    await this.db.update(updatedData, {
+      where: { id: userId },
+    });
+
+    const result = await this.db.findByPk(userId);
     return result;
   };
 
@@ -217,7 +217,7 @@ class User extends Service {
 
   handleForgetPassword = async (email, hashPassword, t) => {
     try {
-      const isUserExist = await this.findUser(email);
+      const isUserExist = await this.findUser(email, ['image']);
       if (!isUserExist) throw new Error('User not Found!');
 
       const data = await this.db.update(
@@ -240,6 +240,16 @@ class User extends Service {
     } catch (error) {
       return error;
     }
+  };
+
+  getUserImagebyId = async (req) => {
+    const user = await this.db.findByPk(req.params.id, {
+      attributes: ['image'],
+      raw: true,
+      logging: false,
+    });
+    if (!user?.image) throw new ResponseError('user image not found', 404);
+    return user.image;
   };
 }
 
