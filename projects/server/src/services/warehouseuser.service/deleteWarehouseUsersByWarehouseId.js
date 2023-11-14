@@ -7,6 +7,7 @@ async function deleteWarehouseUsersByWarehouseId(req) {
       warehouseAdminId: req.body.userIds,
     },
     logging: false,
+    force: true,
   });
 }
 

@@ -24,6 +24,7 @@ const {
   orderRouter,
   warehouseRouter,
   warehouseUserRouter,
+  salesReportRouter,
 } = require('./routes');
 const cronDeleteUnpaid = require('./utils/cron');
 
@@ -59,6 +60,7 @@ app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
 app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
+app.use('/sales-reports', salesReportRouter);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: `*` } });
@@ -67,7 +69,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
-client.connect();
+// client.connect(); // MATIKAN SEMENTARA BUAT LIAT LOG, INGETIN NTAR PAS MAU MERGE
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');

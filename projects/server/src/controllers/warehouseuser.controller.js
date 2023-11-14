@@ -8,6 +8,7 @@ const warehouseUserController = {
         await warehouseUserService.createWarehouseUsersByWarehouseId(req);
       sendResponse({ res, statusCode: 201, data: warehouse });
     } catch (error) {
+      // console.log(error);
       sendResponse({ res, error });
     }
   },
