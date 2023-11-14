@@ -22,6 +22,18 @@ const stockMutationController = {
       sendResponse({ res, error });
     }
   },
+
+  updateStockMutationStatusByStockMutationId: async (req, res) => {
+    try {
+      const stockMutation =
+        await stockMutationService.updateStockMutationStatusByStockMutationId(
+          req
+        );
+      sendResponse({ res, statusCode: 200, data: stockMutation });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = stockMutationController;

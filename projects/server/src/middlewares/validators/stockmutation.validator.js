@@ -38,6 +38,28 @@ const stockMutationValidator = {
       sendResponse({ res, error });
     }
   },
+
+  updateStockMutationStatusByStockMutationId: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          stockMutationId: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          status: Joi.string()
+            .valid('rejected', 'processed', 'shipped', 'received')
+            .required(),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = stockMutationValidator;

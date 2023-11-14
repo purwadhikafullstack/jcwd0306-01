@@ -26,4 +26,11 @@ router.get(
   stockMutationController.getStockMutationByStockMutationId
 );
 
+// update stock mutation status by stockMutationId
+router.patch(
+  '/:stockMutationId',
+  stockMutationValidator.updateStockMutationStatusByStockMutationId,
+  stockMutationController.updateStockMutationStatusByStockMutationId
+);
+
 module.exports = router;
