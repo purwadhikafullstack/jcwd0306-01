@@ -4,14 +4,12 @@ const { User, WarehouseUser, StockMutation } = require('../../models');
 const { sendResponse } = require('../../utils');
 
 async function verifyUserRole({
+  req,
   decoded,
   isAdmin,
   isWarehouseAdmin,
   isCustomer,
   isVerified,
-  userId,
-  warehouseId,
-  stockMutationId,
 }) {
   const user = await User.findByPk(decoded.id, {
     attributes: ['id', 'isAdmin', 'isCustomer', 'isVerified'],
@@ -19,7 +17,7 @@ async function verifyUserRole({
     logging: false,
   });
 
-  if (userId && user.id !== Number(userId))
+  if (req.params.userId && Number(req.params.userId) !== user.id)
     throw new ResponseError('Invalid credential', 401);
 
   // to verify is user a customer
@@ -39,6 +37,7 @@ async function verifyUserRole({
   }
 
   // to verify is user a warehouse admin
+  const { warehouseId, stockMutationId } = req.params;
   if (isWarehouseAdmin && (warehouseId || stockMutationId)) {
     // to verify is warehouse admin verified
     if (isVerified && !user.isVerified)
@@ -47,24 +46,35 @@ async function verifyUserRole({
     const warehouseUser = await WarehouseUser.findOne({
       where: { warehouseAdminId: user.id },
       raw: true,
+      logging: false,
     });
+    if (!warehouseUser) throw new ResponseError('User unauthorized', 401);
 
-    // to verify warehouseAdmin by warehouseId
-    if (warehouseId && warehouseUser) {
-      if (warehouseId === warehouseUser.warehouseId) return;
-    }
+    // to verify warehouse admin by warehouseId
+    if (warehouseId && warehouseId === warehouseUser.warehouseId) return;
 
-    // to verify warehouseAdmin by warehouseId in stokmutation
-    if (stockMutationId && warehouseUser) {
-      const stockMutation = await StockMutation.findByPk(stockMutationId, {
-        attributes: ['fromWarehouseId', 'toWarehouseId'],
-        raw: true,
-      });
-      if (!stockMutation)
-        throw new ResponseError('Stock mutation not found', 404);
+    // to verify warehouse admin by warehouseId in stockmutation
+    if (req.baseUrl === '/stockmutations') {
+      // to verify warehouse admin through stockMutationId
+      if (stockMutationId) {
+        const stockMutation = await StockMutation.findByPk(stockMutationId, {
+          attributes: ['fromWarehouseId', 'toWarehouseId'],
+          raw: true,
+          logging: false,
+        });
+        if (!stockMutation)
+          throw new ResponseError('Stock mutation not found', 404);
+        if (
+          warehouseUser.warehouseId === stockMutation.fromWarehouseId ||
+          warehouseUser.warehouseId === stockMutation.toWarehouseId
+        )
+          return;
+      }
+
+      // to verify warehouse admin through warehouseId in req.body
       if (
-        warehouseUser.warehouseId === stockMutation.fromWarehouseId ||
-        warehouseUser.warehouseId === stockMutation.toWarehouseId
+        warehouseUser.warehouseId === req.body.fromWarehouseId ||
+        warehouseUser.warehouseId === req.body.toWarehouseId
       )
         return;
     }
@@ -82,20 +92,17 @@ function verifyAuthUser({
 }) {
   return async (req, res, next) => {
     try {
-      const { userId, warehouseId, stockMutationId } = req.params;
       if (isLogin && !req.token) {
         throw new ResponseError('Token not provided', 401);
       }
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
       await verifyUserRole({
+        req,
         decoded,
         isAdmin,
         isWarehouseAdmin,
         isCustomer,
         isVerified,
-        userId,
-        warehouseId,
-        stockMutationId,
       });
       req.user = decoded;
 
