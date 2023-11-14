@@ -11,6 +11,15 @@ const stockMutationController = {
     }
   },
 
+  deleteStockMutationByStockMutationId: async (req, res) => {
+    try {
+      await stockMutationService.deleteStockMutationByStockMutationId(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   getStockMutationByStockMutationId: async (req, res) => {
     try {
       const stockMutation =

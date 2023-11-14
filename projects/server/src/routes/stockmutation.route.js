@@ -19,6 +19,13 @@ router.post(
   stockMutationController.createStockMutation
 );
 
+// delete stock mutation by stockMutationId
+router.delete(
+  '/:stockMutationId',
+  stockMutationValidator.deleteStockMutationByStockMutationId,
+  stockMutationController.deleteStockMutationByStockMutationId
+);
+
 // get stock mutation by stockMutationId
 router.get(
   '/:stockMutationId',
