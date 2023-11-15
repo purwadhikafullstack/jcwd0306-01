@@ -131,7 +131,6 @@ class UserController {
     const { email } = req.body;
     try {
       const check = await userServices.findUserEditPassword(email);
-      console.log(check);
       const match = await bcrypt.compare(req.body.oldPassword, check.password);
       if (!match) {
         await t.rollback();
@@ -234,14 +233,7 @@ class UserController {
   static getAllUsers = async (req, res) => {
     try {
       const result = await db.User.findAll({
-        attributes: { exclude: ['image'] }, // Exclude the 'image' column
-        // include: [
-        //   {
-        //     model: db.WarehouseUser,
-        //     attributes: ['warehouseAdminId'],
-        //     required: true, // INNER JOIN
-        //   },
-        // ],
+        attributes: { exclude: ['image'] },
       });
       sendResponse({ res, statusCode: 200, data: result });
     } catch (error) {
