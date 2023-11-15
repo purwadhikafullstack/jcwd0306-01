@@ -4,6 +4,7 @@ const sharp = require('sharp');
 const userServices = require('../services/user.services');
 const db = require('../models');
 const sendResponse = require('../utils/sendResponse');
+const getAllUsers = require('../services/user.service/getAllUsers');
 
 class UserController {
   static getById = async (req, res) => {
@@ -232,10 +233,8 @@ class UserController {
 
   static getAllUsers = async (req, res) => {
     try {
-      const result = await db.User.findAll({
-        attributes: { exclude: ['image'] },
-      });
-      sendResponse({ res, statusCode: 200, data: result });
+      const [users, paginationInfo] = await getAllUsers(req);
+      sendResponse({ res, statusCode: 200, data: users, ...paginationInfo });
     } catch (error) {
       sendResponse({ res, error });
     }

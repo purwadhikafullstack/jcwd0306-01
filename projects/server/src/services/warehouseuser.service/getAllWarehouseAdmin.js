@@ -24,7 +24,6 @@ function generateFilters(req) {
     order,
     limit: perPage,
     offset: (page - 1) * perPage,
-    // paranoid,
   };
 }
 
@@ -38,12 +37,6 @@ async function getAllWarehouseAdmin(req) {
       {
         model: User,
         attributes: ['firstName', 'email', 'id'],
-        where: {
-          [Op.or]: [
-            { firstName: { [Op.like]: `%${name || ''}%` } },
-            { lastName: { [Op.like]: `%${name || ''}%` } },
-          ],
-        },
       },
       {
         model: Warehouse,
@@ -62,6 +55,18 @@ async function getAllWarehouseAdmin(req) {
         ],
       },
     ],
+    where: {
+      [Op.or]: [
+        { '$User.firstName$': { [Op.like]: `%${name || ''}%` } },
+        { '$User.lastName$': { [Op.like]: `%${name || ''}%` } },
+        { '$Warehouse.name$': { [Op.like]: `%${name || ''}%` } },
+        {
+          '$Warehouse.WarehouseAddress.Province.name$': {
+            [Op.like]: `%${name || ''}%`,
+          },
+        },
+      ],
+    },
   });
   if (!result) throw new ResponseError('warehouse admin not found', 404);
 
@@ -98,6 +103,18 @@ async function getAllWarehouseAdmin(req) {
           ],
         },
       ],
+      where: {
+        [Op.or]: [
+          { '$User.firstName$': { [Op.like]: `%${name || ''}%` } },
+          { '$User.lastName$': { [Op.like]: `%${name || ''}%` } },
+          { '$Warehouse.name$': { [Op.like]: `%${name || ''}%` } },
+          {
+            '$Warehouse.WarehouseAddress.Province.name$': {
+              [Op.like]: `%${name || ''}%`,
+            },
+          },
+        ],
+      },
     })
   ).length;
 
