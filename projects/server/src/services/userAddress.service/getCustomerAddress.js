@@ -4,7 +4,7 @@ const { UserAddress, Province, City } = require('../../models');
 function generateFilters(req) {
   // set default values
   req.query.page = +req.query.page || 1;
-  req.query.perPage = +req.query.perPage || 10;
+  req.query.perPage = +req.query.perPage || 5;
 
   const { page, perPage } = req.query;
 
