@@ -58,6 +58,15 @@ const productController = {
       sendResponse({ res, error });
     }
   },
+
+  updateWarehouseProductStock: async (req, res) => {
+    try {
+      const product = await productService.updateWarehouseProductStock(req);
+      sendResponse({ res, statusCode: 200, data: product });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = productController;

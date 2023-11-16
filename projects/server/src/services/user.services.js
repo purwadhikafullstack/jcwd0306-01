@@ -1,5 +1,5 @@
 /* eslint-disable default-case */
-const { Op, where } = require('sequelize');
+const { Op } = require('sequelize');
 const fs = require('fs');
 const handlebars = require('handlebars');
 const path = require('path');
@@ -25,30 +25,29 @@ class User extends Service {
   getByID = async (req) => {
     const { id } = req.params;
     const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
+    if (decoded.id !== Number(id))
+      throw new ResponseError('Invalid credential', 401);
 
     const user = await this.db.findByPk(id, {
-      attributes: { exclude: ['password'] },
-      raw: true,
+      attributes: { exclude: ['password', 'image'] },
+      include: [{ model: db.WarehouseUser, paranoid: false }],
       logging: false,
     });
 
-    if (decoded.id !== user.id)
-      throw new ResponseError('invalid credential', 400);
-
-    const token = jwt.sign(user, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
 
     return { token, user };
   };
 
-  findUser = async (email) => {
+  findUser = async (email, config = []) => {
     try {
       const data = await this.db.findOne({
         where: {
           [Op.or]: [{ email }],
         },
-        attributes: { exclude: ['password'] },
+        attributes: { exclude: ['password', ...config] },
         raw: true,
         logging: false,
       });
@@ -139,19 +138,21 @@ class User extends Service {
       where: {
         email,
       },
+      include: [{ model: db.WarehouseUser, paranoid: false }],
+      attributes: { exclude: ['image'] },
     });
-    // console.log('result', result.dataValues.password);
     if (!result) throw new Error('wrong email/password');
-    const isValid = await bcrypt.compare(password, result.dataValues.password);
-    // console.log('isValid', isValid);
+    const isValid = await bcrypt.compare(
+      password,
+      result.getDataValue('password')
+    );
+
     if (!isValid) {
       throw new Error('wrong password');
     }
     result.setDataValue('password', undefined);
 
-    const payload = { ...result.toJSON() };
-    // console.log('payload', payload);
-
+    const payload = result.toJSON();
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
@@ -160,13 +161,13 @@ class User extends Service {
   };
 
   handleEdit = async (userId, req) => {
-    await this.db.update(
-      {
-        ...req.body,
-      },
-      { where: { id: userId } }
-    );
-    const result = await this.getByUserId(req, { where: { id: userId } });
+    const { isdefault, ...updatedData } = req.body;
+
+    await this.db.update(updatedData, {
+      where: { id: userId },
+    });
+
+    const result = await this.db.findByPk(userId);
     return result;
   };
 
@@ -215,7 +216,7 @@ class User extends Service {
 
   handleForgetPassword = async (email, hashPassword, t) => {
     try {
-      const isUserExist = await this.findUser(email);
+      const isUserExist = await this.findUser(email, ['image']);
       if (!isUserExist) throw new Error('User not Found!');
 
       const data = await this.db.update(
@@ -238,6 +239,16 @@ class User extends Service {
     } catch (error) {
       return error;
     }
+  };
+
+  getUserImagebyId = async (req) => {
+    const user = await this.db.findByPk(req.params.id, {
+      attributes: ['image'],
+      raw: true,
+      logging: false,
+    });
+    if (!user?.image) throw new ResponseError('user image not found', 404);
+    return user.image;
   };
 }
 
