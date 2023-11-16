@@ -53,6 +53,48 @@ const stockMutationValidator = {
     }
   },
 
+  getStockMutations: (req, res, next) => {
+    try {
+      // convert data type
+      if (req.query.warehouseId)
+        req.query.warehouseId = Number(req.query.warehouseId);
+      if (req.query.page) req.query.page = Number(req.query.page);
+      if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
+
+      validateJoiSchema(
+        req.query,
+        Joi.object({
+          search: Joi.string().allow(''),
+          warehouseId: Joi.number().integer().min(1).allow(''),
+          status: Joi.string()
+            .valid('rejected', 'requested', 'processed', 'shipped', 'received')
+            .allow(''),
+          type: Joi.string().valid('request', 'order').allow(''),
+          sortBy: Joi.string()
+            .valid(
+              'id',
+              'status',
+              'quantity',
+              'type',
+              'orderId',
+              'createdAt',
+              'updatedAt',
+              'product-name',
+              'from-wh-name',
+              'to-wh-name'
+            )
+            .allow(''),
+          orderBy: Joi.string().valid('ASC', 'asc', 'DESC', 'desc').allow(''),
+          page: Joi.number().integer().min(1).allow(''),
+          perPage: Joi.number().integer().min(1).allow(''),
+        }).required()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   updateStockMutationStatusByStockMutationId: (req, res, next) => {
     try {
       validateJoiSchema(

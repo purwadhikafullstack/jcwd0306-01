@@ -33,6 +33,13 @@ router.get(
   stockMutationController.getStockMutationByStockMutationId
 );
 
+// get stock mutations
+router.get(
+  '/',
+  stockMutationValidator.getStockMutations,
+  stockMutationController.getStockMutations
+);
+
 // update stock mutation status by stockMutationId
 router.patch(
   '/:stockMutationId',

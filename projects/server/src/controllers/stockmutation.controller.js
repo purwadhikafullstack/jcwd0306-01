@@ -32,6 +32,21 @@ const stockMutationController = {
     }
   },
 
+  getStockMutations: async (req, res) => {
+    try {
+      const [stockMutations, paginationInfo] =
+        await stockMutationService.getStockMutations(req);
+      sendResponse({
+        res,
+        statusCode: 200,
+        data: stockMutations,
+        ...paginationInfo,
+      });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   updateStockMutationStatusByStockMutationId: async (req, res) => {
     try {
       const stockMutation =

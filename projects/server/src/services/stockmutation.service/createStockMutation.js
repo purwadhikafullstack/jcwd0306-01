@@ -1,5 +1,6 @@
 const { ResponseError } = require('../../errors');
 const { sequelize, Sequelize, StockMutation, Order } = require('../../models');
+const getStockMutationByStockMutationId = require('./getStockMutationByStockMutationId');
 
 async function createStockMutationTypeRequest(req, transaction) {
   const stockMutation = await StockMutation.create(
@@ -17,7 +18,11 @@ async function createStockMutationTypeRequest(req, transaction) {
       transaction,
     }
   );
-  return stockMutation;
+  const result = await getStockMutationByStockMutationId(
+    stockMutation.getDataValue('id'),
+    transaction
+  );
+  return result;
 }
 
 async function createStockMutationTypeOrder(req, transaction) {
@@ -52,7 +57,11 @@ async function createStockMutationTypeOrder(req, transaction) {
       transaction,
     }
   );
-  return stockMutation;
+  const result = await getStockMutationByStockMutationId(
+    stockMutation.getDataValue('id'),
+    transaction
+  );
+  return result;
 }
 
 async function createStockMutation(req) {
