@@ -79,7 +79,10 @@ class OrderController {
           data: req.baseData,
         });
       else
-        global?.io.emit(`notification-${req.baseData.userId}`, { [status]: 1 });
+        global?.io.emit(`notification-${req.baseData.userId}`, {
+          key: status,
+          value: 1,
+        });
 
       return res.send(`success`);
     } catch (error) {

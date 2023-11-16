@@ -35,7 +35,7 @@ const includeOrderCart = [
     as: 'UserOrder',
     where: { status: 'unpaid' },
     attributes: {
-      exclude: ['paymentProof', `warehouseId`, `adminId`],
+      exclude: ['paymentProof', `adminId`],
     },
     required: false,
   },
@@ -48,7 +48,11 @@ const includeOrderCart = [
       include: { model: db.ProductImage, attributes: ['id'] },
     },
   },
-  { model: db.WarehouseUser, required: false, attributes: ['warehouseId'] },
+  {
+    model: db.WarehouseUser,
+    required: false,
+    attributes: ['warehouseId'],
+  },
 ];
 
 module.exports = { attributesCountStatus, includeOrderCart };

@@ -206,7 +206,6 @@ class User extends Service {
 
   getDetailsById = async (req) => {
     const result = await this.getOneByID(req, {
-      logging: false,
       attributes: attributesCountStatus,
       include: includeOrderCart,
     });
@@ -221,7 +220,7 @@ class User extends Service {
 
       const data = await this.db.update(
         { password: hashPassword, forget_password_token: null },
-        { where: { email }, transaction: t }
+        { where: { email }, transaction: t, logging: false }
       );
       return data;
     } catch (error) {
@@ -233,7 +232,7 @@ class User extends Service {
     try {
       const result = await this.db.update(
         { forget_password_token: token },
-        { where: { email } }
+        { where: { email }, logging: false }
       );
       return result;
     } catch (error) {
