@@ -64,7 +64,6 @@ const warehouseController = {
   getWarehouseByUserId: async (req, res) => {
     try {
       const warehouses = await warehouseService.getWarehouseByUserId(req);
-      console.log(warehouses);
       return res.send(warehouses);
     } catch (error) {
       sendResponse({ res, error });

@@ -2,9 +2,9 @@ const { Op } = require('sequelize');
 const { Warehouse, WarehouseAddress, Province, City } = require('../../models');
 
 async function getWarehouseByUserId(req) {
-  console.log(req.query);
+  const whId = req.query.warehouseId.map((val) => Number(val));
   const warehouses = await Warehouse.findAll({
-    where: { id: { [Op.in]: req.query.warehouseId } },
+    where: { id: { [Op.in]: whId } },
     attributes: ['id'],
     include: [
       {
@@ -15,6 +15,7 @@ async function getWarehouseByUserId(req) {
         ],
       },
     ],
+    paranoid: false,
     logging: false,
   });
   return warehouses;

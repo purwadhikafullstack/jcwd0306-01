@@ -27,8 +27,9 @@ router.get(
 // get warehouses
 router.get('/', warehouseController.getWarehouses);
 
+// get WHID for admin
 router.get(
-  `/:userId`,
+  `/admin/:userId`,
   // verifyAuthUser({ isWarehouseAdmin: true }),
   warehouseController.getWarehouseByUserId
 );
