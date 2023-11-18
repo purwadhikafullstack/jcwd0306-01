@@ -4,10 +4,11 @@ const { sendResponse } = require('../utils');
 const salesReportController = {
   getSalesReports: async (req, res) => {
     try {
-      const orders = await salesReportService.getSalesReports();
+      const orders = await salesReportService.getSalesReports(req);
       sendResponse({ res, statusCode: 200, data: orders });
     } catch (error) {
       sendResponse({ res, error });
+      console.log(error);
     }
   },
 
