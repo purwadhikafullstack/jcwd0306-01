@@ -8,7 +8,6 @@ const salesReportController = {
       sendResponse({ res, statusCode: 200, data: orders });
     } catch (error) {
       sendResponse({ res, error });
-      console.log(error);
     }
   },
 
