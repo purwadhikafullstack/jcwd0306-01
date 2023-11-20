@@ -77,7 +77,7 @@ function generateFilters(req) {
     page,
     perPage,
   } = req.query;
-
+  
   return {
     logging: false,
     where: {

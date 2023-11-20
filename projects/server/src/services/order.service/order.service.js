@@ -126,12 +126,14 @@ class Order extends Service {
           const idx = warehouses.findIndex(
             (whse) => whse.dataValues.warehouseId === warehouseId
           );
-          if (idx === -1 || warehouses[idx].stock < quantity) {
-            const nearbyWhse = await findNearbyWarehouse(
-              warehouseId,
-              warehouses
-            );
-            const neededStock = quantity - warehouses[idx].stock;
+          const currStock = warehouses[idx]?.stock;
+          const tempWhse = warehouses.filter(
+            (whs) => whs.dataValues.stock > quantity
+          );
+          const source = tempWhse.length ? tempWhse : warehouses;
+          if (idx === -1 || currStock < quantity) {
+            const nearbyWhse = await findNearbyWarehouse(warehouseId, source);
+            const neededStock = currStock ? quantity - currStock : quantity;
             await doStockMutation(t, warehouseId, nearbyWhse, neededStock);
           }
           await doDecrementStock(t, quantity, warehouseId, productId);

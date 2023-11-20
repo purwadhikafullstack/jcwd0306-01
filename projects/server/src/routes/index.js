@@ -11,6 +11,8 @@ const warehouseRouter = require('./warehouse.route');
 const warehouseUserRouter = require('./warehouseuser.route');
 const stockMutationRouter = require('./stockmutation.route');
 
+const chatRouter = require(`./chat.route`);
+
 module.exports = {
   carouselRouter,
   cartRouter,
@@ -23,5 +25,6 @@ module.exports = {
   orderRouter,
   warehouseRouter,
   warehouseUserRouter,
+  chatRouter,
   stockMutationRouter,
 };

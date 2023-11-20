@@ -24,6 +24,7 @@ const {
   orderRouter,
   warehouseRouter,
   warehouseUserRouter,
+  chatRouter,
   stockMutationRouter,
 } = require('./routes');
 const cronDeleteUnpaid = require('./utils/cron');
@@ -61,6 +62,7 @@ app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
 app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
+app.use('/chat', chatRouter);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
