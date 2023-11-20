@@ -9,7 +9,10 @@ const optionGetByQuery = (limit, page, text, id, status, warehouseId) => ({
   limit,
   distinct: true,
   offset: page ? (Number(page) - 1) * limit : 0,
-  order: [['updatedAt', 'ASC']],
+  order: [
+    ['status', 'ASC'],
+    ['updatedAt', 'ASC'],
+  ],
   where: {
     status: { [Op.notIn]: ['unpaid', 'cancelled', 'rejected'] },
     ...(typeof status === 'string' && { status }),

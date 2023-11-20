@@ -2,7 +2,6 @@ const Joi = require('joi');
 const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 const db = require('../../models');
-const { sequelize } = require('../../models');
 
 const addressSchema = Joi.object({
   receiverPhone: Joi.string().required().regex(/^\d+$/),
