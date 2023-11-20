@@ -54,6 +54,8 @@ function generateFilters(req) {
   // set default values
   if (typeof req.query.paranoid !== 'boolean') req.query.paranoid = true;
   if (typeof req.query.isPaginated !== 'boolean') req.query.isPaginated = true;
+  req.query.sortBy = req.query.sortBy || 'updatedAt';
+  req.query.orderBy = req.query.orderBy || 'DESC';
   req.query.page = req.query.page || 1;
   req.query.perPage = req.query.perPage || 10;
 
@@ -64,50 +66,27 @@ function generateFilters(req) {
     req.query.sortBy = INACTIVE_STOCK_QUERY;
   else if (req.query.sortBy === 'sold') req.query.sortBy = SOLD_QUERY;
 
-  const { name, sortBy, orderBy, paranoid, isPaginated, page, perPage } =
-    req.query;
-  return {
-    where: name ? { name: { [Sequelize.Op.like]: `%${name}%` } } : undefined,
-    order:
-      req.query.warehouseId &&
-      ['stock', 'createdAt', 'updatedAt', undefined].includes(sortBy)
-        ? [[WarehouseProduct, sortBy || 'updatedAt', orderBy || 'DESC']]
-        : [[sortBy || 'updatedAt', orderBy || 'DESC']],
-    limit: isPaginated ? perPage : undefined,
-    offset: isPaginated ? (page - 1) * perPage : undefined,
+  const {
+    search,
+    categoryId,
+    warehouseId,
+    sortBy,
+    orderBy,
     paranoid,
-  };
-}
+    isPaginated,
+    page,
+    perPage,
+  } = req.query;
 
-async function receiveProducts(req, filters) {
-  const { categoryId, warehouseId } = req.query;
-
-  const totalData = (
-    await Product.findAll({
-      where: filters.where,
-      paranoid: filters.paranoid,
-      attributes: [],
-      include: [
-        {
-          model: Category,
-          where: categoryId ? { id: categoryId } : undefined,
-          attributes: [],
-          through: { attributes: [], paranoid: filters.paranoid },
-          paranoid: filters.paranoid,
-        },
-        {
-          model: WarehouseProduct,
-          where: warehouseId ? { warehouseId } : undefined,
-          attributes: [],
-          paranoid: filters.paranoid,
-        },
-      ],
-    })
-  ).length;
-
-  const products = await Product.findAll({
-    ...filters,
+  return {
     logging: false,
+    where: {
+      [Sequelize.Op.or]: {
+        name: { [Sequelize.Op.like]: `%${search || ''}%` },
+        description: { [Sequelize.Op.like]: `%${search || ''}%` },
+      },
+    },
+    having: paranoid ? { stock: { [Sequelize.Op.gt]: 0 } } : undefined,
     attributes: {
       include: [
         [SOLD_QUERY, 'sold'],
@@ -122,27 +101,40 @@ async function receiveProducts(req, filters) {
         model: Category,
         where: categoryId ? { id: categoryId } : undefined,
         attributes: [],
-        through: { attributes: [], paranoid: filters.paranoid },
-        paranoid: filters.paranoid,
+        through: { attributes: [], paranoid },
+        paranoid,
         as: 'Categories_getProducts',
       },
       {
         model: WarehouseProduct,
         where: warehouseId ? { warehouseId } : undefined,
-        paranoid: filters.paranoid,
+        paranoid,
       },
     ],
-  });
+    order:
+      req.query.warehouseId &&
+      ['stock', 'createdAt', 'updatedAt', undefined].includes(sortBy)
+        ? [[WarehouseProduct, sortBy, orderBy]]
+        : [[sortBy, orderBy]],
+    limit: isPaginated ? perPage : undefined,
+    offset: isPaginated ? (page - 1) * perPage : undefined,
+    paranoid,
+  };
+}
 
+async function receiveProducts(req, filters) {
+  const totalData = (
+    await Product.findAll({ ...filters, limit: undefined, offset: undefined })
+  ).length;
+  const products = await Product.findAll({ ...filters });
   return [products, totalData];
 }
 
 async function getProducts(req) {
   const filters = generateFilters(req);
-
-  const { isPaginated, page, perPage } = req.query;
   const [products, totalData] = await receiveProducts(req, filters);
 
+  const { isPaginated, page, perPage } = req.query;
   const paginationInfo = { totalData };
   if (isPaginated) {
     paginationInfo.currentPage = page;
