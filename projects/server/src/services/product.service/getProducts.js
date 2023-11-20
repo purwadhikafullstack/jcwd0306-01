@@ -84,6 +84,7 @@ async function receiveProducts(req, filters) {
 
   const totalData = (
     await Product.findAll({
+      logging: false,
       where: filters.where,
       paranoid: filters.paranoid,
       attributes: [],

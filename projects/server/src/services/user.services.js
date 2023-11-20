@@ -198,7 +198,6 @@ class User extends Service {
         { password: hashPassword },
         { where: { email }, transaction: t }
       );
-      console.log(data);
       return data;
     } catch (err) {
       return err;
@@ -207,8 +206,9 @@ class User extends Service {
 
   getDetailsById = async (req) => {
     const result = await this.getOneByID(req, {
-      attributes: attributesCountStatus,
+      attributes: attributesCountStatus(req),
       include: includeOrderCart,
+      logging: false,
     });
     const order = this.encryptMultiResult({ count: 1, rows: result.UserOrder });
     return { ...result.dataValues, UserOrder: order.rows };

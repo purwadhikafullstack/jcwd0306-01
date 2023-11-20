@@ -30,7 +30,7 @@ class Service {
           ['isDefault', 'DESC'],
           ['updatedAt', 'DESC'],
         ],
-        logging: false,
+        // logging: false,
         distinct: true,
         ...option,
       });

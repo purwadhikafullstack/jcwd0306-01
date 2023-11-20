@@ -8,5 +8,6 @@ route.post(`/:userId`, ChatController.postTextMessage); // post new message
 
 // for admin
 route.get(`/inbox`, ChatController.getAllUnreadMsg);
+route.patch(`/multi_records`, ChatController.updateMultiRecord);
 
 module.exports = route;

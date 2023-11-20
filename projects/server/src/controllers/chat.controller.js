@@ -5,7 +5,16 @@ class ChatController {
   static postTextMessage = async (req, res) => {
     try {
       const result = await chatService.postTextMessage(req);
-      global?.io?.emit(`channel-${req.body.warehouseId}`);
+      const { warehouseId, orderId, receiverId, senderId } = result;
+      if (receiverId === senderId) return res.send(result);
+      if (!receiverId)
+        global?.io?.emit(`channel-WHID-${warehouseId}-${orderId}`, {
+          record: result,
+        });
+      else if (receiverId)
+        global?.io?.emit(`channel-USER-${receiverId}-${orderId}`, {
+          record: result,
+        });
       return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
@@ -34,6 +43,15 @@ class ChatController {
     try {
       const result = await chatService.getAllUnreadMsg(req);
       return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
+
+  static updateMultiRecord = async (req, res) => {
+    try {
+      await chatService.updateMultiRecord(req);
+      return res.send('success');
     } catch (error) {
       return sendResponse({ res, error });
     }
