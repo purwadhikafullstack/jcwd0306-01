@@ -89,7 +89,7 @@ const productValidator = {
       validateJoiSchema(
         req.query,
         Joi.object({
-          name: Joi.string().allow(''),
+          search: Joi.string().allow(''),
           categoryId: Joi.number().integer().min(1).allow(''),
           warehouseId: Joi.number().integer().min(1).allow(''),
           sortBy: Joi.string()

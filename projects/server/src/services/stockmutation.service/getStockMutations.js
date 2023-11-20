@@ -18,13 +18,26 @@ function generateFilters(req) {
 
   // set where
   const where = {};
-  if (warehouseId)
-    where[Sequelize.Op.or] = {
-      fromWarehouseId: warehouseId,
-      toWarehouseId: warehouseId,
-    };
   if (status) where.status = status;
   if (type) where.type = type;
+  if (warehouseId) {
+    where[Sequelize.Op.and] = [
+      {
+        [Sequelize.Op.or]: {
+          fromWarehouseId: warehouseId,
+          toWarehouseId: warehouseId,
+        },
+      },
+      {
+        [Sequelize.Op.or]: {
+          '$Product.name$': { [Sequelize.Op.like]: `%${search || ''}%` },
+          '$fromWarehouse.name$': { [Sequelize.Op.like]: `%${search || ''}%` },
+          '$toWarehouse.name$': { [Sequelize.Op.like]: `%${search || ''}%` },
+          orderId: { [Sequelize.Op.like]: `%${search || ''}%` },
+        },
+      },
+    ];
+  }
 
   //   set order
   let order = [[sortBy, orderBy]];
@@ -40,13 +53,7 @@ function generateFilters(req) {
     limit: perPage,
     offset: (page - 1) * perPage,
     include: [
-      {
-        model: Product,
-        paranoid: false,
-        where: search
-          ? { name: { [Sequelize.Op.like]: `%${search}%` } }
-          : undefined,
-      },
+      { model: Product, paranoid: false },
       { model: Warehouse, paranoid: false, as: 'fromWarehouse' },
       { model: Warehouse, paranoid: false, as: 'toWarehouse' },
       { model: Order },
