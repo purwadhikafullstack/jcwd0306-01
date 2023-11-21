@@ -64,13 +64,14 @@ class Order extends Service {
 
   static orderProductFormatter = (products, orderId) => {
     const temp = [];
-    products.forEach((product) =>
+    products.forEach((product) => {
+      const { price, discount } = product.Product;
       temp.push({
         ...product,
-        price: product.Product.price,
+        price: price - price * discount,
         orderId,
-      })
-    );
+      });
+    });
     return temp;
   };
 
