@@ -14,7 +14,7 @@ class Cart extends Service {
               ( 
                 SELECT IFNULL(SUM(wp.stock), 0) 
                 FROM WarehouseProducts AS wp 
-                WHERE wp.productId = Carts.productId AND wp.deletedAt IS NULL 
+                WHERE wp.productId = Cart.productId AND wp.deletedAt IS NULL 
               ) AS SIGNED 
             )`
           ),
@@ -82,7 +82,13 @@ class Cart extends Service {
       include: [
         [
           sequelize.literal(
-            'CAST((SELECT SUM(WarehouseProducts.stock) FROM WarehouseProducts WHERE WarehouseProducts.productId = Product.id) AS SIGNED)'
+            `CAST( 
+              ( 
+                SELECT IFNULL(SUM(wp.stock), 0) 
+                FROM WarehouseProducts AS wp 
+                WHERE wp.productId = Product.id AND wp.deletedAt IS NULL 
+              ) AS SIGNED 
+            )`
           ),
           'stock',
         ],
@@ -121,7 +127,7 @@ class Cart extends Service {
         ...this.optionAttributeAndInclude,
         transaction: t,
       });
-      return data.toJSON();
+      return data;
     });
 
     return cart;
