@@ -69,7 +69,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
-// client.connect(); // MATIKAN SEMENTARA BUAT LIAT LOG, INGETIN NTAR PAS MAU MERGE
+client.connect();
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');

@@ -7,6 +7,7 @@ const salesReportController = {
       const orders = await salesReportService.getSalesReports(req);
       sendResponse({ res, statusCode: 200, data: orders });
     } catch (error) {
+      console.log(error);
       sendResponse({ res, error });
     }
   },

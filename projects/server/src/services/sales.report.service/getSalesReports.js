@@ -14,7 +14,7 @@ function generateFilters(req) {
   req.query.page = +req.query.page || 1;
   req.query.perPage = +req.query.perPage || 10;
 
-  const { sortBy, orderBy, page, perPage, startDate, endDate } = req.query;
+  const { sortBy, orderBy, page, perPage } = req.query;
 
   let order = [];
   if (sortBy === 'date') order = [['createdAt', orderBy]];
@@ -24,51 +24,40 @@ function generateFilters(req) {
     order = [[Warehouse, WarehouseAddress, City, 'name', orderBy]];
   else if (sortBy === 'sentTo') order = [[UserAddress, City, 'name', orderBy]];
 
-  const dateRangeFilter =
-    startDate && endDate
-      ? {
-          createdAt: {
-            [Op.between]: [
-              new Date(`${startDate}T00:00:00.000+08:00`),
-              new Date(`${endDate}T23:59:59.999+08:00`),
-            ],
-          },
-        }
-      : {};
-
   return {
     order,
     limit: perPage,
     offset: (page - 1) * perPage,
-    dateRangeFilter,
   };
 }
 
 async function getSalesReports(req) {
   const { name, WH, category, productName, startDate, endDate } = req.query;
-  const { dateRangeFilter, ...filters } = generateFilters(req);
+  const filters = generateFilters(req);
 
   const whereClause = {
     status: 'received',
     [Op.and]: [
-      {
-        total: { [Op.like]: `%${name || ''}%` },
-      },
-      {
-        [Op.or]: [
-          {
-            '$UserAddress.City.name$': { [Op.like]: `%${name || ''}%` },
-          },
-          {
-            '$Warehouse.WarehouseAddress.City.name$': {
-              [Op.like]: `%${name || ''}%`,
-            },
-          },
-        ],
-      },
-      startDate && endDate && dateRangeFilter,
       WH && {
         '$Warehouse.name$': { [Op.like]: `%${WH || ''}%` },
+      },
+      startDate && {
+        createdAt: {
+          [Op.between]: [
+            new Date(`${startDate}T00:00:00.000+07:00`),
+            new Date(`${endDate}T23:59:59.999+07:00`),
+          ],
+        },
+      },
+    ],
+    [Op.or]: [
+      {
+        '$UserAddress.City.name$': { [Op.like]: `%${name || ''}%` },
+      },
+      {
+        '$Warehouse.WarehouseAddress.City.name$': {
+          [Op.like]: `%${name || ''}%`,
+        },
       },
     ],
   };
@@ -101,10 +90,6 @@ async function getSalesReports(req) {
             },
           },
         ],
-      },
-      {
-        model: OrderProduct,
-        attributes: ['quantity'],
       },
     ],
   });
