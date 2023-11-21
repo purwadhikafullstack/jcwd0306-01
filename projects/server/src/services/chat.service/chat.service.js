@@ -10,12 +10,12 @@ class ChatService extends Service {
   getMessageByOrderId = async (req) => {
     const { userId, orderId } = req.params;
     const { page } = req.query;
-    const limit = 20;
+    // const limit = 20;
     const result = await this.getAll({
       logging: false,
-      limit,
+      // limit,
       order: [['createdAt', 'DESC']],
-      offset: page ? (Number(page) - 1) * limit : 0,
+      // offset: page ? (Number(page) - 1) * limit : 0,
       where: {
         [Op.or]: [{ senderId: userId }, { receiverId: userId }],
         orderId: orderId === 'null' ? null : orderId,
@@ -88,6 +88,24 @@ class ChatService extends Service {
     } catch (error) {
       throw new ResponseError(error?.message, 400);
     }
+  };
+
+  getByWarehouseId = async (req) => {
+    const { warehouseId } = req.query;
+    const result = await this.getAll({
+      logging: false,
+      where: {
+        warehouseId,
+        id: [
+          sequelize.literal(
+            `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId order by createdAt DESC) as rn FROM Chats  WHERE warehouseId IN (${JSON.stringify(
+              warehouseId
+            ).slice(1, -1)}) AND receiverID IS NULL) as a where a.rn=1)`
+          ),
+        ],
+      },
+    });
+    return result;
   };
 }
 

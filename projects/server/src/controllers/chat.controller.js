@@ -56,6 +56,15 @@ class ChatController {
       return sendResponse({ res, error });
     }
   };
+
+  static getByWarehouseId = async (req, res) => {
+    try {
+      const result = await chatService.getByWarehouseId(req);
+      return res.send(result);
+    } catch (error) {
+      return sendResponse({ res, error });
+    }
+  };
 }
 
 module.exports = ChatController;
