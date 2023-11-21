@@ -16,7 +16,7 @@ const includeOrderProduct = {
   include: [
     {
       model: db.Product,
-      attributes: ['name', 'weight'],
+      attributes: ['name', 'weight', 'price', 'discount'],
       include: { model: db.ProductImage, attributes: ['id'] },
     },
   ],
