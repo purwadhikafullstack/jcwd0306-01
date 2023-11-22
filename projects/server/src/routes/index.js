@@ -13,6 +13,7 @@ const stockMutationRouter = require('./stockmutation.route');
 
 const chatRouter = require(`./chat.route`);
 const salesReportRouter = require('./sales.report.routes');
+const productHistoryRouter = require('./product.history.router');
 
 module.exports = {
   carouselRouter,
@@ -29,4 +30,5 @@ module.exports = {
   chatRouter,
   stockMutationRouter,
   salesReportRouter,
+  productHistoryRouter,
 };

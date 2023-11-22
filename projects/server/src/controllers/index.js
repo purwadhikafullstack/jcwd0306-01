@@ -11,6 +11,7 @@ const ProvinceController = require('./province.controller');
 const CityController = require('./city.controller');
 const OrderController = require('./order.controller');
 const ChatController = require('./chat.controller');
+const productHistoryController = require('./product.history.controller');
 
 module.exports = {
   carouselController,
@@ -26,4 +27,5 @@ module.exports = {
   CityController,
   OrderController,
   ChatController,
+  productHistoryController,
 };

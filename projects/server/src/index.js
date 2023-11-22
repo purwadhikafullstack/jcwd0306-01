@@ -27,6 +27,7 @@ const {
   chatRouter,
   stockMutationRouter,
   salesReportRouter,
+  productHistoryRouter,
 } = require('./routes');
 const cronDeleteUnpaid = require('./utils/cron');
 
@@ -65,6 +66,7 @@ app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
 app.use('/chat', chatRouter);
 app.use('/sales-reports', salesReportRouter);
+app.use('/product-history', productHistoryRouter);
 
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
@@ -73,7 +75,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
-client.connect();
+// client.connect();
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');
