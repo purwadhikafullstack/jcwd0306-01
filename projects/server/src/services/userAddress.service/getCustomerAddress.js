@@ -21,6 +21,7 @@ async function getCustomerAddress(req) {
 
   const result = await UserAddress.findAll({
     ...filters,
+    logging: false,
     where: {
       userId,
       [Op.or]: [
@@ -49,6 +50,7 @@ async function getCustomerAddress(req) {
   const totalData = (
     await UserAddress.findAll({
       ...filters,
+      logging: false,
       limit: undefined,
       offset: undefined,
       where: {
