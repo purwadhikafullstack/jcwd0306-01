@@ -29,22 +29,8 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
       // User < WarehouseUser > Warehouse
       // ======================================================
-      models.User.belongsToMany(models.Warehouse, {
-        through: models.WarehouseUser,
-        foreignKey: {
-          name: 'warehouseAdminId',
-          primaryKey: true,
-          unique: false,
-        },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-      models.User.hasMany(models.WarehouseUser, {
-        foreignKey: {
-          name: 'warehouseAdminId',
-          primaryKey: true,
-          unique: false,
-        },
+      models.User.hasOne(models.WarehouseUser, {
+        foreignKey: { name: 'warehouseAdminId', primaryKey: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
