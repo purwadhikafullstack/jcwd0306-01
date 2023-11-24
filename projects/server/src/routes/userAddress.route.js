@@ -14,6 +14,12 @@ route.get(
   UserAddressController.getAddressByUserId
 );
 
+route.get(
+  `/:userId/customerAddress`,
+  verifyAuthUser({ isCustomer: true, isAdmin: true }),
+  UserAddressController.getCustomerAddress
+);
+
 route.post(
   '/shipping_option',
   verifyAuthUser({ isCustomer: true }),

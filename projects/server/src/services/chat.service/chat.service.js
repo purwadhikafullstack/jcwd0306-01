@@ -5,7 +5,14 @@ const db = require('../../models');
 const { ResponseError } = require('../../errors');
 
 class ChatService extends Service {
-  postTextMessage = (req) => this.create(req);
+  postTextMessage = async (req) => {
+    const result = await this.create(req);
+    const sender = await db.User.findByPk(result.senderId);
+    const receiver = await db.User.findByPk(result.receiverId);
+    result.Sender = sender?.dataValues;
+    result.Receiver = receiver?.dataValues;
+    return result;
+  };
 
   getMessageByOrderId = async (req) => {
     const { userId, orderId } = req.params;
@@ -31,14 +38,14 @@ class ChatService extends Service {
   getAllChatRoom = async (req) => {
     const { userId } = req.params;
     const result = await this.getAll({
-      logging: false,
+      // logging: false,
       where: {
         [Op.and]: [
           { [Op.or]: [{ senderId: userId }, { receiverId: userId }] },
           {
             id: [
               sequelize.literal(
-                `(SELECT a.id from (SELECT id, orderId from Chats  where orderId IS NOT NULL group by orderId order by createdAt desc) as a)`
+                `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId order by CreatedAt DESC) as rn FROM Chats  WHERE orderId IS NOT NULL AND senderId = ${userId} or receiverId = ${userId}) as a WHERE a.rn=1 ORDER BY a.receiverId DESC, a.createdAt DESC)`
               ),
             ],
           },
@@ -53,6 +60,7 @@ class ChatService extends Service {
     const { warehouseId } = req.query;
     const whId = JSON.stringify(warehouseId).slice(1, -1);
     const totalUnread = await this.db.count({
+      logging: false,
       where: {
         warehouseId: { [Op.in]: warehouseId },
         isRead: false,
@@ -60,14 +68,15 @@ class ChatService extends Service {
       },
     });
     const result = await this.getAll({
+      logging: false,
       where: {
         id: [
           sequelize.literal(
-            `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId) as rn FROM Chats  WHERE warehouseId IN (${whId}) AND receiverID IS NULL) as a where a.rn=1 order by a.createdAt DESC)`
+            `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId order by createdAt DESC) as rn FROM Chats WHERE warehouseId IN (${whId}) AND receiverID IS NULL) as a where a.rn=1)`
           ),
         ],
       },
-      logging: false,
+
       include: { model: db.User, as: 'Sender' },
     });
     result.totalUnread = totalUnread;
@@ -91,20 +100,31 @@ class ChatService extends Service {
 
   getByWarehouseId = async (req) => {
     const { warehouseId } = req.query;
+    const whId = JSON.stringify(warehouseId).slice(1, -1);
     const result = await this.getAll({
       logging: false,
       where: {
         warehouseId,
         id: [
           sequelize.literal(
-            `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId order by createdAt DESC) as rn FROM Chats  WHERE warehouseId IN (${JSON.stringify(
-              warehouseId
-            ).slice(1, -1)}) AND receiverID IS NULL) as a where a.rn=1)`
+            `(SELECT a.id from (SELECT *, row_number() OVER (PARTITION BY orderId order by createdAt DESC) as rn FROM Chats  WHERE warehouseId IN (${whId}) AND receiverID IS NULL) as a where a.rn=1)`
           ),
         ],
       },
     });
     return result;
+  };
+
+  getTotalUnread = async (req) => {
+    const { userId } = req.params;
+    const result = await this.db.count({
+      logging: false,
+      where: {
+        receiverId: userId,
+        isRead: false,
+      },
+    });
+    return { totalUnread: result };
   };
 }
 

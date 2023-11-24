@@ -1,4 +1,5 @@
 const { userAddressService } = require('../services');
+const getCustomerAddress = require('../services/userAddress.service/getCustomerAddress');
 const { sendResponse } = require('../utils');
 
 class UserAddressController {
@@ -52,6 +53,15 @@ class UserAddressController {
       return res.send('success');
     } catch (error) {
       return sendResponse({ res, error });
+    }
+  };
+
+  static getCustomerAddress = async (req, res) => {
+    try {
+      const [result, paginationInfo] = await getCustomerAddress(req);
+      sendResponse({ res, statusCode: 200, data: result, ...paginationInfo });
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }

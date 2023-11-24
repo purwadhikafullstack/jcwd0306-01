@@ -11,6 +11,7 @@ const provinceService = require(`./province.service/province.service`);
 const cartService = require(`./cart.service/cart.service`);
 const cityService = require(`./city.service/city.service`);
 const chatService = require(`./chat.service/chat.service`);
+const salesReportService = require('./sales.report.service');
 
 module.exports = {
   carouselService,
@@ -25,4 +26,5 @@ module.exports = {
   cityService,
   orderService,
   chatService,
+  salesReportService,
 };
