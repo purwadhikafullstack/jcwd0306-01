@@ -7,7 +7,7 @@ const { GmapsOptionSetter } = require('./GmapsOptionSetter');
 const { findTheSmallestDuration } = require('./findTheSmallestDuration');
 const { getWarehouseAddress } = require('./getWarehouseAddress');
 const { fetchRajaOngkir } = require('./fetchRajaOngkir');
-const isActiveWarehouseNotChanging = require('./IsActiveWarehouseNotChanging');
+const isActiveWarehouseNotChanging = require('./isActiveWarehouseNotChanging');
 
 const client = createClient({
   url: 'redis://localhost:6379',
