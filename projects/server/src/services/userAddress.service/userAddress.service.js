@@ -7,6 +7,7 @@ const { GmapsOptionSetter } = require('./GmapsOptionSetter');
 const { findTheSmallestDuration } = require('./findTheSmallestDuration');
 const { getWarehouseAddress } = require('./getWarehouseAddress');
 const { fetchRajaOngkir } = require('./fetchRajaOngkir');
+const isActiveWarehouseNotChanging = require('./IsActiveWarehouseNotChanging');
 
 const client = createClient({
   url: 'redis://localhost:6379',
@@ -33,11 +34,12 @@ class UserAddress extends Service {
       if (!client.isOpen) client.connect();
       const key = JSON.stringify(req.body.postalCode);
       client.get(key, async (err, result) => {
+        const checkWarehouse = await isActiveWarehouseNotChanging(client);
         if (err) {
           const paymentOption = await this.getShippingOptions(req);
           return res.send(paymentOption);
         }
-        if (result) return res.send(JSON.parse(result));
+        if (result && checkWarehouse) return res.send(JSON.parse(result));
         const paymentOption = await this.getShippingOptions(req);
         client.setEx(key, 3000, JSON.stringify(paymentOption));
         return res.send(paymentOption);
