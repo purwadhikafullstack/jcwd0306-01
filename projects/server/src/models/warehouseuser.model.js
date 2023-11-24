@@ -19,11 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         onUpdate: 'CASCADE',
       });
       models.WarehouseUser.belongsTo(models.User, {
-        foreignKey: {
-          name: 'warehouseAdminId',
-          primaryKey: true,
-          unique: false,
-        },
+        foreignKey: { name: 'warehouseAdminId', primaryKey: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
