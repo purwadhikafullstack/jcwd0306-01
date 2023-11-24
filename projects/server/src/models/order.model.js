@@ -56,6 +56,12 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+
+      models.Order.hasMany(models.StockHistory, {
+        foreignKey: { name: 'orderId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
     }
   }
   Order.init(
@@ -101,7 +107,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Order',
-      // paranoid: true,
     }
   );
   return Order;

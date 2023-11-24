@@ -1,4 +1,3 @@
-const { ResponseError } = require('../../errors');
 const {
   WarehouseUser,
   User,
@@ -9,6 +8,7 @@ const {
 
 async function getAllWarehouseAdmin() {
   const result = await WarehouseUser.findAll({
+    logging: false,
     include: [
       {
         model: User,
@@ -17,10 +17,12 @@ async function getAllWarehouseAdmin() {
       {
         model: Warehouse,
         attributes: ['name'],
+        paranoid: false,
         include: [
           {
             model: WarehouseAddress,
             attributes: ['provinceId'],
+            paranoid: false,
             include: [
               {
                 model: Province,
@@ -32,7 +34,6 @@ async function getAllWarehouseAdmin() {
       },
     ],
   });
-  if (!result) throw new ResponseError('warehouse admin not found', 404);
   return result;
 }
 

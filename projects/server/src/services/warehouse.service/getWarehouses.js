@@ -7,9 +7,11 @@ async function getWarehouses() {
       {
         model: WarehouseAddress,
         include: [{ model: Province }, { model: City }],
+        paranoid: false,
       },
     ],
     order: [['updatedAt', 'DESC']],
+    logging: false,
   });
   return warehouses;
 }

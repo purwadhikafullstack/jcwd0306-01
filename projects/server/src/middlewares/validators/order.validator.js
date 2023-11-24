@@ -1,4 +1,5 @@
-const { sendResponse } = require('../../utils');
+const Joi = require('joi');
+const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 const { orderService } = require('../../services');
 const db = require('../../models');
@@ -69,6 +70,28 @@ const orderValidator = {
       return next();
     } catch (error) {
       return sendResponse({ res, error });
+    }
+  },
+
+  updateOrderStatus: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          status: Joi.string()
+            .valid('unpaid', 'rejected', 'processed', 'shipped', 'received')
+            .required(),
+        }).unknown()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
     }
   },
 };

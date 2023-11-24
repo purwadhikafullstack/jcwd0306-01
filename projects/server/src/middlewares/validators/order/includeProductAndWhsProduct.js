@@ -7,7 +7,13 @@ const includeOrderProductAndWarehouseProduct = {
     include: [
       [
         db.sequelize.literal(
-          'CAST((SELECT SUM(WarehouseProducts.stock) FROM WarehouseProducts WHERE WarehouseProducts.productId = OrderProducts.productId) AS SIGNED)'
+          `CAST( 
+            ( 
+              SELECT IFNULL(SUM(wp.stock), 0) 
+              FROM WarehouseProducts AS wp 
+              WHERE wp.productId = OrderProducts.productId AND wp.deletedAt IS NULL 
+            ) AS SIGNED 
+          )`
         ),
         'stock',
       ],

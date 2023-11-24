@@ -29,6 +29,7 @@ async function updateWarehouseProductStock(req) {
           warehouseId,
           productId,
           quantity,
+          updatedStock: warehouseProduct.getDataValue('stock') + quantity,
           type: 'manual',
           adminId: user.id,
         },
