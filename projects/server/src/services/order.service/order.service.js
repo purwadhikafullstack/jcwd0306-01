@@ -159,32 +159,8 @@ class Order extends Service {
       },
       async (t) => {
         const order = await this.db.findByPk(req.params.id, {
-          logging: false,
           transaction: t,
-          attributes: { exclude: ['paymentProof'] },
-          include: [
-            { model: db.Warehouse, include: [{ model: db.WarehouseAddress }] },
-            { model: db.StockMutation },
-            {
-              model: db.OrderProduct,
-              include: [
-                {
-                  model: db.Product,
-                  include: [
-                    {
-                      model: db.WarehouseProduct,
-                      include: [
-                        {
-                          model: db.Warehouse,
-                          include: [{ model: db.WarehouseAddress }],
-                        },
-                      ],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
+          ...updateOrderStatusProcessed,
         });
         if (!order) throw new ResponseError('Order not found', 404);
 
