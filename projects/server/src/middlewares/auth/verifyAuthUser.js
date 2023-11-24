@@ -48,6 +48,7 @@ async function verifyUserRole({
       raw: true,
       logging: false,
     });
+
     if (!warehouseUser) throw new ResponseError('User unauthorized', 401);
 
     // to verify warehouse admin by warehouseId
@@ -96,6 +97,7 @@ function verifyAuthUser({
         throw new ResponseError('Token not provided', 401);
       }
       const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
+
       await verifyUserRole({
         req,
         decoded,

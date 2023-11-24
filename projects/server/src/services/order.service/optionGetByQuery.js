@@ -44,6 +44,9 @@ const optionGetByQuery = (limit, page, text, id, status, warehouseId) => ({
       ),
     }),
   },
+  include: [
+    { model: db.User, as: 'User', attributes: ['firstName', 'lastName'] },
+  ],
   // include: [this.includeOrderProduct, this.includeUserAddress],
 });
 
