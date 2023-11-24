@@ -38,12 +38,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: { name: 'requestAdminId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'requestAdmin',
       });
 
       models.StockMutation.belongsTo(models.User, {
         foreignKey: { name: 'approveAdminId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'approveAdmin',
       });
 
       models.StockMutation.belongsTo(models.Order, {

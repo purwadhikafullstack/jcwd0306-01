@@ -23,11 +23,13 @@ function generateFilters(req) {
   };
 }
 
-async function getProductHistory(req) {
+async function getProductHistryByWarehouseId(req) {
   const { name, WH, productName, startDate, endDate } = req.query;
+  const { warehouseId } = req.params;
   const filters = generateFilters(req);
 
   const whereClause = {
+    warehouseId,
     [Op.or]: [
       { type: { [Op.like]: `%${name || ''}%` } },
       { '$Warehouse.name$': { [Op.like]: `%${name || ''}%` } },
@@ -108,7 +110,8 @@ async function getProductHistory(req) {
     perPage: +req.query.perPage,
     totalPage: Math.ceil(totalData.length / +req.query.perPage),
   };
+
   return [data, paginationInfo];
 }
 
-module.exports = getProductHistory;
+module.exports = getProductHistryByWarehouseId;

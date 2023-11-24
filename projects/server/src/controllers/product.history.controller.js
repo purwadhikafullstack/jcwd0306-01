@@ -2,6 +2,7 @@ const productHistoryService = require('../services/product.history.services');
 const { sendResponse } = require('../utils');
 
 const productHistoryController = {
+  // untuk super admin
   getProductHistory: async (req, res) => {
     try {
       const [productHistory, paginationInfo] =
@@ -17,9 +18,22 @@ const productHistoryController = {
     }
   },
 
+  // untuk warehouse admin
+  getProductHistryByWarehouseId: async (req, res) => {
+    try {
+      const [data, paginationInfo] =
+        await productHistoryService.getProductHistryByWarehouseId(req);
+      sendResponse({ res, statusCode: 200, data, ...paginationInfo });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  // untuk detail stock mutation
   getStockMutationById: async (req, res) => {
     try {
-      const stockMutation = await productHistoryService.getStockMutationById();
+      const stockMutation =
+        await productHistoryService.getStockMutationById(req);
       sendResponse({
         res,
         statusCode: 200,

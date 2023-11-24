@@ -5,6 +5,15 @@ const { productHistoryController } = require('../controllers');
 router.get('/', productHistoryController.getProductHistory);
 
 // get stock mutation by Id
-router.get('/stock-mutation', productHistoryController.getStockMutationById);
+router.get(
+  '/stock-mutation/:stockMutationId',
+  productHistoryController.getStockMutationById
+);
+
+// get productHistory by warehouse
+router.get(
+  '/:warehouseId',
+  productHistoryController.getProductHistryByWarehouseId
+);
 
 module.exports = router;
