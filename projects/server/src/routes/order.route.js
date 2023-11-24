@@ -5,7 +5,11 @@ const idDecryptor = require('../middlewares/decryptor/idDecryptor');
 const { multerBlobUploader } = require('../middlewares/multers');
 const { orderValidator } = require('../middlewares/validators');
 
-route.get(``, verifyAuthUser({ isAdmin: true }), OrderController.getByQuery);
+route.get(
+  ``,
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  OrderController.getByQuery
+);
 route.get(
   `/payment_proof/:id`,
   idDecryptor,
