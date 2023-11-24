@@ -10,7 +10,6 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
       models.StockHistory.belongsTo(models.Warehouse, {
         foreignKey: { name: 'warehouseId', allowNull: false },
         onDelete: 'CASCADE',
@@ -34,13 +33,20 @@ module.exports = (sequelize, DataTypes) => {
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
+
+      models.StockHistory.belongsTo(models.Order, {
+        foreignKey: { name: 'orderId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
     }
   }
   StockHistory.init(
     {
       quantity: { type: DataTypes.INTEGER, allowNull: false },
+      updatedStock: { type: DataTypes.INTEGER, allowNull: false },
       type: {
-        type: DataTypes.ENUM('manual', 'stock-mutation'),
+        type: DataTypes.ENUM('manual', 'stock-mutation', 'order'),
         allowNull: false,
       },
     },

@@ -35,13 +35,22 @@ route.patch(
   orderValidator.checkStatus,
   OrderController.userUpdateOrder
 );
+
 route.patch(
-  `/:id`,
+  '/:id',
   idDecryptor,
   verifyAuthUser({ isAdmin: true }),
-  orderValidator.rejectOrConfirm,
-  OrderController.adminUpdateOrder
+  orderValidator.updateOrderStatus,
+  OrderController.updateOrderStatus
 );
+
+// route.patch(
+//   `/:id`,
+//   idDecryptor,
+//   verifyAuthUser({ isAdmin: true }),
+//   orderValidator.rejectOrConfirm,
+//   OrderController.adminUpdateOrder
+// );
 
 route.post(
   `/payment_proof/:id`,
