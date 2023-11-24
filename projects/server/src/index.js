@@ -75,7 +75,7 @@ const client = createClient({
   url: 'redis://localhost:6379',
   legacyMode: true,
 });
-// client.connect();
+client.connect();
 
 app.get('/', (req, res) => {
   res.send('Hello, this is my API');

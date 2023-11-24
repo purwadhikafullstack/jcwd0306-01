@@ -24,8 +24,10 @@ function generateFilters(req) {
 }
 
 async function getProductHistory(req) {
-  const { name, WH, productName, startDate, endDate } = req.query;
+  const { name, WH, productName, startDate, endDate, warehouseId } = req.query;
   const filters = generateFilters(req);
+  const numberedWhId = Number(warehouseId);
+  console.log({ warehouseId, numberedWhId });
 
   const whereClause = {
     [Op.or]: [
@@ -43,6 +45,7 @@ async function getProductHistory(req) {
           ],
         },
       },
+      numberedWhId && { warehouseId: numberedWhId },
       { '$Warehouse.name$': { [Op.like]: `%${WH || ''}%` } },
       { '$Product.name$': { [Op.like]: `%${productName || ''}%` } },
     ],

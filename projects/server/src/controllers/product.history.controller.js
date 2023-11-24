@@ -18,17 +18,6 @@ const productHistoryController = {
     }
   },
 
-  // untuk warehouse admin
-  getProductHistryByWarehouseId: async (req, res) => {
-    try {
-      const [data, paginationInfo] =
-        await productHistoryService.getProductHistryByWarehouseId(req);
-      sendResponse({ res, statusCode: 200, data, ...paginationInfo });
-    } catch (error) {
-      sendResponse({ res, error });
-    }
-  },
-
   // untuk detail stock mutation
   getStockMutationById: async (req, res) => {
     try {

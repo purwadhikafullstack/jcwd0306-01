@@ -10,10 +10,4 @@ router.get(
   productHistoryController.getStockMutationById
 );
 
-// get productHistory by warehouse
-router.get(
-  '/:warehouseId',
-  productHistoryController.getProductHistryByWarehouseId
-);
-
 module.exports = router;
