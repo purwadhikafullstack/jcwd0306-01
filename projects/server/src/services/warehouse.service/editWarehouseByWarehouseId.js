@@ -12,6 +12,7 @@ async function getProvinceName(provinceId, transaction) {
   const province = await Province.findByPk(provinceId, {
     attributes: ['name'],
     transaction,
+    logging: false,
   });
   if (!province) throw new ResponseError('province not found', 404);
   return province.getDataValue('name');
@@ -21,6 +22,7 @@ async function getCityName(provinceId, cityId, transaction) {
   const city = await City.findByPk(cityId, {
     attributes: ['name', 'provinceId'],
     transaction,
+    logging: false,
   });
   if (!city) throw new ResponseError('city not found', 404);
   if (city.provinceId !== provinceId)
@@ -51,6 +53,7 @@ async function editWarehouse(warehouseId, values, transaction) {
     where: { id: warehouseId },
     fields: ['name'],
     transaction,
+    logging: false,
   });
 }
 
@@ -68,6 +71,7 @@ async function editWarehouseAddress(warehouseId, values, transaction) {
       'latitude',
     ],
     transaction,
+    logging: false,
   });
 }
 
@@ -83,9 +87,11 @@ async function editWarehouseByWarehouseId(req) {
         {
           model: WarehouseAddress,
           include: [{ model: Province }, { model: City }],
+          paranoid: false,
         },
       ],
       transaction: t,
+      logging: false,
     });
     if (!result) throw new ResponseError('Warehouse not found', 404);
     return result;

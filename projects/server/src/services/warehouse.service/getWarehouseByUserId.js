@@ -13,6 +13,7 @@ async function getWarehouseByUserId(req) {
           { model: Province, attributes: ['name'] },
           { model: City, attributes: ['name'] },
         ],
+        paranoid: false,
       },
     ],
     paranoid: false,

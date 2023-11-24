@@ -84,9 +84,30 @@ class OrderController {
           value: 1,
         });
 
-      return res.send(`success`);
+      res.send('success');
     } catch (error) {
-      return sendResponse({ res, error });
+      sendResponse({ res, error });
+    }
+  };
+
+  static updateOrderStatus = async (req, res) => {
+    try {
+      await orderService.updateOrderStatus(req);
+      const { status } = req.body;
+      if (status === 'unpaid') {
+        global?.io.emit(`unpaid-${req.body.userId}`, {
+          message: 'You need to review one of transaction',
+          data: req.body,
+        });
+      } else {
+        global?.io.emit(`notification-${req.body.userId}`, {
+          key: status,
+          value: 1,
+        });
+      }
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }

@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { ResponseError } = require('../../errors');
+
 const {
   WarehouseUser,
   User,
@@ -32,6 +33,7 @@ async function getAllWarehouseAdmin(req) {
   const filters = generateFilters(req);
 
   const result = await WarehouseUser.findAll({
+    logging: false,
     ...filters,
     include: [
       {
@@ -41,10 +43,12 @@ async function getAllWarehouseAdmin(req) {
       {
         model: Warehouse,
         attributes: ['name'],
+        paranoid: false,
         include: [
           {
             model: WarehouseAddress,
             attributes: ['provinceId'],
+            paranoid: false,
             include: [
               {
                 model: Province,
@@ -68,6 +72,7 @@ async function getAllWarehouseAdmin(req) {
       ],
     },
   });
+  
   if (!result) throw new ResponseError('warehouse admin not found', 404);
 
   const totalData = (

@@ -10,7 +10,16 @@ const IMAGEIDS_QUERY = sequelize.literal(
   '(SELECT JSON_ARRAYAGG(pi.id) FROM ProductImages AS pi WHERE pi.productId = Product.id)'
 );
 const SOLD_QUERY = sequelize.literal(
-  'CAST((SELECT IFNULL(SUM(op.quantity), 0) FROM OrderProducts AS op WHERE op.productId = Product.id) AS SIGNED)'
+  `CAST(
+    IFNULL((
+      SELECT 
+        IFNULL(SUM(op.quantity), 0) AS sold 
+      FROM OrderProducts op 
+      LEFT JOIN Orders o ON o.id = op.orderId 
+      WHERE o.status IN ('processed', 'shipped', 'received') AND op.productId = Product.id
+      GROUP BY op.productId 
+    ), 0) AS SIGNED
+  )`
 );
 const STOCK_QUERY = sequelize.literal(
   `CAST( 
@@ -77,7 +86,7 @@ function generateFilters(req) {
     page,
     perPage,
   } = req.query;
-  
+
   return {
     logging: false,
     where: {

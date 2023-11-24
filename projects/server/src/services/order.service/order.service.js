@@ -11,6 +11,11 @@ const optionGetByQuery = require('./optionGetByQuery');
 const { findNearbyWarehouse } = require('./findNearbyWarehouse');
 const { doStockMutation } = require('./doStockMutation');
 const doDecrementStock = require('./doDecrementStock');
+const updateOrderStatusUnpaid = require('./updateOrderStatusUnpaid');
+const updateOrderStatusRejected = require('./updateOrderStatusRejected');
+const updateOrderStatusProcessed = require('./updateOrderStatusProcessed');
+const updateOrderStatusShipped = require('./updateOrderStatusShipped');
+const updateOrderStatusReceived = require('./updateOrderStatusReceived');
 
 class Order extends Service {
   limit = 7;
@@ -145,6 +150,58 @@ class Order extends Service {
       await this.update(req);
     }
     return 'success';
+  };
+
+  updateOrderStatus = async (req) => {
+    await db.sequelize.transaction(
+      {
+        isolationLevel: db.Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      },
+      async (t) => {
+        const order = await this.db.findByPk(req.params.id, {
+          logging: false,
+          transaction: t,
+          attributes: { exclude: ['paymentProof'] },
+          include: [
+            { model: db.Warehouse, include: [{ model: db.WarehouseAddress }] },
+            { model: db.StockMutation },
+            {
+              model: db.OrderProduct,
+              include: [
+                {
+                  model: db.Product,
+                  include: [
+                    {
+                      model: db.WarehouseProduct,
+                      include: [
+                        {
+                          model: db.Warehouse,
+                          include: [{ model: db.WarehouseAddress }],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        });
+        if (!order) throw new ResponseError('Order not found', 404);
+
+        const { status } = req.body;
+        if (status === 'unpaid') {
+          await updateOrderStatusUnpaid(req, order, t);
+        } else if (status === 'rejected') {
+          await updateOrderStatusRejected(req, order, t);
+        } else if (status === 'processed') {
+          await updateOrderStatusProcessed(req, order, t);
+        } else if (status === 'shipped') {
+          await updateOrderStatusShipped(req, order, t);
+        } else if (status === 'received') {
+          await updateOrderStatusReceived(req, order, t);
+        }
+      }
+    );
   };
 }
 

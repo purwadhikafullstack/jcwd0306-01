@@ -8,9 +8,11 @@ async function getWarehouseByWarehouseId(warehouseId, transaction) {
       {
         model: WarehouseAddress,
         include: [{ model: Province }, { model: City }],
+        paranoid: false,
       },
     ],
     transaction,
+    logging: false,
   });
   if (!warehouse) throw new ResponseError('Warehouse not found', 404);
   return warehouse;

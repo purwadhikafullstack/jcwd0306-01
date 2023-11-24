@@ -3,12 +3,14 @@ const {
   sequelize,
   Sequelize,
   Warehouse,
+  WarehouseAddress,
   WarehouseUser,
   WarehouseProduct,
 } = require('../../models');
 
 async function activateWarehouse(warehouse, warehouseId, transaction) {
   await warehouse.restore({ transaction });
+  await WarehouseAddress.restore({ where: { warehouseId }, transaction });
   await WarehouseUser.restore({ where: { warehouseId }, transaction });
 
   // restore active products only
@@ -33,6 +35,7 @@ async function activateWarehouse(warehouse, warehouseId, transaction) {
 
 async function deactivateWarehouse(warehouse, warehouseId, transaction) {
   await warehouse.destroy({ transaction });
+  await WarehouseAddress.destroy({ where: { warehouseId }, transaction });
   await WarehouseUser.destroy({ where: { warehouseId }, transaction });
   await WarehouseProduct.destroy({ where: { warehouseId }, transaction });
 }
