@@ -10,6 +10,7 @@ function generateFilters(req) {
   let order = [];
   if (sortBy === 'date') order = [['createdAt', orderBy]];
   else if (sortBy === 'type') order = [['type', orderBy]];
+  else if (sortBy === 'updatedStock') order = [['updatedStock', orderBy]];
   else if (sortBy === 'quantity') order = [['quantity', orderBy]];
   else if (sortBy === 'warehouse') order = [[Warehouse, 'name', orderBy]];
   else if (sortBy === 'productName') order = [[Product, 'name', orderBy]];
@@ -50,6 +51,19 @@ async function getProductHistory(req) {
   const data = await StockHistory.findAll({
     where: whereClause,
     ...filters,
+    attributes: [
+      'id',
+      'warehouseId',
+      'productId',
+      'quantity',
+      'updatedStock',
+      'type',
+      'adminId',
+      'stockMutationId',
+      'orderId',
+      'createdAt',
+      'updatedAt',
+    ],
     include: [
       {
         model: Product,
@@ -93,7 +107,6 @@ async function getProductHistory(req) {
     perPage: +req.query.perPage,
     totalPage: Math.ceil(totalData.length / +req.query.perPage),
   };
-
   return [data, paginationInfo];
 }
 
