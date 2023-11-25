@@ -27,7 +27,6 @@ async function getProductHistory(req) {
   const { name, WH, productName, startDate, endDate, warehouseId } = req.query;
   const filters = generateFilters(req);
   const numberedWhId = Number(warehouseId);
-  console.log({ warehouseId, numberedWhId });
 
   const whereClause = {
     [Op.or]: [
@@ -70,6 +69,7 @@ async function getProductHistory(req) {
     include: [
       {
         model: Product,
+        paranoid: false,
         attributes: ['name'],
       },
       {
@@ -92,11 +92,13 @@ async function getProductHistory(req) {
     include: [
       {
         model: Product,
+        paranoid: false,
         attributes: ['name'],
       },
       {
         model: Warehouse,
         attributes: ['name'],
+        paranoid: false,
       },
       {
         model: User,

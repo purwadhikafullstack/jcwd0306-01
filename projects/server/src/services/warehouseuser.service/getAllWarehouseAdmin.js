@@ -35,6 +35,7 @@ async function getAllWarehouseAdmin(req) {
   const result = await WarehouseUser.findAll({
     logging: false,
     ...filters,
+    paranoid: false,
     include: [
       {
         model: User,
@@ -72,7 +73,7 @@ async function getAllWarehouseAdmin(req) {
       ],
     },
   });
-  
+
   if (!result) throw new ResponseError('warehouse admin not found', 404);
 
   const totalData = (
