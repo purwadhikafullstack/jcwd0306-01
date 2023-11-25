@@ -17,6 +17,7 @@ async function getStockMutationById(req) {
     include: [
       {
         model: Product,
+        paranoid: false,
         attributes: ['id', 'name'],
         include: {
           model: ProductImage,
@@ -25,6 +26,7 @@ async function getStockMutationById(req) {
       },
       {
         model: Warehouse,
+        paranoid: false,
         as: 'fromWarehouse',
         include: {
           model: WarehouseAddress,
@@ -36,6 +38,7 @@ async function getStockMutationById(req) {
       },
       {
         model: Warehouse,
+        paranoid: false,
         as: 'toWarehouse',
         include: {
           model: WarehouseAddress,

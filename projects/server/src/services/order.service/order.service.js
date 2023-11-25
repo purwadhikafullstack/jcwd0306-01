@@ -164,7 +164,6 @@ class Order extends Service {
           ...updateOrderStatusOption,
         });
         if (!order) throw new ResponseError('Order not found', 404);
-
         const { status } = req.body;
         if (status === 'unpaid') {
           await updateOrderStatusUnpaid(req, order, t);
@@ -179,6 +178,19 @@ class Order extends Service {
         }
       }
     );
+  };
+
+  updateOrderStatusByUser = async (req) => {
+    // console.log(req.params.id);
+    console.log(req.user);
+    const order = await this.db.findByPk(req.params.id);
+    if (!order) throw new Error('order not found!', 404);
+
+    if (order.userId !== req.user.id) throw new Error('User Unauthorized', 401);
+
+    await order.update({
+      status: 'received',
+    });
   };
 }
 

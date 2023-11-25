@@ -4,9 +4,11 @@ const { Warehouse, WarehouseUser, User } = require('../../models');
 async function getWarehouseUsersByWarehouseId(req) {
   const { warehouseId } = req.params;
   const warehouse = await Warehouse.findByPk(warehouseId, {
+    paranoid: false,
     include: [
       {
         model: WarehouseUser,
+        paranoid: false,
         include: [
           {
             model: User,

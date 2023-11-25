@@ -28,8 +28,15 @@ route.get(
 );
 route.get(
   `/:id`,
-  // verifyAuthUser({ isWarehouseAdmin: true }),
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   OrderController.getByID
+);
+
+route.patch(
+  '/:id/status/receipt',
+  idDecryptor,
+  verifyAuthUser({ isCustomer: true }),
+  OrderController.updateOrderStatusByUser
 );
 
 route.patch(
@@ -43,7 +50,7 @@ route.patch(
 route.patch(
   '/:id',
   idDecryptor,
-  // verifyAuthUser({ isWarehouseAdmin: true }),
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   orderValidator.updateOrderStatus,
   OrderController.updateOrderStatus
 );

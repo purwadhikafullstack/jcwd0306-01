@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { ResponseError } = require('../../errors');
-const { User, WarehouseUser, StockMutation } = require('../../models');
+const { User, WarehouseUser, StockMutation, Order } = require('../../models');
 const { sendResponse } = require('../../utils');
 
 async function verifyUserRole({
@@ -37,8 +37,8 @@ async function verifyUserRole({
   }
 
   // to verify is user a warehouse admin
-  const { warehouseId, stockMutationId } = req.params;
-  if (isWarehouseAdmin && (warehouseId || stockMutationId)) {
+  if (isWarehouseAdmin) {
+    const warehouseId = req.params.warehouseId || +req.query.warehouseId;
     // to verify is warehouse admin verified
     if (isVerified && !user.isVerified)
       throw new ResponseError('User unverified', 401);
@@ -56,6 +56,7 @@ async function verifyUserRole({
 
     // to verify warehouse admin by warehouseId in stockmutation
     if (req.baseUrl === '/stockmutations') {
+      const { stockMutationId } = req.params;
       // to verify warehouse admin through stockMutationId
       if (stockMutationId) {
         const stockMutation = await StockMutation.findByPk(stockMutationId, {
@@ -78,6 +79,24 @@ async function verifyUserRole({
         warehouseUser.warehouseId === req.body.toWarehouseId
       )
         return;
+    }
+
+    // to verify warehouse admin by warehouseId in order
+    if (req.baseUrl === '/order') {
+      // to verify warehouse admin through orderId
+      const orderId = req.params.id;
+      if (orderId) {
+        const order = await Order.findByPk(orderId, {
+          attributes: ['warehouseId'],
+          raw: true,
+          logging: false,
+        });
+        if (!order) throw new ResponseError('Order not found', 404);
+        if (warehouseUser.warehouseId === order.warehouseId) return;
+      }
+
+      // to verify warehouse admin through warehouseId in req.body
+      if (warehouseUser.warehouseId === req.body.warehouseId) return;
     }
   }
 

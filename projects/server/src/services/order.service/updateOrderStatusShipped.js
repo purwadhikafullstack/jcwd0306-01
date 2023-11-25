@@ -17,7 +17,12 @@ async function updateOrderStatusShipped(req, order, transaction) {
       400
     );
 
-  await order.update({ status: 'shipped' }, { transaction, logging: false });
+  if (!req.body.shippingReceipt)
+    throw new ResponseError('shippingReceipt required!', 400);
+  await order.update(
+    { status: 'shipped', shippingReceipt: req.body.shippingReceipt },
+    { transaction, logging: false }
+  );
 }
 
 module.exports = updateOrderStatusShipped;

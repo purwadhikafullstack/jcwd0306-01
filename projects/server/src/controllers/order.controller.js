@@ -110,6 +110,15 @@ class OrderController {
       sendResponse({ res, error });
     }
   };
+
+  static updateOrderStatusByUser = async (req, res) => {
+    try {
+      await orderService.updateOrderStatusByUser(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
 }
 
 module.exports = OrderController;

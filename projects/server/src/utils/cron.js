@@ -44,4 +44,10 @@ const cronDeleteUnpaid = () =>
     );
   });
 
-module.exports = cronDeleteUnpaid;
+const testCron = () => {
+  cron.schedule(`* * * * *`, () => {
+    console.log('hello from cron');
+  });
+};
+
+module.exports = { cronDeleteUnpaid, testCron };
