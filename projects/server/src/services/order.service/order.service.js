@@ -16,6 +16,7 @@ const updateOrderStatusRejected = require('./updateOrderStatusRejected');
 const updateOrderStatusProcessed = require('./updateOrderStatusProcessed');
 const updateOrderStatusShipped = require('./updateOrderStatusShipped');
 const updateOrderStatusReceived = require('./updateOrderStatusReceived');
+const updateOrderStatusOption = require('./updateOrderStatusOption');
 
 class Order extends Service {
   limit = 7;
@@ -160,7 +161,7 @@ class Order extends Service {
       async (t) => {
         const order = await this.db.findByPk(req.params.id, {
           transaction: t,
-          ...updateOrderStatusProcessed,
+          ...updateOrderStatusOption,
         });
         if (!order) throw new ResponseError('Order not found', 404);
 
