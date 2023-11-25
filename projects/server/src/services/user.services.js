@@ -15,6 +15,7 @@ const {
   attributesCountStatus,
   includeOrderCart,
 } = require('./user.service/optionGetDetailsByID');
+const checkIsAdmin = require('./user.service/checkIsAdmin');
 
 require('dotenv').config({
   path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
@@ -33,6 +34,7 @@ class User extends Service {
       include: [{ model: db.WarehouseUser, paranoid: false }],
       logging: false,
     });
+    const allWarehouses = await checkIsAdmin(user);
 
     const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',

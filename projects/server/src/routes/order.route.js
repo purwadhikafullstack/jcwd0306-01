@@ -7,7 +7,7 @@ const { orderValidator } = require('../middlewares/validators');
 
 route.get(
   ``,
-  // verifyAuthUser({ isLogin: true, isWarehouseAdmin: true }),
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   OrderController.getByQuery
 );
 route.get(
@@ -42,7 +42,7 @@ route.patch(
 route.patch(
   `/:userId/:id`,
   idDecryptor,
-  // verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true }),
   orderValidator.checkStatus,
   OrderController.userUpdateOrder
 );
