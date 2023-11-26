@@ -17,7 +17,7 @@ route.get(
 );
 route.get(
   `/user/:userId`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true, isWarehouseAdmin: true }),
   OrderController.getOrderByUserId
 );
 route.get(
