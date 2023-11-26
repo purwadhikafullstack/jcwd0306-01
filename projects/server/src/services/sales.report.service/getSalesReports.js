@@ -32,8 +32,11 @@ function generateFilters(req) {
 }
 
 async function getSalesReports(req) {
-  const { name, WH, category, productName, startDate, endDate } = req.query;
+  const { name, WH, category, productName, startDate, endDate, warehouseId } =
+    req.query;
   const filters = generateFilters(req);
+  const numberedWhId = Number(warehouseId);
+  console.log(numberedWhId);
 
   const whereClause = {
     status: 'received',
@@ -49,6 +52,7 @@ async function getSalesReports(req) {
           ],
         },
       },
+      numberedWhId && { warehouseId: numberedWhId },
     ],
     [Op.or]: [
       {
@@ -92,6 +96,7 @@ async function getSalesReports(req) {
         ],
       },
     ],
+    logging: false,
   });
 
   const orderIds = result.map((order) => order.id);
@@ -124,6 +129,7 @@ async function getSalesReports(req) {
         ],
       },
     ],
+    logging: false,
   });
 
   // Associate OrderProducts with Orders
@@ -168,6 +174,7 @@ async function getSalesReports(req) {
         ],
       },
     ],
+    logging: false,
   });
 
   const paginationInfo = {
