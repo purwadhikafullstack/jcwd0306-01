@@ -8,7 +8,8 @@ const {
 
 router.get(
   '/getAll',
-  /* verifyAuthUser({ isAdmin: true }), */ userController.getAllUsers
+  verifyAuthUser({ isAdmin: true }),
+  userController.getAllUsers
 );
 router.get(
   '/forgetPasswordToken',

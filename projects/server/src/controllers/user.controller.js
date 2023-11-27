@@ -56,9 +56,17 @@ class UserController {
   };
 
   static login = async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, firstName, lastName, uid } = req.body;
+    const { providerId } = req.query;
     try {
-      const signInResult = await userServices.signIn(email, password);
+      const signInResult = await userServices.signIn(
+        email,
+        password,
+        providerId,
+        firstName,
+        lastName,
+        uid
+      );
       sendResponse({ res, statusCode: 200, data: signInResult });
     } catch (error) {
       sendResponse({ res, error });

@@ -74,10 +74,10 @@ const cronUpdateReceivedStatus = () => {
       { status: 'received' },
       { where: { id: { [Op.in]: id } } }
     );
+    console.log(
+      'cron update: order status more than 7 days,status updated to received!'
+    );
   });
-  console.log(
-    'cron update: order status more than 7 days,status updated to received!'
-  );
 };
 
 module.exports = { cronDeleteUnpaid, cronUpdateReceivedStatus };

@@ -16,7 +16,7 @@ route.get(
 
 route.get(
   `/:userId/customerAddress`,
-  verifyAuthUser({ isCustomer: true, isAdmin: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true, isWarehouseAdmin: true }),
   UserAddressController.getCustomerAddress
 );
 
