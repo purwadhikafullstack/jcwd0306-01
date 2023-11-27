@@ -95,7 +95,6 @@ function generateFilters(req) {
         description: { [Sequelize.Op.like]: `%${search || ''}%` },
       },
     },
-    having: paranoid ? { stock: { [Sequelize.Op.gt]: 0 } } : undefined,
     attributes: {
       include: [
         [SOLD_QUERY, 'sold'],
