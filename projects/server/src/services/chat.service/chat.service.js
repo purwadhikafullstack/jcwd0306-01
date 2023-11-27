@@ -3,6 +3,7 @@ const { sequelize } = require('../../models');
 const Service = require('../baseServices');
 const db = require('../../models');
 const { ResponseError } = require('../../errors');
+const includeSenderReceiver = require('./includeSenderReceiver');
 
 class ChatService extends Service {
   postTextMessage = async (req) => {
@@ -27,10 +28,7 @@ class ChatService extends Service {
         [Op.or]: [{ senderId: userId }, { receiverId: userId }],
         orderId: orderId === 'null' ? null : orderId,
       },
-      include: [
-        { model: db.User, as: 'Receiver' },
-        { model: db.User, as: 'Sender' },
-      ],
+      include: includeSenderReceiver,
     });
     return result;
   };
