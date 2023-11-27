@@ -44,7 +44,10 @@ async function getCustomerAddress(req) {
         attributes: ['name'],
       },
     ],
-    order: [['isDefault', 'DESC']],
+    order: [
+      ['isDefault', 'DESC'],
+      ['updatedAt', 'DESC'],
+    ],
   });
 
   const totalData = (
@@ -75,7 +78,10 @@ async function getCustomerAddress(req) {
           attributes: ['name'],
         },
       ],
-      order: [['isDefault', 'DESC']],
+      order: [
+        ['isDefault', 'DESC'],
+        ['updatedAt', 'DESC'],
+      ],
     })
   ).length;
 
