@@ -74,11 +74,6 @@ const includeOrderCart = [
       include: { model: db.ProductImage, attributes: ['id'] },
     },
   },
-  {
-    model: db.WarehouseUser,
-    required: false,
-    attributes: ['warehouseId'],
-  },
 ];
 
 module.exports = { attributesCountStatus, includeOrderCart };

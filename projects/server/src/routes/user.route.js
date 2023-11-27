@@ -17,7 +17,7 @@ router.get(
 );
 router.get(
   '/details/:id',
-  verifyAuthUser({ isCustomer: true, isAdmin: true }),
+  verifyAuthUser({ isLogin: true, isCustomer: true }),
   userController.getDetailsById
 );
 

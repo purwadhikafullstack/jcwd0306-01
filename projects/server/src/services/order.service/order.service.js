@@ -19,14 +19,8 @@ const updateOrderStatusReceived = require('./updateOrderStatusReceived');
 const updateOrderStatusOption = require('./updateOrderStatusOption');
 
 class Order extends Service {
-  limit = 7;
-
-  includeOrderProduct = includeOrderProduct;
-
-  includeUserAddress = includeUserAddress;
-
   optionGetByID = {
-    include: [this.includeOrderProduct, this.includeUserAddress],
+    include: [includeOrderProduct, includeUserAddress],
   };
 
   getByID = async (req) => {
@@ -38,11 +32,12 @@ class Order extends Service {
     try {
       const userId = Number(req.params.userId);
       const { name, page, status } = req.query;
+      const limit = 7;
       const result = await this.getByUserId(
         req,
-        optionGetOrderByUserId(page, userId, this.limit, name, status, [
-          this.includeOrderProduct,
-          this.includeUserAddress,
+        optionGetOrderByUserId(page, userId, limit, name, status, [
+          includeOrderProduct,
+          includeUserAddress,
         ])
       );
       return this.encryptMultiResult(result);
@@ -54,7 +49,7 @@ class Order extends Service {
   // untuk admin
   getByQuery = async (req) => {
     const { page, text, id, status, warehouseId } = req.query;
-    const limit = Number(req.query.limit);
+    const limit = Number(req.query.limit) || 0;
     try {
       const result = await this.db.findAndCountAll(
         optionGetByQuery(limit, page, text, id, status, warehouseId)

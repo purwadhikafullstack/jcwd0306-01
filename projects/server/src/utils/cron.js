@@ -33,6 +33,27 @@ const optionCronDeleteUnpaid = {
   logging: false,
 };
 
+const optionCronUpdateStatusReceived = {
+  attributes: [
+    'status',
+    'id',
+    [
+      db.sequelize.fn(
+        'timediff',
+        db.sequelize.fn('NOW'),
+        db.sequelize.col('updatedAt')
+      ),
+      'timediff',
+    ],
+  ],
+  where: {
+    createdAt: {
+      [Op.gte]: new Date(new Date() - 7 * 24 * 60 * 60 * 1000),
+    },
+    logging: false,
+  },
+};
+
 const cronDeleteUnpaid = () =>
   cron.schedule(`2 * * * *`, async () => {
     const result = await db.Order.findAll(optionCronDeleteUnpaid);
@@ -44,10 +65,19 @@ const cronDeleteUnpaid = () =>
     );
   });
 
-const testCron = () => {
-  cron.schedule(`* * * * *`, () => {
-    console.log('hello from cron');
+const cronUpdateReceivedStatus = () => {
+  cron.schedule(`0 0 * * *`, async () => {
+    const result = await db.Order.findAll(optionCronUpdateStatusReceived);
+    const id = [];
+    result.forEach((order) => id.push(order.dataValues.id));
+    await db.Order.update(
+      { status: 'received' },
+      { where: { id: { [Op.in]: id } } }
+    );
   });
+  console.log(
+    'cron update: order status more than 7 days,status updated to received!'
+  );
 };
 
-module.exports = { cronDeleteUnpaid, testCron };
+module.exports = { cronDeleteUnpaid, cronUpdateReceivedStatus };

@@ -29,13 +29,13 @@ const {
   salesReportRouter,
   productHistoryRouter,
 } = require('./routes');
-const { cronDeleteUnpaid, testCron } = require('./utils/cron');
+const { cronDeleteUnpaid, cronUpdateReceivedStatus } = require('./utils/cron');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 
 cronDeleteUnpaid();
-// testCron();
+cronUpdateReceivedStatus();
 
 app.use(
   cors({
