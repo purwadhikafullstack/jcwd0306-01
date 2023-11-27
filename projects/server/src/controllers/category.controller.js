@@ -1,5 +1,4 @@
 const sharp = require('sharp');
-const { Op } = require('sequelize');
 const { sendResponse } = require('../utils');
 const { categoryService } = require('../services');
 
@@ -36,13 +35,14 @@ const categoryController = {
 
   getCategories: async (req, res) => {
     try {
-      const { name, sortBy, orderBy } = req.query;
-      req.locals = {
-        order: [[sortBy || 'updatedAt', orderBy || 'DESC']],
-        where: name ? { name: { [Op.like]: `%${name}%` } } : {},
-      };
-      const categories = await categoryService.getCategories(req);
-      sendResponse({ res, statusCode: 200, data: categories });
+      const [categories, paginationInfo] =
+        await categoryService.getCategories(req);
+      sendResponse({
+        res,
+        statusCode: 200,
+        data: categories,
+        ...paginationInfo,
+      });
     } catch (error) {
       sendResponse({ res, error });
     }

@@ -56,14 +56,23 @@ const categoryValidator = {
 
   getCategories: (req, res, next) => {
     try {
+      // convert data type
+      if (req.query.pagination)
+        req.query.pagination = JSON.parse(req.query.pagination);
+      if (req.query.page) req.query.page = Number(req.query.page);
+      if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
+
       validateJoiSchema(
         req.query,
         Joi.object({
-          name: Joi.string().allow(''),
+          search: Joi.string().allow(''),
           sortBy: Joi.string()
             .valid('id', 'name', 'totalProducts', 'createdAt', 'updatedAt')
             .allow(''),
           orderBy: Joi.string().valid('ASC', 'asc', 'DESC', 'desc').allow(''),
+          pagination: Joi.boolean().allow(''),
+          page: Joi.number().integer().min(1).allow(''),
+          perPage: Joi.number().integer().min(1).allow(''),
         })
       );
       next();
