@@ -30,7 +30,13 @@ class User extends Service {
 
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password', 'image'] },
-      include: [{ model: db.WarehouseUser, paranoid: false }],
+      include: [
+        {
+          model: db.WarehouseUser,
+          paranoid: false,
+          include: [{ model: db.Warehouse, paranoid: false }],
+        },
+      ],
       logging: false,
     });
 
@@ -126,7 +132,7 @@ class User extends Service {
           password: hashedPassword,
           isVerified: 1,
         },
-        { where: whereClause, transaction: t }
+        { where: whereClause, transaction: t, logging: false }
       );
     } catch (err) {
       return err;
@@ -135,10 +141,17 @@ class User extends Service {
 
   signIn = async (email, password) => {
     const result = await this.db.findOne({
+      logging: false,
       where: {
         email,
       },
-      include: [{ model: db.WarehouseUser, paranoid: false }],
+      include: [
+        {
+          model: db.WarehouseUser,
+          paranoid: false,
+          include: [{ model: db.Warehouse, paranoid: false }],
+        },
+      ],
       attributes: { exclude: ['image'] },
     });
     if (!result) throw new Error('wrong email/password');
@@ -165,9 +178,10 @@ class User extends Service {
 
     await this.db.update(updatedData, {
       where: { id: userId },
+      logging: false,
     });
 
-    const result = await this.db.findByPk(userId);
+    const result = await this.db.findByPk(userId, { logging: false });
     return result;
   };
 
@@ -182,6 +196,7 @@ class User extends Service {
         },
         {
           where: { id },
+          logging: false,
         }
       );
       return data;
@@ -196,7 +211,7 @@ class User extends Service {
       const hashPassword = await bcrypt.hash(newPassword, 10);
       const data = await this.db.update(
         { password: hashPassword },
-        { where: { email }, transaction: t }
+        { where: { email }, transaction: t, logging: false }
       );
       return data;
     } catch (err) {

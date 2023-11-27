@@ -11,6 +11,7 @@ const updateOrderStatusOption = {
       include: [
         {
           model: db.Product,
+          paranoid: false,
           include: [
             {
               model: db.WarehouseProduct,
