@@ -36,7 +36,6 @@ async function getSalesReports(req) {
     req.query;
   const filters = generateFilters(req);
   const numberedWhId = Number(warehouseId);
-  console.log(numberedWhId);
 
   const whereClause = {
     status: 'received',

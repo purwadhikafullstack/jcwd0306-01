@@ -56,6 +56,7 @@ async function getAllUsers(req) {
     paginationInfo.totalData / +req.query.perPage
   );
   paginationInfo.offset = filters.offset;
+  paginationInfo.totalUsers = users.length;
 
   return [result, paginationInfo];
 }

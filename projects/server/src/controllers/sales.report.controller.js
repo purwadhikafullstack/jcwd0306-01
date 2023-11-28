@@ -56,6 +56,24 @@ const salesReportController = {
       sendResponse({ res, error });
     }
   },
+
+  getOrderByWarehouseId: async (req, res) => {
+    try {
+      const result = await salesReportService.getOrderByWarehouse(req);
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getrevenueByWarehouse: async (req, res) => {
+    try {
+      const result = await salesReportService.getrevenueByWarehouse(req);
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = salesReportController;
