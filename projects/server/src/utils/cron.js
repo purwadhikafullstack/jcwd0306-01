@@ -67,16 +67,20 @@ const cronDeleteUnpaid = () =>
 
 const cronUpdateReceivedStatus = () => {
   cron.schedule(`0 0 * * *`, async () => {
-    const result = await db.Order.findAll(optionCronUpdateStatusReceived);
-    const id = [];
-    result.forEach((order) => id.push(order.dataValues.id));
-    await db.Order.update(
-      { status: 'received' },
-      { where: { id: { [Op.in]: id } } }
-    );
-    console.log(
-      'cron update: order status more than 7 days,status updated to received!'
-    );
+    try {
+      const result = await db.Order.findAll(optionCronUpdateStatusReceived);
+      const id = [];
+      result.forEach((order) => id.push(order.dataValues.id));
+      await db.Order.update(
+        { status: 'received' },
+        { where: { id: { [Op.in]: id } } }
+      );
+      console.log(
+        'cron update: order status more than 7 days, status updated to received!'
+      );
+    } catch (error) {
+      console.error('Error in cron job:', error);
+    }
   });
 };
 
