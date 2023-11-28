@@ -8,6 +8,16 @@ router.get(
   salesReportController.getSalesReports
 );
 router.get(
+  '/revenue',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  salesReportController.getTotalSalesRevenue
+);
+
+router.get('/order-statuses', salesReportController.getOrderStatuses);
+
+router.get('/product-sold', salesReportController.getProductSold);
+
+router.get(
   '/:warehouseId/warehouse',
   verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   salesReportController.getSalesReportByWarehouse

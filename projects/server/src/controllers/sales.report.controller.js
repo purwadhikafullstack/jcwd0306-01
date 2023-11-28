@@ -29,6 +29,33 @@ const salesReportController = {
       sendResponse({ res, error });
     }
   },
+
+  getTotalSalesRevenue: async (req, res) => {
+    try {
+      const result = await salesReportService.getTotalSalesRevenue();
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getOrderStatuses: async (req, res) => {
+    try {
+      const result = await salesReportService.getOrderStatuses();
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getProductSold: async (req, res) => {
+    try {
+      const result = await salesReportService.getProductSold();
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = salesReportController;
