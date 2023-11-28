@@ -15,6 +15,7 @@ const {
   attributesCountStatus,
   includeOrderCart,
 } = require('./user.service/optionGetDetailsByID');
+const checkIsAdmin = require('./user.service/checkIsAdmin');
 
 require('dotenv').config({
   path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
@@ -30,9 +31,16 @@ class User extends Service {
 
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password', 'image'] },
-      include: [{ model: db.WarehouseUser, paranoid: false }],
+      include: [
+        {
+          model: db.WarehouseUser,
+          paranoid: false,
+          include: [{ model: db.Warehouse, paranoid: false }],
+        },
+      ],
       logging: false,
     });
+    const allWarehouses = await checkIsAdmin(user);
 
     const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
@@ -126,31 +134,82 @@ class User extends Service {
           password: hashedPassword,
           isVerified: 1,
         },
-        { where: whereClause, transaction: t }
+        { where: whereClause, transaction: t, logging: false }
       );
     } catch (err) {
       return err;
     }
   };
 
-  signIn = async (email, password) => {
+  signIn = async (email, password, providerId, firstName, lastName, uid) => {
+    let passwordNotCreated = false;
     const result = await this.db.findOne({
+      logging: false,
       where: {
         email,
       },
-      include: [{ model: db.WarehouseUser, paranoid: false }],
+      include: [
+        {
+          model: db.WarehouseUser,
+          paranoid: false,
+          include: [{ model: db.Warehouse, paranoid: false }],
+        },
+      ],
       attributes: { exclude: ['image'] },
     });
-    if (!result) throw new Error('wrong email/password');
-    const isValid = await bcrypt.compare(
-      password,
-      result.getDataValue('password')
-    );
-
-    if (!isValid) {
-      throw new Error('wrong password');
+    // kalo email gaada dan gaada providerId maka throw error
+    if (!result && !providerId) {
+      throw new Error('User not found');
     }
-    result.setDataValue('password', undefined);
+
+    // kalo emailnya gaada tapi ada providerId, maka push email dri fe ke db
+    if (!result && providerId) {
+      const hashedPassword = await bcrypt.hash('@NO_P455W0RD', 10);
+      const googleLogin = await this.db.create({
+        email,
+        firstName,
+        lastName,
+        uuidGoogle: uid,
+        isCustomer: 1,
+        isAdmin: 0,
+        isVerified: 1,
+        password: hashedPassword,
+      });
+
+      const payload = googleLogin.toJSON();
+      const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
+        expiresIn: '1h',
+      });
+
+      return { token, user: googleLogin };
+    }
+
+    // kalo gaada providerId, brti login biasa, maka cek passwordnya
+    // cek kalo ada isi di kolom uid kasih return belum set password
+    if (providerId !== 'google.com') {
+      // kalo user login biasa pake email dari login google
+      if (result.uuidGoogle !== null) {
+        // cek apakah passwordnya default(password di db === '@N0_P455W0RD'), kalo iya return belum set password, kalo tidak lanjut validasi password
+        const isDefaultPassword = await bcrypt.compare(
+          '@NO_P455W0RD',
+          result.getDataValue('password')
+        );
+        if (isDefaultPassword) {
+          passwordNotCreated = true;
+          result.setDataValue('isNotCreatePassword', passwordNotCreated);
+          return result;
+        }
+      }
+
+      const isValid = await bcrypt.compare(
+        password,
+        result.getDataValue('password')
+      );
+      if (!isValid) {
+        throw new Error('wrong password');
+      }
+      result.setDataValue('password', undefined);
+    }
 
     const payload = result.toJSON();
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
@@ -165,9 +224,10 @@ class User extends Service {
 
     await this.db.update(updatedData, {
       where: { id: userId },
+      logging: false,
     });
 
-    const result = await this.db.findByPk(userId);
+    const result = await this.db.findByPk(userId, { logging: false });
     return result;
   };
 
@@ -182,6 +242,7 @@ class User extends Service {
         },
         {
           where: { id },
+          logging: false,
         }
       );
       return data;
@@ -196,9 +257,8 @@ class User extends Service {
       const hashPassword = await bcrypt.hash(newPassword, 10);
       const data = await this.db.update(
         { password: hashPassword },
-        { where: { email }, transaction: t }
+        { where: { email }, transaction: t, logging: false }
       );
-      console.log(data);
       return data;
     } catch (err) {
       return err;
@@ -207,9 +267,9 @@ class User extends Service {
 
   getDetailsById = async (req) => {
     const result = await this.getOneByID(req, {
-      logging: false,
-      attributes: attributesCountStatus,
+      attributes: attributesCountStatus(req),
       include: includeOrderCart,
+      logging: false,
     });
     const order = this.encryptMultiResult({ count: 1, rows: result.UserOrder });
     return { ...result.dataValues, UserOrder: order.rows };
@@ -222,7 +282,7 @@ class User extends Service {
 
       const data = await this.db.update(
         { password: hashPassword, forget_password_token: null },
-        { where: { email }, transaction: t }
+        { where: { email }, transaction: t, logging: false }
       );
       return data;
     } catch (error) {
@@ -234,7 +294,7 @@ class User extends Service {
     try {
       const result = await this.db.update(
         { forget_password_token: token },
-        { where: { email } }
+        { where: { email }, logging: false }
       );
       return result;
     } catch (error) {

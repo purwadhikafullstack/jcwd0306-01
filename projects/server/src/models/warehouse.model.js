@@ -29,12 +29,6 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
       // User < WarehouseUser > Warehouse
       // ======================================================
-      models.Warehouse.belongsToMany(models.User, {
-        through: models.WarehouseUser,
-        foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
       models.Warehouse.hasMany(models.WarehouseUser, {
         foreignKey: { name: 'warehouseId', primaryKey: true, unique: false },
         onDelete: 'CASCADE',
@@ -43,20 +37,25 @@ module.exports = (sequelize, DataTypes) => {
       // ======================================================
 
       // ======================================================
-      models.Warehouse.hasOne(models.WarehouseAddress, {
-        foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
+      // Warehouse < StockMutation
+      // ======================================================
       models.Warehouse.hasMany(models.StockMutation, {
         foreignKey: { name: 'fromWarehouseId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'fromWarehouse',
       });
-
       models.Warehouse.hasMany(models.StockMutation, {
         foreignKey: { name: 'toWarehouseId', allowNull: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: 'toWarehouse',
+      });
+      // ======================================================
+
+      // ======================================================
+      models.Warehouse.hasOne(models.WarehouseAddress, {
+        foreignKey: { name: 'warehouseId', primaryKey: true, allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });

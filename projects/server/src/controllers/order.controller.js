@@ -43,6 +43,7 @@ class OrderController {
       const result = await orderService.uploadPaymentProof(req);
       global?.io.emit(`warehouse-${req.body.warehouseId}`, {
         message: `New transaction payment to be verified`,
+        data: req.body,
       });
       return res.send(result);
     } catch (error) {
@@ -79,11 +80,47 @@ class OrderController {
           data: req.baseData,
         });
       else
-        global?.io.emit(`notification-${req.baseData.userId}`, { [status]: 1 });
+        global?.io.emit(`notification-${req.baseData.userId}`, {
+          key: status,
+          value: 1,
+        });
 
-      return res.send(`success`);
+      res.send('success');
     } catch (error) {
-      return sendResponse({ res, error });
+      sendResponse({ res, error });
+    }
+  };
+
+  static updateOrderStatus = async (req, res) => {
+    try {
+      await orderService.updateOrderStatus(req);
+      const { status, warehouseId, userId } = req.body;
+      if (status === 'unpaid') {
+        global?.io.emit(`unpaid-${userId}`, {
+          message: 'You need to review one of transaction',
+          data: req.body,
+        });
+        global?.io.emit(`warehouseNotification-${warehouseId}`, -1);
+      } else if (status === 'processed') {
+        global?.io.emit(`warehouseNotification-${warehouseId}`, -1);
+      } else {
+        global?.io.emit(`notification-${userId}`, {
+          key: status,
+          value: 1,
+        });
+      }
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static updateOrderStatusByUser = async (req, res) => {
+    try {
+      await orderService.updateOrderStatusByUser(req);
+      res.sendStatus(204);
+    } catch (error) {
+      sendResponse({ res, error });
     }
   };
 }

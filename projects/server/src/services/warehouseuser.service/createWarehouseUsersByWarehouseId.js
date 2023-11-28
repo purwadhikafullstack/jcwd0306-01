@@ -21,6 +21,7 @@ async function createWarehouseUsersByWarehouseId(req) {
 
   // bawah: 1 user tidak bisa di post di warehouse yg sama
   const existingWarehouseUser = await WarehouseUser.findOne({
+    paranoid: false,
     where: {
       warehouseId: req.params.warehouseId,
       warehouseAdminId: user.id,
@@ -33,6 +34,7 @@ async function createWarehouseUsersByWarehouseId(req) {
   }
 
   const existingAdmin = await WarehouseUser.findOne({
+    paranoid: false,
     where: {
       warehouseAdminId: user.id,
     },
@@ -43,6 +45,7 @@ async function createWarehouseUsersByWarehouseId(req) {
 
   const data = await sequelize.transaction(async (t) => {
     const warehouse = await Warehouse.findByPk(req.params.warehouseId, {
+      paranoid: false,
       transaction: t,
       logging: false,
     });
@@ -56,13 +59,15 @@ async function createWarehouseUsersByWarehouseId(req) {
         warehouseId: req.params.warehouseId,
         warehouseAdminId: user.id,
       },
-      { transaction: t }
+      { paranoid: false, transaction: t }
     );
 
     const result = await Warehouse.findByPk(req.params.warehouseId, {
+      paranoid: false,
       include: [
         {
           model: WarehouseUser,
+          paranoid: false,
           include: [
             {
               model: User,

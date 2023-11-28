@@ -24,13 +24,18 @@ const {
   orderRouter,
   warehouseRouter,
   warehouseUserRouter,
+  chatRouter,
+  stockMutationRouter,
+  salesReportRouter,
+  productHistoryRouter,
 } = require('./routes');
-const cronDeleteUnpaid = require('./utils/cron');
+const { cronDeleteUnpaid, cronUpdateReceivedStatus } = require('./utils/cron');
 
 const PORT = process.env.PORT || 8000;
 const app = express();
 
 cronDeleteUnpaid();
+cronUpdateReceivedStatus();
 
 app.use(
   cors({
@@ -51,17 +56,21 @@ app.use(bearerToken());
 app.use('/carousels', carouselRouter);
 app.use('/categories', categoryRouter);
 app.use('/products', productRouter);
-app.use('/order', orderRouter);
 app.use('/warehouses', warehouseRouter);
 app.use('/warehouseusers', warehouseUserRouter);
+app.use('/stockmutations', stockMutationRouter);
+app.use('/order', orderRouter);
 app.use('/cart', cartRouter);
 app.use('/user_address', userAddressRouter);
 app.use('/user', userRouter);
 app.use('/province', provinceRouter);
 app.use('/city', cityRouter);
+app.use('/chat', chatRouter);
+app.use('/sales-reports', salesReportRouter);
+app.use('/product-history', productHistoryRouter);
 
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: `*` } });
+const io = new Server(server, { cors: { origin: '*' } });
 global.io = io;
 const client = createClient({
   url: 'redis://localhost:6379',
@@ -103,7 +112,7 @@ app.use((err, req, res, next) => {
 // #endregion
 
 server.listen(PORT, async (err) => {
-  client.on(`error`, (error) =>
+  client.on('error', (error) =>
     console.log(
       error.code === 'ECONNREFUSED' ? 'Nyalain Redis oi' : `Redis${error.code}`
     )

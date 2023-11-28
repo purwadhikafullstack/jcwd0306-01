@@ -5,7 +5,11 @@ const idDecryptor = require('../middlewares/decryptor/idDecryptor');
 const { multerBlobUploader } = require('../middlewares/multers');
 const { orderValidator } = require('../middlewares/validators');
 
-route.get(``, verifyAuthUser({ isAdmin: true }), OrderController.getByQuery);
+route.get(
+  ``,
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  OrderController.getByQuery
+);
 route.get(
   `/payment_proof/:id`,
   idDecryptor,
@@ -13,7 +17,7 @@ route.get(
 );
 route.get(
   `/user/:userId`,
-  verifyAuthUser({ isCustomer: true }),
+  verifyAuthUser({ isCustomer: true, isAdmin: true, isWarehouseAdmin: true }),
   OrderController.getOrderByUserId
 );
 route.get(
@@ -22,7 +26,18 @@ route.get(
   verifyAuthUser({ isCustomer: true }),
   OrderController.getByID
 );
-route.get(`/:id`, verifyAuthUser({ isAdmin: true }), OrderController.getByID);
+route.get(
+  `/:id`,
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  OrderController.getByID
+);
+
+route.patch(
+  '/:id/status/receipt',
+  idDecryptor,
+  verifyAuthUser({ isCustomer: true }),
+  OrderController.updateOrderStatusByUser
+);
 
 route.patch(
   `/:userId/:id`,
@@ -31,13 +46,22 @@ route.patch(
   orderValidator.checkStatus,
   OrderController.userUpdateOrder
 );
+
 route.patch(
-  `/:id`,
+  '/:id',
   idDecryptor,
-  verifyAuthUser({ isAdmin: true }),
-  orderValidator.rejectOrConfirm,
-  OrderController.adminUpdateOrder
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  orderValidator.updateOrderStatus,
+  OrderController.updateOrderStatus
 );
+
+// route.patch(
+//   `/:id`,
+//   idDecryptor,
+//   verifyAuthUser({ isAdmin: true }),
+//   orderValidator.rejectOrConfirm,
+//   OrderController.adminUpdateOrder
+// );
 
 route.post(
   `/payment_proof/:id`,

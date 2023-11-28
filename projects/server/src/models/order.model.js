@@ -28,12 +28,14 @@ module.exports = (sequelize, DataTypes) => {
 
       // ======================================================
       models.Order.belongsTo(models.User, {
+        as: 'User',
         foreignKey: { name: 'userId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
 
       models.Order.belongsTo(models.User, {
+        as: 'Admin',
         foreignKey: { name: 'adminId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -52,6 +54,12 @@ module.exports = (sequelize, DataTypes) => {
       });
 
       models.Order.hasMany(models.StockMutation, {
+        foreignKey: { name: 'orderId', allowNull: true },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+      });
+
+      models.Order.hasMany(models.StockHistory, {
         foreignKey: { name: 'orderId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
@@ -101,7 +109,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       sequelize,
       modelName: 'Order',
-      // paranoid: true,
     }
   );
   return Order;

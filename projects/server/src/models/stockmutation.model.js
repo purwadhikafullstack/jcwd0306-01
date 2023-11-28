@@ -10,21 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
-      models.StockMutation.belongsTo(models.Product, {
-        foreignKey: { name: 'productId', allowNull: false },
-        onDelete: 'CASCADE',
-        onUpdate: 'CASCADE',
-      });
-
+      // ======================================================
+      // Warehouse < StockMutation
+      // ======================================================
       models.StockMutation.belongsTo(models.Warehouse, {
         foreignKey: { name: 'fromWarehouseId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'fromWarehouse',
       });
-
       models.StockMutation.belongsTo(models.Warehouse, {
         foreignKey: { name: 'toWarehouseId', allowNull: false },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        as: 'toWarehouse',
+      });
+      // ======================================================
+
+      // ======================================================
+      models.StockMutation.belongsTo(models.Product, {
+        foreignKey: { name: 'productId', allowNull: false },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
       });
@@ -33,12 +38,14 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: { name: 'requestAdminId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'requestAdmin',
       });
 
       models.StockMutation.belongsTo(models.User, {
         foreignKey: { name: 'approveAdminId', allowNull: true },
         onDelete: 'CASCADE',
         onUpdate: 'CASCADE',
+        as: 'approveAdmin',
       });
 
       models.StockMutation.belongsTo(models.Order, {

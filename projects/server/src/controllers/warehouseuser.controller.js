@@ -8,6 +8,7 @@ const warehouseUserController = {
         await warehouseUserService.createWarehouseUsersByWarehouseId(req);
       sendResponse({ res, statusCode: 201, data: warehouse });
     } catch (error) {
+      // console.log(error);
       sendResponse({ res, error });
     }
   },
@@ -33,8 +34,14 @@ const warehouseUserController = {
 
   getAllWarehouseAdmin: async (req, res) => {
     try {
-      const warehouseAdmin = await warehouseUserService.getAllWarehouseAdmin();
-      sendResponse({ res, statusCode: 200, data: warehouseAdmin });
+      const [warehouseAdmin, paginationInfo] =
+        await warehouseUserService.getAllWarehouseAdmin(req);
+      sendResponse({
+        res,
+        statusCode: 200,
+        data: warehouseAdmin,
+        ...paginationInfo,
+      });
     } catch (error) {
       sendResponse({ res, error });
     }

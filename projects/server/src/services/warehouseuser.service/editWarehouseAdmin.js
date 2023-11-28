@@ -14,11 +14,12 @@ async function editWarehouseAdmin(req) {
     'forget_password_token',
   ]);
   // console.log(user);
-  const warehouse = await Warehouse.findByPk(whId);
+  const warehouse = await Warehouse.findByPk(whId, { paranoid: false });
   if (!warehouse) throw new ResponseError('Warehouse Not Found!', 404);
 
   // Check if the user is already assigned as an admin for this warehouse
   const existingWarehouseUser = await WarehouseUser.findOne({
+    paranoid: false,
     where: {
       warehouseId: warehouse.id,
       warehouseAdminId: user.id,
@@ -35,6 +36,7 @@ async function editWarehouseAdmin(req) {
       warehouseId: warehouse.id,
     },
     {
+      paranoid: false,
       where: {
         warehouseAdminId: user.id,
       },

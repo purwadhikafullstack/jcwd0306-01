@@ -1,6 +1,7 @@
-const { sendResponse } = require('../../utils');
+const Joi = require('joi');
+const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
-const { OrderService } = require('../../services');
+const { orderService } = require('../../services');
 const db = require('../../models');
 const includeOrderProductAndWarehouseProduct = require('./order/includeProductAndWhsProduct');
 
@@ -39,7 +40,7 @@ const checkCondition = (
 const orderValidator = {
   checkStatus: async (req, res, next) => {
     try {
-      const order = await OrderService.getByID(req);
+      const order = await orderService.getByID(req);
       if (order.status !== 'unpaid' && req.body.status === 'cancel')
         throw new ResponseError(
           'User cannot cancel this order on this stage',
@@ -69,6 +70,28 @@ const orderValidator = {
       return next();
     } catch (error) {
       return sendResponse({ res, error });
+    }
+  },
+
+  updateOrderStatus: (req, res, next) => {
+    try {
+      validateJoiSchema(
+        req.params,
+        Joi.object({
+          id: Joi.number().integer().min(1).required(),
+        }).required()
+      );
+      validateJoiSchema(
+        req.body,
+        Joi.object({
+          status: Joi.string()
+            .valid('unpaid', 'rejected', 'processed', 'shipped', 'received')
+            .required(),
+        }).unknown()
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
     }
   },
 };

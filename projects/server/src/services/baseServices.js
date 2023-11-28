@@ -10,7 +10,11 @@ class Service {
 
   async getAll(option = {}) {
     try {
-      const result = await this.db.findAll({ ...option });
+      const result = await this.db.findAndCountAll({
+        logging: false,
+        distinct: true,
+        ...option,
+      });
       return result;
     } catch (error) {
       throw new ResponseError(error?.message, 400);

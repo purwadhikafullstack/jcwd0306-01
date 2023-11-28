@@ -11,16 +11,16 @@ const optionGetByQuery = require('./optionGetByQuery');
 const { findNearbyWarehouse } = require('./findNearbyWarehouse');
 const { doStockMutation } = require('./doStockMutation');
 const doDecrementStock = require('./doDecrementStock');
+const updateOrderStatusUnpaid = require('./updateOrderStatusUnpaid');
+const updateOrderStatusRejected = require('./updateOrderStatusRejected');
+const updateOrderStatusProcessed = require('./updateOrderStatusProcessed');
+const updateOrderStatusShipped = require('./updateOrderStatusShipped');
+const updateOrderStatusReceived = require('./updateOrderStatusReceived');
+const updateOrderStatusOption = require('./updateOrderStatusOption');
 
 class Order extends Service {
-  limit = 7;
-
-  includeOrderProduct = includeOrderProduct;
-
-  includeUserAddress = includeUserAddress;
-
   optionGetByID = {
-    include: [this.includeOrderProduct, this.includeUserAddress],
+    include: [includeOrderProduct, includeUserAddress],
   };
 
   getByID = async (req) => {
@@ -32,11 +32,12 @@ class Order extends Service {
     try {
       const userId = Number(req.params.userId);
       const { name, page, status } = req.query;
+      const limit = 7;
       const result = await this.getByUserId(
         req,
-        optionGetOrderByUserId(page, userId, this.limit, name, status, [
-          this.includeOrderProduct,
-          this.includeUserAddress,
+        optionGetOrderByUserId(page, userId, limit, name, status, [
+          includeOrderProduct,
+          includeUserAddress,
         ])
       );
       return this.encryptMultiResult(result);
@@ -48,7 +49,7 @@ class Order extends Service {
   // untuk admin
   getByQuery = async (req) => {
     const { page, text, id, status, warehouseId } = req.query;
-    const limit = Number(req.query.limit);
+    const limit = Number(req.query.limit) || 0;
     try {
       const result = await this.db.findAndCountAll(
         optionGetByQuery(limit, page, text, id, status, warehouseId)
@@ -64,13 +65,14 @@ class Order extends Service {
 
   static orderProductFormatter = (products, orderId) => {
     const temp = [];
-    products.forEach((product) =>
+    products.forEach((product) => {
+      const { price, discount } = product.Product;
       temp.push({
         ...product,
-        price: product.Product.price,
+        price: price - price * discount,
         orderId,
-      })
-    );
+      });
+    });
     return temp;
   };
 
@@ -126,12 +128,14 @@ class Order extends Service {
           const idx = warehouses.findIndex(
             (whse) => whse.dataValues.warehouseId === warehouseId
           );
-          if (idx === -1 || warehouses[idx].stock < quantity) {
-            const nearbyWhse = await findNearbyWarehouse(
-              warehouseId,
-              warehouses
-            );
-            const neededStock = quantity - warehouses[idx].stock;
+          const currStock = warehouses[idx]?.stock;
+          const tempWhse = warehouses.filter(
+            (whs) => whs.dataValues.stock > quantity
+          );
+          const source = tempWhse.length ? tempWhse : warehouses;
+          if (idx === -1 || currStock < quantity) {
+            const nearbyWhse = await findNearbyWarehouse(warehouseId, source);
+            const neededStock = currStock ? quantity - currStock : quantity;
             await doStockMutation(t, warehouseId, nearbyWhse, neededStock);
           }
           await doDecrementStock(t, quantity, warehouseId, productId);
@@ -142,6 +146,40 @@ class Order extends Service {
       await this.update(req);
     }
     return 'success';
+  };
+
+  updateOrderStatus = async (req) => {
+    await db.sequelize.transaction(
+      {
+        isolationLevel: db.Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      },
+      async (t) => {
+        const order = await this.db.findByPk(req.params.id, {
+          transaction: t,
+          ...updateOrderStatusOption,
+        });
+        if (!order) throw new ResponseError('Order not found', 404);
+        const { status } = req.body;
+        if (status === 'unpaid') {
+          await updateOrderStatusUnpaid(req, order, t);
+        } else if (status === 'rejected') {
+          await updateOrderStatusRejected(req, order, t);
+        } else if (status === 'processed') {
+          await updateOrderStatusProcessed(req, order, t);
+        } else if (status === 'shipped') {
+          await updateOrderStatusShipped(req, order, t);
+        } else if (status === 'received') {
+          await updateOrderStatusReceived(req, order, t);
+        }
+      }
+    );
+  };
+
+  updateOrderStatusByUser = async (req) => {
+    const order = await this.db.findByPk(req.params.id);
+    if (!order) throw new Error('order not found!', 404);
+    if (order.userId !== req.user.id) throw new Error('User Unauthorized', 401);
+    await order.update({ status: 'received' });
   };
 }
 

@@ -8,6 +8,7 @@ async function getWarehouseByName(warehouseName) {
       {
         model: WarehouseAddress,
         include: [{ model: Province }, { model: City }],
+        paranoid: false,
       },
     ],
     logging: false,
