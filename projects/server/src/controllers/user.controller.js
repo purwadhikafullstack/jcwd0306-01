@@ -20,7 +20,11 @@ class UserController {
     const t = await db.sequelize.transaction();
     try {
       const { email, firstName, lastName, password } = req.body;
-      const isUserExist = await userServices.findUser(email, ['image']);
+      // const isUserExist = await userServices.findUser(email, ['image'])
+      const isUserExist = await db.User.findOne({
+        where: { email },
+        transaction: t,
+      });
       if (isUserExist) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
