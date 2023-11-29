@@ -12,6 +12,7 @@ async function updateWarehouseProductStock(req) {
       where: { warehouseId, productId },
       paranoid: false,
       transaction: t,
+      logging: false,
     });
     if (!warehouseProduct)
       throw new ResponseError('Warehouse/product not found', 404); // check is warehouseproduct exist
@@ -23,7 +24,10 @@ async function updateWarehouseProductStock(req) {
       ); // check new stock must be >= 0
 
     if (quantity !== 0) {
-      await warehouseProduct.increment({ stock: quantity }, { transaction: t }); // update new stock
+      await warehouseProduct.increment(
+        { stock: quantity },
+        { transaction: t, logging: false }
+      ); // update new stock
       await StockHistory.create(
         {
           warehouseId,
@@ -33,7 +37,7 @@ async function updateWarehouseProductStock(req) {
           type: 'manual',
           adminId: user.id,
         },
-        { transaction: t }
+        { transaction: t, logging: false }
       ); // create stockhistory
     }
 
