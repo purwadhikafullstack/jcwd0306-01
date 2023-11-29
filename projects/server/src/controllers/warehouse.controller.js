@@ -33,8 +33,14 @@ const warehouseController = {
 
   getWarehouses: async (req, res) => {
     try {
-      const warehouses = await warehouseService.getWarehouses();
-      sendResponse({ res, statusCode: 200, data: warehouses });
+      const [warehouses, paginationInfo] =
+        await warehouseService.getWarehouses(req);
+      sendResponse({
+        res,
+        statusCode: 200,
+        data: warehouses,
+        ...paginationInfo,
+      });
     } catch (error) {
       sendResponse({ res, error });
     }
@@ -64,7 +70,7 @@ const warehouseController = {
   getWarehouseByUserId: async (req, res) => {
     try {
       const warehouses = await warehouseService.getWarehouseByUserId(req);
-      return res.send(warehouses);
+      res.send(warehouses);
     } catch (error) {
       sendResponse({ res, error });
     }

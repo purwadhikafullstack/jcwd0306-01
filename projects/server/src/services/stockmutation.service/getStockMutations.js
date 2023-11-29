@@ -48,6 +48,7 @@ function generateFilters(req) {
     order = [[{ model: Warehouse, as: 'toWarehouse' }, 'name', orderBy]];
 
   return {
+    logging: false,
     where,
     order,
     limit: perPage,
@@ -56,7 +57,7 @@ function generateFilters(req) {
       { model: Product, paranoid: false },
       { model: Warehouse, paranoid: false, as: 'fromWarehouse' },
       { model: Warehouse, paranoid: false, as: 'toWarehouse' },
-      { model: Order },
+      { model: Order, attributes: { exclude: ['paymentProof'] } },
     ],
   };
 }

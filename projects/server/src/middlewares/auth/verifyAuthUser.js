@@ -17,8 +17,8 @@ async function verifyUserRole({
     logging: false,
   });
 
-  if (req.params.userId && Number(req.params.userId) !== user.id)
-    throw new ResponseError('Invalid credential', 401);
+  // if (req.params.userId && Number(req.params.userId) !== user.id)
+  //   throw new ResponseError('Invalid credential', 401);
 
   // to verify is user a customer
   if (isCustomer && user.isCustomer) {
