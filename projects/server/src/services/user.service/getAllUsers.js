@@ -11,6 +11,7 @@ function generateFilters(req) {
   if (sortBy === 'firstName') order = [['firstName', orderBy]];
   else if (sortBy === 'lastName') order = [['lastName', orderBy]];
   else if (sortBy === 'email') order = [['email', orderBy]];
+  else if (sortBy === 'joinDate') order = [['updatedAt', orderBy]];
   return {
     order,
     limit: perPage,

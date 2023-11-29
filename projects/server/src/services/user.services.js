@@ -6,6 +6,7 @@ const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sharp = require('sharp');
+const axios = require('axios');
 const db = require('../models');
 // const { sequelize } = require('../models');
 const Service = require('./baseServices');
@@ -15,7 +16,7 @@ const {
   attributesCountStatus,
   includeOrderCart,
 } = require('./user.service/optionGetDetailsByID');
-const checkIsAdmin = require('./user.service/checkIsAdmin');
+const { sendResponse } = require('../utils');
 
 require('dotenv').config({
   path: path.resolve(__dirname, '..', '..', `.env.${process.env.NODE_ENV}`),
@@ -28,7 +29,6 @@ class User extends Service {
     const decoded = jwt.verify(req.token, process.env.JWT_SECRET_KEY);
     if (decoded.id !== Number(id))
       throw new ResponseError('Invalid credential', 401);
-
     const user = await this.db.findByPk(id, {
       attributes: { exclude: ['password', 'image'] },
       include: [
@@ -40,12 +40,9 @@ class User extends Service {
       ],
       logging: false,
     });
-    const allWarehouses = await checkIsAdmin(user);
-
     const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
-
     return { token, user };
   };
 
@@ -60,8 +57,9 @@ class User extends Service {
         logging: false,
       });
       return data;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      sendResponse({ error });
+      throw error;
     }
   };
 
@@ -72,14 +70,16 @@ class User extends Service {
           [Op.or]: [{ email }],
         },
         raw: true,
+        logging: false,
       });
       return data;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      sendResponse({ error });
+      throw error;
     }
   };
 
-  mailerEmail = async (data, email, token) => {
+  static mailerEmail = (data, email, token) => {
     try {
       let template;
       let compiledTemplate;
@@ -117,31 +117,55 @@ class User extends Service {
         to: email,
         html,
       });
-    } catch (err) {
-      return err;
+    } catch (error) {
+      sendResponse({ error });
     }
   };
 
-  verifyUser = async (body, t) => {
+  verifyUser = async (req, t) => {
     try {
-      const hashedPassword = await bcrypt.hash(body.password, 10);
-      const whereClause = {};
-      if (body.email) whereClause.email = body.email;
-      return await this.db.update(
+      const { email, password, firstName, lastName } = req.body;
+      if (!req.body.email) {
+        throw new Error('Email is required!');
+      }
+      const existingUser = await this.db.findOne({
+        where: { email },
+        logging: false,
+      });
+      if (!existingUser) {
+        throw new Error('User not found');
+      }
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      const updateResult = await this.db.update(
         {
-          firstName: body?.firstName,
-          lastName: body?.lastName,
+          firstName,
+          lastName,
           password: hashedPassword,
           isVerified: 1,
         },
-        { where: whereClause, transaction: t, logging: false }
+        { where: { email }, transaction: t, logging: false }
       );
-    } catch (err) {
-      return err;
+
+      if (updateResult[0] === 0) throw new Error('User not found');
+
+      return updateResult;
+    } catch (error) {
+      sendResponse({ error });
+      throw error;
     }
   };
 
-  signIn = async (email, password, providerId, firstName, lastName, uid) => {
+  signIn = async (
+    t,
+    email,
+    password,
+    providerId,
+    firstName,
+    lastName,
+    uid,
+    photoURL
+  ) => {
     let passwordNotCreated = false;
     const result = await this.db.findOne({
       logging: false,
@@ -156,25 +180,34 @@ class User extends Service {
         },
       ],
       attributes: { exclude: ['image'] },
+      transaction: t,
     });
-    // kalo email gaada dan gaada providerId maka throw error
     if (!result && !providerId) {
       throw new Error('User not found');
     }
-
-    // kalo emailnya gaada tapi ada providerId, maka push email dri fe ke db
     if (!result && providerId) {
-      const hashedPassword = await bcrypt.hash('@NO_P455W0RD', 10);
-      const googleLogin = await this.db.create({
-        email,
-        firstName,
-        lastName,
-        uuidGoogle: uid,
-        isCustomer: 1,
-        isAdmin: 0,
-        isVerified: 1,
-        password: hashedPassword,
+      const response = await axios.get(photoURL, {
+        responseType: 'arraybuffer',
       });
+      const processedImage = await sharp(response.data).png().toBuffer();
+      const hashedPassword = await bcrypt.hash('@NO_P455W0RD', 10);
+      const googleLogin = await this.db.create(
+        {
+          email,
+          firstName,
+          lastName,
+          uuidGoogle: uid,
+          isCustomer: 1,
+          isAdmin: 0,
+          isVerified: 1,
+          password: hashedPassword,
+          image: processedImage,
+        },
+        {
+          logging: false,
+          transaction: t,
+        }
+      );
 
       const payload = googleLogin.toJSON();
       const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
@@ -183,13 +216,8 @@ class User extends Service {
 
       return { token, user: googleLogin };
     }
-
-    // kalo gaada providerId, brti login biasa, maka cek passwordnya
-    // cek kalo ada isi di kolom uid kasih return belum set password
     if (providerId !== 'google.com') {
-      // kalo user login biasa pake email dari login google
       if (result.uuidGoogle !== null) {
-        // cek apakah passwordnya default(password di db === '@N0_P455W0RD'), kalo iya return belum set password, kalo tidak lanjut validasi password
         const isDefaultPassword = await bcrypt.compare(
           '@NO_P455W0RD',
           result.getDataValue('password')
@@ -200,7 +228,6 @@ class User extends Service {
           return result;
         }
       }
-
       const isValid = await bcrypt.compare(
         password,
         result.getDataValue('password')
@@ -210,12 +237,10 @@ class User extends Service {
       }
       result.setDataValue('password', undefined);
     }
-
     const payload = result.toJSON();
     const token = jwt.sign(payload, process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
-
     return { token, user: result };
   };
 
@@ -247,7 +272,8 @@ class User extends Service {
       );
       return data;
     } catch (error) {
-      console.log(error);
+      sendResponse({ error });
+      throw error;
     }
   };
 
@@ -260,8 +286,9 @@ class User extends Service {
         { where: { email }, transaction: t, logging: false }
       );
       return data;
-    } catch (err) {
-      return err;
+    } catch (error) {
+      sendResponse({ error });
+      throw error;
     }
   };
 
@@ -286,7 +313,8 @@ class User extends Service {
       );
       return data;
     } catch (error) {
-      return error;
+      sendResponse({ error });
+      throw error;
     }
   };
 
@@ -298,7 +326,8 @@ class User extends Service {
       );
       return result;
     } catch (error) {
-      return error;
+      sendResponse({ error });
+      throw error;
     }
   };
 
@@ -310,6 +339,20 @@ class User extends Service {
     });
     if (!user?.image) throw new ResponseError('user image not found', 404);
     return user.image;
+  };
+
+  deleteAvatar = async (req) => {
+    const { userId } = req.params;
+    const user = await this.db.findByPk(userId, {
+      attributes: ['id'],
+      logging: false,
+    });
+    if (user) {
+      user.image = null;
+      await user.save();
+      return user;
+    }
+    throw new ResponseError('user not found', 404);
   };
 }
 

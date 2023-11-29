@@ -41,32 +41,30 @@ class UserController {
   static verify = async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await userServices.verifyUser(req.body, t);
-      // const isUserExist = await userServices.findUser(req.body.email);
-      // if (isUserExist) {
-      //   await t.rollback();
-      //   return res.status(400).send({ message: 'user already verified' });
-      // }
-
+      await userServices.verifyUser(req, t);
       t.commit();
-      return res.status(200).send({ message: 'success create account' });
+      return res.status(201).send({ message: 'success create account' });
     } catch (err) {
       return res.status(400).send(err?.message);
     }
   };
 
   static login = async (req, res) => {
-    const { email, password, firstName, lastName, uid } = req.body;
+    const { email, password, firstName, lastName, uid, photoURL } = req.body;
     const { providerId } = req.query;
+    const t = await db.sequelize.transaction();
     try {
       const signInResult = await userServices.signIn(
+        t,
         email,
         password,
         providerId,
         firstName,
         lastName,
-        uid
+        uid,
+        photoURL
       );
+      t.commit();
       sendResponse({ res, statusCode: 200, data: signInResult });
     } catch (error) {
       sendResponse({ res, error });
@@ -243,6 +241,15 @@ class UserController {
     try {
       const [users, paginationInfo] = await getAllUsers(req);
       sendResponse({ res, statusCode: 200, data: users, ...paginationInfo });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static deleteAvatar = async (req, res) => {
+    try {
+      const result = await userServices.deleteAvatar(req);
+      sendResponse({ res, statusCode: 200, data: result });
     } catch (error) {
       sendResponse({ res, error });
     }
