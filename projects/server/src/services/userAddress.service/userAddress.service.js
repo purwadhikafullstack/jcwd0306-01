@@ -10,7 +10,7 @@ const isActiveWarehouseNotChanging = require('./isActiveWarehouseNotChanging');
 const optionGetAddressByUserId = require('./optionGetAddressByUserId');
 
 const client = createClient({
-  url: 'redis://localhost:6379',
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
   legacyMode: true,
 });
 client.on(`error`, () => client.disconnect());

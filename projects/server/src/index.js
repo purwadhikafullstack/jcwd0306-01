@@ -73,7 +73,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 global.io = io;
 const client = createClient({
-  url: 'redis://localhost:6379',
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
   legacyMode: true,
 });
 client.connect();
