@@ -3,18 +3,10 @@ const { stockMutationController } = require('../controllers');
 const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
 const { stockMutationValidator } = require('../middlewares/validators');
 
-router.use(
-  verifyAuthUser({
-    isLogin: true,
-    isVerified: true,
-    isAdmin: true,
-    isWarehouseAdmin: true,
-  })
-);
-
 // create stock mutation
 router.post(
   '/',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   stockMutationValidator.createStockMutation,
   stockMutationController.createStockMutation
 );
@@ -22,6 +14,7 @@ router.post(
 // delete stock mutation by stockMutationId
 router.delete(
   '/:stockMutationId',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   stockMutationValidator.deleteStockMutationByStockMutationId,
   stockMutationController.deleteStockMutationByStockMutationId
 );
@@ -29,6 +22,7 @@ router.delete(
 // get stock mutation by stockMutationId
 router.get(
   '/:stockMutationId',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   stockMutationValidator.getStockMutationByStockMutationId,
   stockMutationController.getStockMutationByStockMutationId
 );
@@ -36,6 +30,7 @@ router.get(
 // get stock mutations
 router.get(
   '/',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   stockMutationValidator.getStockMutations,
   stockMutationController.getStockMutations
 );
@@ -43,6 +38,7 @@ router.get(
 // update stock mutation status by stockMutationId
 router.patch(
   '/:stockMutationId',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   stockMutationValidator.updateStockMutationStatusByStockMutationId,
   stockMutationController.updateStockMutationStatusByStockMutationId
 );

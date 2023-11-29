@@ -11,7 +11,7 @@ router.post(
   warehouseController.createWarehouse
 );
 
-// edit warehouse by warehouseId;
+// edit warehouse by warehouseId
 router.patch(
   '/:warehouseId',
   verifyAuthUser({ isAdmin: true }),
