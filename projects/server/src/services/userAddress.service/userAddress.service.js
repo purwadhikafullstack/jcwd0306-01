@@ -1,38 +1,37 @@
 const { createClient } = require('redis');
 const { default: fetch } = require('node-fetch');
 const Service = require('../baseServices');
-const db = require('../../models');
 const { ResponseError } = require('../../errors');
 const { GmapsOptionSetter } = require('./GmapsOptionSetter');
 const { findTheSmallestDuration } = require('./findTheSmallestDuration');
 const { getWarehouseAddress } = require('./getWarehouseAddress');
 const { fetchRajaOngkir } = require('./fetchRajaOngkir');
 const isActiveWarehouseNotChanging = require('./isActiveWarehouseNotChanging');
+const optionGetAddressByUserId = require('./optionGetAddressByUserId');
 
 const client = createClient({
-  url: 'redis://localhost:6379',
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
   legacyMode: true,
 });
 client.on(`error`, () => client.disconnect());
 
 class UserAddress extends Service {
-  optionGetAddressByUserId = {
-    include: [
-      { model: db.Province, attributes: ['name'] },
-      { model: db.City, attributes: ['name'] },
-    ],
-    logging: false,
-  };
-
   GOOGLEMAPS_API_KEY = process.env.Googlemaps_api_key;
 
-  getAddressByUserId = (req) =>
-    this.getByUserId(req, this.optionGetAddressByUserId);
+  getAddressByUserId = async (req) => {
+    const { userId } = req.params;
+    const { name } = req.query;
+    const result = await this.getByUserId(
+      req,
+      optionGetAddressByUserId(name, userId)
+    );
+    return result;
+  };
 
   getShippingOptionsWithRedis = async (req, res) => {
     try {
-      if (!client.isOpen) client.connect();
       const key = JSON.stringify(req.body.postalCode);
+      if (!client.isOpen) await client.connect();
       client.get(key, async (err, result) => {
         const checkWarehouse = await isActiveWarehouseNotChanging(client);
         if (err) {
@@ -45,7 +44,6 @@ class UserAddress extends Service {
         return res.send(paymentOption);
       });
     } catch (error) {
-      client.disconnect();
       if (error.code === `ECONNREFUSED`) {
         const paymentOption = await this.getShippingOptions(req);
         return res.send(paymentOption);

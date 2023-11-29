@@ -26,6 +26,9 @@ router.patch(
 // get products
 router.get('/', productValidator.getProducts, productController.getProducts);
 
+// get total products (dashboard)
+router.get('/total', productController.getTotalProducts);
+
 // get product by productId
 router.get(
   '/:productId',

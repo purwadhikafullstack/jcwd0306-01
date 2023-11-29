@@ -76,26 +76,29 @@ async function editWarehouseAddress(warehouseId, values, transaction) {
 }
 
 async function editWarehouseByWarehouseId(req) {
-  const warehouse = await sequelize.transaction(async (t) => {
-    const { warehouseId } = req.params;
-    if (req.body.provinceId && req.body.cityId) await getLocation(req, t);
-    await editWarehouse(warehouseId, req.body, t);
-    await editWarehouseAddress(warehouseId, req.body, t);
-    const result = await Warehouse.findByPk(warehouseId, {
-      paranoid: false,
-      include: [
-        {
-          model: WarehouseAddress,
-          include: [{ model: Province }, { model: City }],
-          paranoid: false,
-        },
-      ],
-      transaction: t,
-      logging: false,
-    });
-    if (!result) throw new ResponseError('Warehouse not found', 404);
-    return result;
-  });
+  const warehouse = await sequelize.transaction(
+    { logging: false },
+    async (t) => {
+      const { warehouseId } = req.params;
+      if (req.body.provinceId && req.body.cityId) await getLocation(req, t);
+      await editWarehouse(warehouseId, req.body, t);
+      await editWarehouseAddress(warehouseId, req.body, t);
+      const result = await Warehouse.findByPk(warehouseId, {
+        paranoid: false,
+        include: [
+          {
+            model: WarehouseAddress,
+            include: [{ model: Province }, { model: City }],
+            paranoid: false,
+          },
+        ],
+        transaction: t,
+        logging: false,
+      });
+      if (!result) throw new ResponseError('Warehouse not found', 404);
+      return result;
+    }
+  );
   return warehouse;
 }
 

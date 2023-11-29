@@ -74,6 +74,33 @@ const warehouseValidator = {
     }
   },
 
+  getWarehouses: (req, res, next) => {
+    try {
+      // convert data type
+      if (req.query.pagination)
+        req.query.pagination = JSON.parse(req.query.pagination);
+      if (req.query.page) req.query.page = Number(req.query.page);
+      if (req.query.perPage) req.query.perPage = Number(req.query.perPage);
+
+      validateJoiSchema(
+        req.query,
+        Joi.object({
+          search: Joi.string().allow(''),
+          sortBy: Joi.string()
+            .valid('id', 'name', 'createdAt', 'updatedAt', 'deletedAt')
+            .allow(''),
+          orderBy: Joi.string().valid('ASC', 'asc', 'DESC', 'desc').allow(''),
+          pagination: Joi.boolean().allow(''),
+          page: Joi.number().integer().min(1).allow(''),
+          perPage: Joi.number().integer().min(1).allow(''),
+        })
+      );
+      next();
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
   updateWarehouseActivationByWarehouseId: (req, res, next) => {
     try {
       validateJoiSchema(

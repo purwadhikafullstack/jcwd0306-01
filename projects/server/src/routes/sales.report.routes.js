@@ -12,10 +12,16 @@ router.get(
   verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   salesReportController.getTotalSalesRevenue
 );
-
 router.get('/order-statuses', salesReportController.getOrderStatuses);
-
 router.get('/product-sold', salesReportController.getProductSold);
+// get order by warehouse
+router.get('/:warehouseId/order', salesReportController.getOrderByWarehouseId);
+// get revenue by warehouse
+router.get(
+  '/:warehouseId/revenue',
+  // verifyAuthUser({ isWarehouseAdmin: true }),
+  salesReportController.getrevenueByWarehouse
+);
 
 router.get(
   '/:warehouseId/warehouse',

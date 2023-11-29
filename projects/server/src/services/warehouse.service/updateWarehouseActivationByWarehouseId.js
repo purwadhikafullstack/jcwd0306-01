@@ -9,9 +9,17 @@ const {
 } = require('../../models');
 
 async function activateWarehouse(warehouse, warehouseId, transaction) {
-  await warehouse.restore({ transaction });
-  await WarehouseAddress.restore({ where: { warehouseId }, transaction });
-  await WarehouseUser.restore({ where: { warehouseId }, transaction });
+  await warehouse.restore({ transaction, logging: false });
+  await WarehouseAddress.restore({
+    where: { warehouseId },
+    transaction,
+    logging: false,
+  });
+  await WarehouseUser.restore({
+    where: { warehouseId },
+    transaction,
+    logging: false,
+  });
 
   // restore active products only
   const inactiveProducts = await warehouse.getProducts({
@@ -20,6 +28,7 @@ async function activateWarehouse(warehouse, warehouseId, transaction) {
     through: { paranoid: false },
     paranoid: false,
     transaction,
+    logging: false,
   });
   const inactiveProductIds = inactiveProducts.map((val) =>
     val.getDataValue('id')
@@ -30,23 +39,37 @@ async function activateWarehouse(warehouse, warehouseId, transaction) {
       productId: { [Sequelize.Op.not]: inactiveProductIds },
     },
     transaction,
+    logging: false,
   });
 }
 
 async function deactivateWarehouse(warehouse, warehouseId, transaction) {
-  await warehouse.destroy({ transaction });
-  await WarehouseAddress.destroy({ where: { warehouseId }, transaction });
-  await WarehouseUser.destroy({ where: { warehouseId }, transaction });
-  await WarehouseProduct.destroy({ where: { warehouseId }, transaction });
+  await warehouse.destroy({ transaction, logging: false });
+  await WarehouseAddress.destroy({
+    where: { warehouseId },
+    transaction,
+    logging: false,
+  });
+  await WarehouseUser.destroy({
+    where: { warehouseId },
+    transaction,
+    logging: false,
+  });
+  await WarehouseProduct.destroy({
+    where: { warehouseId },
+    transaction,
+    logging: false,
+  });
 }
 
 async function updateWarehouseActivationByWarehouseId(req) {
-  const wh = await sequelize.transaction(async (t) => {
+  const wh = await sequelize.transaction({ logging: false }, async (t) => {
     const { action } = req.query;
     const { warehouseId } = req.params;
     const warehouse = await Warehouse.findByPk(warehouseId, {
       paranoid: false,
       transaction: t,
+      logging: false,
     });
     if (!warehouse) throw new ResponseError('warehouse not found', 404);
     if (action === 'activate')
