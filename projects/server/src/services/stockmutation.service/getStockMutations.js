@@ -48,6 +48,7 @@ function generateFilters(req) {
     order = [[{ model: Warehouse, as: 'toWarehouse' }, 'name', orderBy]];
 
   return {
+    logging: false,
     where,
     order,
     limit: perPage,

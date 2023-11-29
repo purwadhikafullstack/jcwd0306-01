@@ -187,7 +187,10 @@ async function updateStockMutationStatusReceived(
 
 async function updateStockMutationStatusByStockMutationId(req) {
   const result = await sequelize.transaction(
-    { isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE },
+    {
+      isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      logging: false,
+    },
     async (t) => {
       const { status } = req.body;
       const stockMutation = await getStockMutationByStockMutationId(

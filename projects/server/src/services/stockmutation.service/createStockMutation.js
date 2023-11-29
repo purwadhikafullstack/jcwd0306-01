@@ -16,6 +16,7 @@ async function createStockMutationTypeRequest(req, transaction) {
         'requestAdminId',
       ],
       transaction,
+      logging: false,
     }
   );
   const result = await getStockMutationByStockMutationId(
@@ -29,6 +30,7 @@ async function createStockMutationTypeOrder(req, transaction) {
   const order = await Order.findByPk(req.body.orderId, {
     raw: true,
     transaction,
+    logging: false,
   });
   if (!order) throw new ResponseError('orderId not found', 404);
   if (order.warehouseId !== req.body.toWarehouseId)
@@ -55,6 +57,7 @@ async function createStockMutationTypeOrder(req, transaction) {
         'orderId',
       ],
       transaction,
+      logging: false,
     }
   );
   const result = await getStockMutationByStockMutationId(
@@ -66,7 +69,10 @@ async function createStockMutationTypeOrder(req, transaction) {
 
 async function createStockMutation(req) {
   const stockMutation = await sequelize.transaction(
-    { isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE },
+    {
+      isolationLevel: Sequelize.Transaction.ISOLATION_LEVELS.SERIALIZABLE,
+      logging: false,
+    },
     async (t) => {
       const { type } = req.body;
       if (type === 'request') {

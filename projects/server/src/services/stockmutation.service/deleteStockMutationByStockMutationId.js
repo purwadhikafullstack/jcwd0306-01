@@ -10,7 +10,7 @@ async function deleteStockMutationByStockMutationId(req) {
       'Stock mutation can be deleted only if current status="requested"',
       400
     );
-  await stockMutation.destroy();
+  await stockMutation.destroy({ logging: false });
 }
 
 module.exports = deleteStockMutationByStockMutationId;

@@ -3,6 +3,7 @@ const { StockMutation, Product, Warehouse, Order } = require('../../models');
 
 async function getStockMutationByStockMutationId(stockMutationId, transaction) {
   const stockMutation = await StockMutation.findByPk(stockMutationId, {
+    logging: false,
     transaction,
     include: [
       { model: Product, paranoid: false },
