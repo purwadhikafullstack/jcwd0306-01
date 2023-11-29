@@ -112,7 +112,7 @@ app.use((err, req, res, next) => {
 // #endregion
 
 server.listen(PORT, async (err) => {
-  client.on('error', (error) =>
+  await client.on('error', (error) =>
     console.log(
       error.code === 'ECONNREFUSED' ? 'Nyalain Redis oi' : `Redis${error.code}`
     )

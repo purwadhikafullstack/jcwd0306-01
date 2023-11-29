@@ -25,14 +25,13 @@ class UserAddress extends Service {
       req,
       optionGetAddressByUserId(name, userId)
     );
-    console.log(result, name);
     return result;
   };
 
   getShippingOptionsWithRedis = async (req, res) => {
     try {
-      if (!client.isOpen) client.connect();
       const key = JSON.stringify(req.body.postalCode);
+      if (!client.isOpen) await client.connect();
       client.get(key, async (err, result) => {
         const checkWarehouse = await isActiveWarehouseNotChanging(client);
         if (err) {
@@ -45,7 +44,6 @@ class UserAddress extends Service {
         return res.send(paymentOption);
       });
     } catch (error) {
-      client.disconnect();
       if (error.code === `ECONNREFUSED`) {
         const paymentOption = await this.getShippingOptions(req);
         return res.send(paymentOption);
