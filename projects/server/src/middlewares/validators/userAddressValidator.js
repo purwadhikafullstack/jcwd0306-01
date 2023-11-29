@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { default: fetch } = require('node-fetch');
 const { sendResponse, validateJoiSchema } = require('../../utils');
 const { ResponseError } = require('../../errors');
 const db = require('../../models');
