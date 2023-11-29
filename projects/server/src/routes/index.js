@@ -10,8 +10,7 @@ const orderRouter = require('./order.route');
 const warehouseRouter = require('./warehouse.route');
 const warehouseUserRouter = require('./warehouseuser.route');
 const stockMutationRouter = require('./stockmutation.route');
-
-const chatRouter = require(`./chat.route`);
+const chatRouter = require('./chat.route');
 const salesReportRouter = require('./sales.report.routes');
 const productHistoryRouter = require('./product.history.router');
 
