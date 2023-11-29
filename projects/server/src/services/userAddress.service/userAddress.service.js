@@ -1,13 +1,13 @@
 const { createClient } = require('redis');
 const { default: fetch } = require('node-fetch');
 const Service = require('../baseServices');
-const db = require('../../models');
 const { ResponseError } = require('../../errors');
 const { GmapsOptionSetter } = require('./GmapsOptionSetter');
 const { findTheSmallestDuration } = require('./findTheSmallestDuration');
 const { getWarehouseAddress } = require('./getWarehouseAddress');
 const { fetchRajaOngkir } = require('./fetchRajaOngkir');
 const isActiveWarehouseNotChanging = require('./isActiveWarehouseNotChanging');
+const optionGetAddressByUserId = require('./optionGetAddressByUserId');
 
 const client = createClient({
   url: 'redis://localhost:6379',
@@ -16,18 +16,18 @@ const client = createClient({
 client.on(`error`, () => client.disconnect());
 
 class UserAddress extends Service {
-  optionGetAddressByUserId = {
-    include: [
-      { model: db.Province, attributes: ['name'] },
-      { model: db.City, attributes: ['name'] },
-    ],
-    logging: false,
-  };
-
   GOOGLEMAPS_API_KEY = process.env.Googlemaps_api_key;
 
-  getAddressByUserId = (req) =>
-    this.getByUserId(req, this.optionGetAddressByUserId);
+  getAddressByUserId = async (req) => {
+    const { userId } = req.params;
+    const { name } = req.query;
+    const result = await this.getByUserId(
+      req,
+      optionGetAddressByUserId(name, userId)
+    );
+    console.log(result, name);
+    return result;
+  };
 
   getShippingOptionsWithRedis = async (req, res) => {
     try {
