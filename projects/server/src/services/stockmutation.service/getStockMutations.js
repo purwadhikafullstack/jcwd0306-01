@@ -56,7 +56,7 @@ function generateFilters(req) {
       { model: Product, paranoid: false },
       { model: Warehouse, paranoid: false, as: 'fromWarehouse' },
       { model: Warehouse, paranoid: false, as: 'toWarehouse' },
-      { model: Order },
+      { model: Order, attributes: { exclude: ['paymentProof'] } },
     ],
   };
 }
