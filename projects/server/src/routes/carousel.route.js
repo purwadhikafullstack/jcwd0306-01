@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const { carouselController } = require('../controllers');
+const verifyAuthUser = require('../middlewares/auth/verifyAuthUser');
 const {
   multerBlobUploader,
   multerErrorHandler,
@@ -9,6 +10,7 @@ const { carouselValidator } = require('../middlewares/validators');
 // create carousel
 router.post(
   '/',
+  verifyAuthUser({ isAdmin: true }),
   multerBlobUploader().single('image'),
   multerErrorHandler,
   carouselValidator.createCarousel,

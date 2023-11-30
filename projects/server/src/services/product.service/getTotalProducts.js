@@ -3,7 +3,6 @@ const { WarehouseProduct } = require('../../models');
 async function getTotalProducts(req) {
   const { warehouseId } = req.query;
   const numberedWarehouseId = Number(warehouseId);
-  console.log(numberedWarehouseId);
 
   const data1 = await WarehouseProduct.findAll({
     attributes: ['productId', 'stock'],
