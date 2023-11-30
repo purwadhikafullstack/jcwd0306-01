@@ -56,12 +56,17 @@ const optionCronUpdateStatusReceived = {
 
 const cronDeleteUnpaid = () =>
   cron.schedule(`2 * * * *`, async () => {
+    console.log(`'cron update [delete unpaid]: start'`);
     const result = await db.Order.findAll(optionCronDeleteUnpaid);
+    console.log(`'cron update [delete unpaid]: target:'`, result);
     const id = [];
     result.forEach((order) => id.push(order.dataValues.id));
     await db.Order.update(
       { status: 'cancelled' },
       { where: { id: { [Op.in]: id } } }
+    );
+    console.log(
+      `'cron update [delete unpaid]: finish, affecting ${result.length} datas'`
     );
   });
 
