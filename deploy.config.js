@@ -1,8 +1,8 @@
 module.exports = {
   apps: [
     {
-      name: 'JCWD-0306-01', // Format JCWD-{batchcode}-{groupnumber}
-      script: './projects/server/src/index.js',
+      name: "JCWD-0306-01", // Format JCWD-{batchcode}-{groupnumber}
+      script: "./projects/server/src/index.js",
       env: {
         NODE_ENV: process.env.NODE_ENV || 'production',
         PORT: process.env.PORT || 8001,
@@ -20,7 +20,7 @@ module.exports = {
         OpenCage_api_key:
           process.env.OpenCage_api_key || 'c79ccba183824510808d5899fc0f6e62',
         RajaOngkir_api_key:
-          process.env.RajaOngkir_api_key || 'RajaOngkir_api_key',
+          process.env.RajaOngkir_api_key || 'a44bb964bbfe84f56d5c38ca505def6e',
         Googlemaps_api_key:
           process.env.Googlemaps_api_key ||
           'AIzaSyD0BznkOcWn2BonYVT94uhlkwz1DycFjxg',

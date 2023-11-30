@@ -28,5 +28,11 @@ module.exports = {
     host: process.env.MYSQL_HOST,
     dialect: process.env.MYSQL_DIALECT,
     timezone: process.env.MYSQL_TIMEZONE,
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000,
+    },
   },
 };
