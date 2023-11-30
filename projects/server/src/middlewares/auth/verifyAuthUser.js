@@ -47,6 +47,7 @@ async function verifyUserRole({
       where: { warehouseAdminId: user.id },
       raw: true,
       logging: false,
+      paranoid: false,
     });
 
     if (!warehouseUser) throw new ResponseError('User unauthorized', 401);
