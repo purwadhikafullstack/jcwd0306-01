@@ -5,6 +5,7 @@ async function deleteCategoryById(req) {
   const result = await Category.destroy({
     where: { id: req.params.id },
     force: true,
+    logging: false,
   });
   if (!result) throw new ResponseError('category not found', 404);
 }

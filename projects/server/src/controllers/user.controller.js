@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sharp = require('sharp');
@@ -20,7 +21,10 @@ class UserController {
     const t = await db.sequelize.transaction();
     try {
       const { email, firstName, lastName, password } = req.body;
-      const isUserExist = await userServices.findUser(email, ['image']);
+      const isUserExist = await db.User.findOne({
+        where: { email },
+        transaction: t,
+      });
       if (isUserExist) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
@@ -41,32 +45,30 @@ class UserController {
   static verify = async (req, res) => {
     const t = await db.sequelize.transaction();
     try {
-      await userServices.verifyUser(req.body, t);
-      // const isUserExist = await userServices.findUser(req.body.email);
-      // if (isUserExist) {
-      //   await t.rollback();
-      //   return res.status(400).send({ message: 'user already verified' });
-      // }
-
+      await userServices.verifyUser(req, t);
       t.commit();
-      return res.status(200).send({ message: 'success create account' });
+      return res.status(201).send({ message: 'success create account' });
     } catch (err) {
       return res.status(400).send(err?.message);
     }
   };
 
   static login = async (req, res) => {
-    const { email, password, firstName, lastName, uid } = req.body;
+    const { email, password, firstName, lastName, uid, photoURL } = req.body;
     const { providerId } = req.query;
+    const t = await db.sequelize.transaction();
     try {
       const signInResult = await userServices.signIn(
+        t,
         email,
         password,
         providerId,
         firstName,
         lastName,
-        uid
+        uid,
+        photoURL
       );
+      t.commit();
       sendResponse({ res, statusCode: 200, data: signInResult });
     } catch (error) {
       sendResponse({ res, error });
@@ -89,7 +91,6 @@ class UserController {
   static uploadAvatar = async (req, res) => {
     try {
       const result = await userServices.handleUploadAvatar(req);
-      console.log(result);
       sendResponse({ res, statusCode: 201, data: result });
     } catch (error) {
       sendResponse({ res, error });
@@ -161,7 +162,6 @@ class UserController {
       await t.commit();
       return sendResponse({ res, statusCode: 201, data: 'password edited' });
     } catch (error) {
-      console.log(error);
       sendResponse({ res, error });
     }
   };
@@ -243,6 +243,15 @@ class UserController {
     try {
       const [users, paginationInfo] = await getAllUsers(req);
       sendResponse({ res, statusCode: 200, data: users, ...paginationInfo });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  };
+
+  static deleteAvatar = async (req, res) => {
+    try {
+      const result = await userServices.deleteAvatar(req);
+      sendResponse({ res, statusCode: 200, data: result });
     } catch (error) {
       sendResponse({ res, error });
     }

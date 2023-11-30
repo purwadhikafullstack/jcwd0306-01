@@ -8,6 +8,7 @@ const { productValidator } = require('../middlewares/validators');
 // create product
 router.post(
   '/',
+  verifyAuthUser({ isAdmin: true }),
   multerBlobUploader().array('images'),
   multerErrorHandler,
   productValidator.createProduct,
@@ -17,6 +18,7 @@ router.post(
 // edit product by productId
 router.patch(
   '/:productId',
+  verifyAuthUser({ isAdmin: true }),
   multerBlobUploader().array('images'),
   multerErrorHandler,
   productValidator.editProductByProductId,
@@ -25,6 +27,9 @@ router.patch(
 
 // get products
 router.get('/', productValidator.getProducts, productController.getProducts);
+
+// get total products (dashboard)
+router.get('/total', productController.getTotalProducts);
 
 // get product by productId
 router.get(
@@ -43,6 +48,7 @@ router.get(
 // update product activation by productId
 router.put(
   '/:productId',
+  verifyAuthUser({ isAdmin: true }),
   productValidator.updateProductActivationByProductId,
   productController.updateProductActivationByProductId
 );
@@ -50,12 +56,7 @@ router.put(
 // update warehouse product stock
 router.patch(
   '/:productId/warehouseproducts',
-  verifyAuthUser({
-    isLogin: true,
-    isAdmin: true,
-    isWarehouseAdmin: true,
-    isVerified: true,
-  }),
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   productValidator.updateWarehouseProductStock,
   productController.updateWarehouseProductStock
 );

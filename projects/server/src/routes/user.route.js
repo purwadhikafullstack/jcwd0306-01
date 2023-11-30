@@ -21,12 +21,12 @@ router.get(
   verifyAuthUser({ isLogin: true, isCustomer: true }),
   userController.getDetailsById
 );
-
-// // render blob by userId
-// router.get('/render/:userId', userController.renderBlob);
-// get category image by categoryId
 router.get('/:id/image', userController.getUserImageById);
-router.get('/:id', userController.getById);
+router.get(
+  '/:id',
+  verifyAuthUser({ isCustomer: true, isAdmin: true, isWarehouseAdmin: true }),
+  userController.getById
+);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/request-fp', userController.requestForgetPassword);
@@ -47,5 +47,6 @@ router.patch(
   multerErrorHandler,
   userController.edit
 );
+router.delete('/:userId', userController.deleteAvatar);
 
 module.exports = router;

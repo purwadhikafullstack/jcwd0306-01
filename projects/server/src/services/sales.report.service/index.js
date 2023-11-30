@@ -4,6 +4,8 @@ const getSalesReportByWarehouse = require('./getSalesReportByWarehouse');
 const getTotalSalesRevenue = require('./getTotalSalesRevenue');
 const getOrderStatuses = require('./getOrderStatuses');
 const getProductSold = require('./getProductSold');
+const getOrderByWarehouse = require('./getOrderByWarehouse');
+const getrevenueByWarehouse = require('./getRevenueByWarehouse');
 
 const salesReportService = {
   getSalesReports,
@@ -12,6 +14,8 @@ const salesReportService = {
   getTotalSalesRevenue,
   getOrderStatuses,
   getProductSold,
+  getOrderByWarehouse,
+  getrevenueByWarehouse,
 };
 
 module.exports = salesReportService;

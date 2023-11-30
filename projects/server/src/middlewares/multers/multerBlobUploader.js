@@ -9,7 +9,7 @@ function multerBlobUploader() {
       return cb(null, true);
     },
     limits: {
-      fileSize: 1000000,
+      fileSize: 4000000,
     },
   });
 }

@@ -7,6 +7,7 @@ async function checkProductNameUniqueness(req, transaction) {
     where: { name: req.body.name },
     paranoid: false,
     transaction,
+    logging: false,
   });
   if (product && product.getDataValue('id') !== +req.params.productId)
     throw new ResponseError('product name already exist', 400);
@@ -18,6 +19,7 @@ async function updateProduct(req, transaction) {
     fields: ['name', 'description', 'price', 'weight', 'discount'],
     paranoid: false,
     transaction,
+    logging: false,
   });
 }
 
@@ -25,11 +27,13 @@ async function updateProductCategories(req, transaction) {
   const product = await Product.findByPk(req.params.productId, {
     paranoid: false,
     transaction,
+    logging: false,
   });
   await product.setCategories(req.body.categoryIds, {
     force: true,
     paranoid: false,
     transaction,
+    logging: false,
   });
 }
 
@@ -37,10 +41,11 @@ async function updateProductImages(req, transaction) {
   const product = await Product.findByPk(req.params.productId, {
     paranoid: false,
     transaction,
+    logging: false,
   });
   await Promise.all(
     req.body.images.map((image) =>
-      product.createProductImage({ image }, { transaction })
+      product.createProductImage({ image }, { transaction, logging: false })
     )
   );
 }
@@ -49,6 +54,7 @@ async function deleteProductImages(req, transaction) {
   await ProductImage.destroy({
     where: { id: req.body.imageIdsToDelete },
     transaction,
+    logging: false,
   });
 }
 
@@ -57,13 +63,14 @@ async function checkProductImages(req, transaction) {
     attributes: ['id'],
     where: { productId: req.params.productId },
     transaction,
+    logging: false,
   });
   if (productImages.length < 1)
     throw new ResponseError('Product must have at least one image', 400);
 }
 
 async function editProductByProductId(req) {
-  const product = await sequelize.transaction(async (t) => {
+  const product = await sequelize.transaction({ logging: false }, async (t) => {
     if (req.body.name) await checkProductNameUniqueness(req, t);
     await updateProduct(req, t);
     if (req.body.categoryIds) await updateProductCategories(req, t);

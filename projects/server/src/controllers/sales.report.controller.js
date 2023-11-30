@@ -7,7 +7,6 @@ const salesReportController = {
       const orders = await salesReportService.getSalesReports(req);
       sendResponse({ res, statusCode: 200, data: orders });
     } catch (error) {
-      console.log(error);
       sendResponse({ res, error });
     }
   },
@@ -51,6 +50,24 @@ const salesReportController = {
   getProductSold: async (req, res) => {
     try {
       const result = await salesReportService.getProductSold();
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getOrderByWarehouseId: async (req, res) => {
+    try {
+      const result = await salesReportService.getOrderByWarehouse(req);
+      sendResponse({ res, statusCode: 200, data: result });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
+
+  getrevenueByWarehouse: async (req, res) => {
+    try {
+      const result = await salesReportService.getrevenueByWarehouse(req);
       sendResponse({ res, statusCode: 200, data: result });
     } catch (error) {
       sendResponse({ res, error });

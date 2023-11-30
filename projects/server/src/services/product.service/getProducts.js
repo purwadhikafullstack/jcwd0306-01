@@ -89,6 +89,7 @@ function generateFilters(req) {
 
   return {
     logging: false,
+    subQuery: !warehouseId, //
     where: {
       [Sequelize.Op.or]: {
         name: { [Sequelize.Op.like]: `%${search || ''}%` },

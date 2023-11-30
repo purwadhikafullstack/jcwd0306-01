@@ -6,13 +6,15 @@ const { warehouseValidator } = require('../middlewares/validators');
 // create warehouse
 router.post(
   '/',
+  verifyAuthUser({ isAdmin: true }),
   warehouseValidator.createWarehouse,
   warehouseController.createWarehouse
 );
 
-// edit warehouse by warehouseId;
+// edit warehouse by warehouseId
 router.patch(
   '/:warehouseId',
+  verifyAuthUser({ isAdmin: true }),
   warehouseValidator.editWarehouseByWarehouseId,
   warehouseController.editWarehouseByWarehouseId
 );
@@ -20,25 +22,37 @@ router.patch(
 // get warehouse by warehouseId
 router.get(
   '/:warehouseId',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   warehouseValidator.getWarehouseByWarehouseId,
   warehouseController.getWarehouseByWarehouseId
 );
 
 // get warehouses
-router.get('/', warehouseController.getWarehouses);
+router.get(
+  '/',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  warehouseValidator.getWarehouses,
+  warehouseController.getWarehouses
+);
 
 // get WHID for admin
 router.get(
-  `/admin/:userId`,
-  // verifyAuthUser({ isWarehouseAdmin: true }),
+  '/admin/:userId',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
   warehouseController.getWarehouseByUserId
 );
+
 // get Warehouse By Name
-router.get('/search', warehouseController.getWarehouseByName);
+router.get(
+  '/search',
+  verifyAuthUser({ isAdmin: true, isWarehouseAdmin: true }),
+  warehouseController.getWarehouseByName
+);
 
 // update warehouse activation by warehouseId
 router.put(
   '/:warehouseId',
+  verifyAuthUser({ isAdmin: true }),
   warehouseValidator.updateWarehouseActivationByWarehouseId,
   warehouseController.updateWarehouseActivationByWarehouseId
 );
