@@ -79,7 +79,8 @@ class User extends Service {
     }
   };
 
-  static mailerEmail = (data, email, token) => {
+  // eslint-disable-next-line class-methods-use-this
+  mailerEmail = (data, email, token) => {
     try {
       let template;
       let compiledTemplate;

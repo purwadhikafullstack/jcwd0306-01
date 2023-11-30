@@ -18,8 +18,8 @@ class UserController {
   };
 
   static register = async (req, res) => {
-    const t = await db.sequelize.transaction();
     try {
+      const t = await db.sequelize.transaction();
       const { email, firstName, lastName, password } = req.body;
       const isUserExist = await db.User.findOne({
         where: { email },
@@ -34,8 +34,8 @@ class UserController {
         { email, firstName, lastName, password: hashedPassword },
         { transaction: t }
       );
-      userServices.mailerEmail('register', email);
       t.commit();
+      userServices.mailerEmail('register', email);
       sendResponse({ res, statusCode: 200, data: newUser });
     } catch (err) {
       sendResponse({ res, err });
