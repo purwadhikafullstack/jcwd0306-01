@@ -59,7 +59,6 @@ const addressValidator = {
   checkIsDefault: async (req, res, next) => {
     try {
       const result = await db.UserAddress.findByPk(req.params.id);
-      console.log(result);
       if (result.dataValues.isDefault) {
         throw new ResponseError('Default address cannot be removed', 400);
       }

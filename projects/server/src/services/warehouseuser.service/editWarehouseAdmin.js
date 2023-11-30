@@ -13,7 +13,6 @@ async function editWarehouseAdmin(req) {
     'isVerified',
     'forget_password_token',
   ]);
-  // console.log(user);
   const warehouse = await Warehouse.findByPk(whId, { paranoid: false });
   if (!warehouse) throw new ResponseError('Warehouse Not Found!', 404);
 

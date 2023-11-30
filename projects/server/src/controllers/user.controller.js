@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sharp = require('sharp');
@@ -20,7 +21,6 @@ class UserController {
     const t = await db.sequelize.transaction();
     try {
       const { email, firstName, lastName, password } = req.body;
-      // const isUserExist = await userServices.findUser(email, ['image'])
       const isUserExist = await db.User.findOne({
         where: { email },
         transaction: t,
@@ -91,7 +91,6 @@ class UserController {
   static uploadAvatar = async (req, res) => {
     try {
       const result = await userServices.handleUploadAvatar(req);
-      console.log(result);
       sendResponse({ res, statusCode: 201, data: result });
     } catch (error) {
       sendResponse({ res, error });
@@ -163,7 +162,6 @@ class UserController {
       await t.commit();
       return sendResponse({ res, statusCode: 201, data: 'password edited' });
     } catch (error) {
-      console.log(error);
       sendResponse({ res, error });
     }
   };
