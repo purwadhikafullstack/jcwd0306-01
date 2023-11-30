@@ -55,7 +55,7 @@ async function verifyUserRole({
     if (warehouseId && warehouseId === warehouseUser.warehouseId) return;
 
     // to verify warehouse admin on /warehouses
-    if (req.baseUrl === '/warehouses' || '/user') return;
+    if (req.baseUrl === '/warehouses' || req.baseUrl === '/user') return;
 
     // to verify warehouse admin on /products
     if (req.baseUrl === '/products') {
