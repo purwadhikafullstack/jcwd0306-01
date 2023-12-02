@@ -87,6 +87,9 @@ class User extends Service {
       let subject;
       let html;
       const registrationLink = `${process.env.URL}verify`;
+      const encryptedEmail = jwt.sign({ email }, process.env.JWT_SECRET_KEY, {
+        expiresIn: '10m',
+      });
 
       switch (data) {
         case 'register':
@@ -98,7 +101,7 @@ class User extends Service {
           compiledTemplate = handlebars.compile(template);
           html = compiledTemplate({
             registrationLink,
-            email,
+            encryptedEmail,
           });
           break;
         case 'forget-password':
@@ -126,18 +129,22 @@ class User extends Service {
   verifyUser = async (req, t) => {
     try {
       const { email, password, firstName, lastName } = req.body;
-      if (!req.body.email) {
+      const decoded = jwt.verify(email, process.env.JWT_SECRET_KEY);
+
+      if (!email || email === undefined) {
         throw new Error('Email is required!');
       }
+
       const existingUser = await this.db.findOne({
-        where: { email },
+        where: { email: decoded.email },
         logging: false,
+        transaction: t,
       });
       if (!existingUser) {
         throw new Error('User not found');
       }
-      const hashedPassword = await bcrypt.hash(password, 10);
 
+      const hashedPassword = await bcrypt.hash(password, 10);
       const updateResult = await this.db.update(
         {
           firstName,
@@ -145,13 +152,14 @@ class User extends Service {
           password: hashedPassword,
           isVerified: 1,
         },
-        { where: { email }, transaction: t, logging: false }
+        { where: { email: decoded.email }, transaction: t, logging: false }
       );
 
       if (updateResult[0] === 0) throw new Error('User not found');
 
       return updateResult;
     } catch (error) {
+      console.log(error);
       sendResponse({ error });
       throw error;
     }
@@ -184,7 +192,7 @@ class User extends Service {
       transaction: t,
     });
     if (!result && !providerId) {
-      throw new Error('User not found');
+      throw new Error('invalid email/password');
     }
     if (!result && providerId) {
       const response = await axios.get(photoURL, {
@@ -234,7 +242,7 @@ class User extends Service {
         result.getDataValue('password')
       );
       if (!isValid) {
-        throw new Error('wrong password');
+        throw new Error('invalid email/password');
       }
       result.setDataValue('password', undefined);
     }
