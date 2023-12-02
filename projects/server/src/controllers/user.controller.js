@@ -69,7 +69,6 @@ class UserController {
       t.commit();
       return res.status(201).send({ message: 'success create account' });
     } catch (err) {
-      console.log(err);
       await t.rollback();
       return res.status(400).send(err?.message);
     }
