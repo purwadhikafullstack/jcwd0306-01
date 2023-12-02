@@ -129,7 +129,16 @@ class User extends Service {
   verifyUser = async (req, t) => {
     try {
       const { email, password, firstName, lastName } = req.body;
-      const decoded = jwt.verify(email, process.env.JWT_SECRET_KEY);
+      let decoded;
+      try {
+        decoded = jwt.verify(email, process.env.JWT_SECRET_KEY);
+      } catch (tokenError) {
+        if (tokenError.name === 'TokenExpiredError') {
+          throw new Error('Link has expired, please Re-Register!');
+        } else {
+          throw tokenError;
+        }
+      }
 
       if (!email || email === undefined) {
         throw new Error('Email is required!');
@@ -154,12 +163,10 @@ class User extends Service {
         },
         { where: { email: decoded.email }, transaction: t, logging: false }
       );
-
       if (updateResult[0] === 0) throw new Error('User not found');
 
       return updateResult;
     } catch (error) {
-      console.log(error);
       sendResponse({ error });
       throw error;
     }
