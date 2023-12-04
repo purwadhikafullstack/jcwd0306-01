@@ -131,8 +131,8 @@ class Order extends Service {
           const currStock = warehouses[idx]?.stock;
           const tempWhse = warehouses.filter(
             (whs) => whs.dataValues.stock > quantity
-          );
-          const source = tempWhse.length ? tempWhse : warehouses;
+          ); // get warehouse which has greater stock
+          const source = tempWhse.length ? tempWhse : warehouses; // if no warehouse with greater stock, decrease from several nearby warehouse
           if (idx === -1 || currStock < quantity) {
             const nearbyWhse = await findNearbyWarehouse(warehouseId, source);
             const neededStock = currStock ? quantity - currStock : quantity;
