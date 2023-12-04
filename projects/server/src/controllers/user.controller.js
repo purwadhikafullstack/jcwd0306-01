@@ -21,19 +21,39 @@ class UserController {
     try {
       const t = await db.sequelize.transaction();
       const { email, firstName, lastName, password } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+
       const isUserExist = await db.User.findOne({
         where: { email },
+        attributes: { exclude: ['image', 'password'] },
         transaction: t,
       });
-      if (isUserExist) {
+
+      if (isUserExist && isUserExist.dataValues.isVerified === true) {
         await t.rollback();
         return res.status(400).send({ message: 'email already exists' });
       }
-      const hashedPassword = await bcrypt.hash(password, 10);
+      if (isUserExist && isUserExist.dataValues.isVerified === false) {
+        await db.User.update(
+          {
+            email,
+            firstName,
+            lastName,
+            password: hashedPassword,
+          },
+          {
+            where: { email },
+            transaction: t,
+          }
+        );
+        userServices.mailerEmail('register', email);
+      }
+
       const newUser = await db.User.create(
         { email, firstName, lastName, password: hashedPassword },
         { transaction: t }
       );
+
       t.commit();
       userServices.mailerEmail('register', email);
       sendResponse({ res, statusCode: 200, data: newUser });
@@ -49,6 +69,7 @@ class UserController {
       t.commit();
       return res.status(201).send({ message: 'success create account' });
     } catch (err) {
+      await t.rollback();
       return res.status(400).send(err?.message);
     }
   };

@@ -55,19 +55,23 @@ const optionCronUpdateStatusReceived = {
 };
 
 const cronDeleteUnpaid = () =>
-  cron.schedule(`2 * * * *`, async () => {
-    console.log(`'cron update [delete unpaid]: start'`);
-    const result = await db.Order.findAll(optionCronDeleteUnpaid);
-    console.log(`'cron update [delete unpaid]: target:'`, result);
-    const id = [];
-    result.forEach((order) => id.push(order.dataValues.id));
-    await db.Order.update(
-      { status: 'cancelled' },
-      { where: { id: { [Op.in]: id } } }
-    );
-    console.log(
-      `'cron update [delete unpaid]: finish, affecting ${result.length} datas'`
-    );
+  cron.schedule(`*/10 * * * *`, async () => {
+    try {
+      console.log(`'cron update [delete unpaid]: start'`);
+      const result = await db.Order.findAll(optionCronDeleteUnpaid);
+      console.log(`'cron update [delete unpaid]: target:'`, result);
+      const id = [];
+      result.forEach((order) => id.push(order.dataValues.id));
+      await db.Order.update(
+        { status: 'cancelled' },
+        { where: { id: { [Op.in]: id } } }
+      );
+      console.log(
+        `'cron update [delete unpaid]: finish, affecting ${result.length} datas'`
+      );
+    } catch (error) {
+      console.log('Error in cron job delete unpaid:', error);
+    }
   });
 
 const cronUpdateReceivedStatus = () => {
@@ -81,10 +85,10 @@ const cronUpdateReceivedStatus = () => {
         { where: { id: { [Op.in]: id } } }
       );
       console.log(
-        'cron update: order status more than 7 days, status updated to received!'
+        `'cron update [update received]: finish, affecting ${result.length} datas'`
       );
     } catch (error) {
-      console.error('Error in cron job:', error);
+      console.log('Error in cron job update received:', error);
     }
   });
 };
