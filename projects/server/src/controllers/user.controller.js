@@ -18,8 +18,8 @@ class UserController {
   };
 
   static register = async (req, res) => {
+    const t = await db.sequelize.transaction();
     try {
-      const t = await db.sequelize.transaction();
       const { email, firstName, lastName, password } = req.body;
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -58,6 +58,7 @@ class UserController {
       userServices.mailerEmail('register', email);
       sendResponse({ res, statusCode: 200, data: newUser });
     } catch (err) {
+      await t.rollback();
       sendResponse({ res, err });
     }
   };
@@ -92,6 +93,7 @@ class UserController {
       t.commit();
       sendResponse({ res, statusCode: 200, data: signInResult });
     } catch (error) {
+      await t.rollback();
       sendResponse({ res, error });
     }
   };
@@ -183,6 +185,7 @@ class UserController {
       await t.commit();
       return sendResponse({ res, statusCode: 201, data: 'password edited' });
     } catch (error) {
+      await t.rollback();
       sendResponse({ res, error });
     }
   };
