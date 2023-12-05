@@ -6,6 +6,7 @@ const getProducts = require('./getProducts');
 const updateProductActivationByProductId = require('./updateProductActivationByProductId');
 const updateWarehouseProductStock = require('./updateWarehouseProductStock');
 const getTotalProducts = require('./getTotalProducts');
+const getAllProducts = require('./getAllProducts');
 
 const productService = {
   createProduct,
@@ -16,6 +17,7 @@ const productService = {
   updateProductActivationByProductId,
   updateWarehouseProductStock,
   getTotalProducts,
+  getAllProducts,
 };
 
 module.exports = productService;
