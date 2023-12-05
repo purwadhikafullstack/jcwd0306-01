@@ -31,6 +31,13 @@ router.get('/', productValidator.getProducts, productController.getProducts);
 // get total products (dashboard)
 router.get('/total', productController.getTotalProducts);
 
+// get all product (without pagination)
+router.get(
+  '/allProducts',
+  verifyAuthUser({ isAdmin: true }),
+  productController.getAllProducts
+);
+
 // get product by productId
 router.get(
   '/:productId',
