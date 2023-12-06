@@ -76,6 +76,15 @@ const productController = {
       sendResponse({ res, error });
     }
   },
+
+  getAllProducts: async (req, res) => {
+    try {
+      const products = await productService.getAllProducts();
+      sendResponse({ res, statusCode: 200, data: products });
+    } catch (error) {
+      sendResponse({ res, error });
+    }
+  },
 };
 
 module.exports = productController;
