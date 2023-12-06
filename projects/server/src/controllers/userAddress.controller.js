@@ -32,7 +32,8 @@ class UserAddressController {
 
   static getShippingOptions = async (req, res) => {
     try {
-      return userAddressService.getShippingOptionsWithRedis(req, res);
+      const result = await userAddressService.getShippingOptions(req);
+      return res.send(result);
     } catch (error) {
       return sendResponse({ res, error });
     }
