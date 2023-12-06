@@ -59,7 +59,10 @@ const cronDeleteUnpaid = () =>
     try {
       console.log(`'cron update [delete unpaid]: start'`);
       const result = await db.Order.findAll(optionCronDeleteUnpaid);
-      if (!result.length) return;
+      if (!result.length) {
+        console.log('cron update: no changes');
+        return;
+      }
       console.log(`'cron update [delete unpaid]: target:'`, result);
       const id = [];
       result.forEach((order) => id.push(order.dataValues.id));
@@ -79,7 +82,10 @@ const cronUpdateReceivedStatus = () => {
   cron.schedule(`0 0 * * *`, async () => {
     try {
       const result = await db.Order.findAll(optionCronUpdateStatusReceived);
-      if (!result.length) return;
+      if (!result.length) {
+        console.log('cron update: no changes');
+        return;
+      }
       const id = [];
       result.forEach((order) => id.push(order.dataValues.id));
       await db.Order.update(

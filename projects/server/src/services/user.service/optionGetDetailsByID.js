@@ -71,6 +71,7 @@ const includeOrderCart = [
     ],
     include: {
       model: db.Product,
+      paranoid: false,
       include: { model: db.ProductImage, attributes: ['id'] },
     },
   },
