@@ -67,6 +67,8 @@ class ChatService extends Service {
     });
     const result = await this.getAll({
       logging: false,
+      limit: 5,
+      order: [['createdAt', 'DESC']],
       where: {
         id: [
           sequelize.literal(

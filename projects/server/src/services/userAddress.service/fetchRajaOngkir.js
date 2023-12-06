@@ -1,6 +1,13 @@
 /* eslint-disable no-await-in-loop */
 const { default: fetch } = require('node-fetch');
+const { createClient } = require('redis');
 const { ResponseError } = require('../../errors');
+
+const client = createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+  legacyMode: true,
+});
+client.on(`error`, () => client.disconnect());
 
 const shippingMethodFormatter = (arr = []) => {
   const temp = [];
@@ -51,4 +58,25 @@ const fetchRajaOngkir = async (body) => {
   return data;
 };
 
-module.exports = { fetchRajaOngkir };
+const redisRajaOngkir = async (body) => {
+  try {
+    if (!client.isOpen) await client.connect();
+    const wFloor = Math.floor(body.weight / 1000);
+    const weightCeil = Math.ceil(body.weight / 1000);
+    const weightFloor = weightCeil === wFloor ? weightCeil - 1 : wFloor;
+    const key = `city-${body.destination}-${weightFloor}-${weightCeil}`;
+    const shippingList = await client.v4.get(key);
+    if (shippingList) return JSON.parse(shippingList);
+    const shippingMethodList = await fetchRajaOngkir(body);
+    client.setEx(key, 3000, JSON.stringify(shippingMethodList));
+    return shippingMethodList;
+  } catch (error) {
+    if (error.code === `ECONNREFUSED`) {
+      const shippings = await fetchRajaOngkir(body);
+      return shippings;
+    }
+    throw new ResponseError(`redis error raja ongkir${error}`, 500);
+  }
+};
+
+module.exports = { fetchRajaOngkir, redisRajaOngkir };

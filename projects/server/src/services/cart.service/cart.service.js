@@ -22,10 +22,6 @@ class Cart extends Service {
         ],
       ],
     },
-    include: {
-      model: db.Product,
-      include: { model: db.ProductImage, attributes: ['id'] },
-    },
   };
 
   optionGetCartByUserId = {

@@ -43,6 +43,10 @@ class User extends Service {
     const token = jwt.sign(user.toJSON(), process.env.JWT_SECRET_KEY, {
       expiresIn: '1h',
     });
+    if (user.dataValues.isAdmin) {
+      const warehouses = await db.Warehouse.findAll({ attributes: ['id'] });
+      user.setDataValue('WarehouseUsers', warehouses);
+    }
     return { token, user };
   };
 
